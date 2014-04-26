@@ -1,0 +1,3 @@
+# Makes sure all line endings in the repo are LF
+# See here : https://help.github.com/articles/dealing-with-line-endings
+* text eol=lf
