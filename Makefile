@@ -56,6 +56,7 @@ help:
 	@echo '   make s3_upload                      upload the web site via S3         '
 	@echo '   make cf_upload                      upload the web site via Cloud Files'
 	@echo '   make github                         upload the web site via gh-pages   '
+	@echo "   make newpost NAME='Post name'       create a new post                  "
 	@echo '                                                                          '
 	@echo 'Set the DEBUG variable to 1 to enable debugging, e.g. make DEBUG=1 html   '
 	@echo 'Set the RELATIVE variable to 1 to enable relative urls                    '
@@ -121,4 +122,27 @@ github: publish
 	ghp-import -m "Generate Pelican site" -b $(GITHUB_PAGES_BRANCH) $(OUTPUTDIR)
 	git push origin $(GITHUB_PAGES_BRANCH)
 
-.PHONY: html help clean regenerate serve serve-global devserver publish ssh_upload rsync_upload dropbox_upload ftp_upload s3_upload cf_upload github
+DATE = $(shell date +'%Y-%m-%d')
+SLUG = $(shell echo '${NAME}' | sed -e 's/[^[:alnum:]]/-/g' | tr -s '-' | tr A-Z a-z)
+EXT ?= md
+FILENAME = $(INPUTDIR)/$(DATE)-$(SLUG)_DRAFT.$(EXT)
+
+
+newpost:
+ifdef NAME
+	@echo "Title: $(NAME)" > $(FILENAME)
+	@echo "Category: "    >> $(FILENAME)
+	@echo "Tags: "        >> $(FILENAME)
+	@echo "Summary: "     >> $(FILENAME)
+	@echo "Status: draft" >> $(FILENAME)
+	@echo ""              >> $(FILENAME)
+	@echo ""              >> $(FILENAME)
+
+	@echo "Created new post: $(FILENAME)"
+	vim $(FILENAME)
+else
+	@echo 'Variable NAME is not defined.'
+	@echo "Do: make newpost NAME='Post Name'"
+endif
+
+.PHONY: html help clean regenerate serve serve-global devserver publish ssh_upload rsync_upload dropbox_upload ftp_upload s3_upload cf_upload github newpost
