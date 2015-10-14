@@ -33,3 +33,6 @@ DEFAULT_PAGINATION = 10
 
 # Uncomment following line if you want document-relative URLs when developing
 #RELATIVE_URLS = True
+
+FILENAME_METADATA = '(?P<date>\d{4}-\d{2}-\d{2})-(?P<slug>.*)'
+SLUGIFY_SOURCE = 'basename'
