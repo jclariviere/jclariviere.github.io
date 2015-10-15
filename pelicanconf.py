@@ -12,6 +12,8 @@ TIMEZONE = 'America/Montreal'
 
 DEFAULT_LANG = u'en'
 
+THEME = 'pelican-bootstrap3'
+
 # Feed generation is usually not desired when developing
 FEED_ALL_ATOM = None
 CATEGORY_FEED_ATOM = None
