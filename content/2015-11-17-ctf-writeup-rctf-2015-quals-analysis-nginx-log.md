@@ -1,8 +1,7 @@
 Title: CTF writeup - RCTF 2015 Quals: Analysis nginx's log
-Category: Security
+Category: Infosec
 Tags: ctf,sqli
 Summary: Analysis of a blind SQL Injection in logs
-Status: draft
 
 
 ## Challenge
@@ -49,7 +48,7 @@ I extracted those URL-encoded entries then converted them to readable text using
 192.168.52.1 - - [06/Nov/2015:19:33:18 -0800] "GET /phpcode/rctf/misc/index.php?id=1 AND 7500=IF((ORD(MID((SELECT IFNULL(CAST(flag AS CHAR),0x20) FROM misc.flag ORDER BY flag LIMIT 0,1),4,1))!=83),SLEEP(1),7500) HTTP/1.1" 200 5 "-" "sqlmap/1.0-dev (http://sqlmap.org)" "-"
 ```
 
-The interesting part of each entry basically does this:
+For each character, there is a bunch of entries that basically does this:
 ```pseudocode
 if flag[0].char_code > 64:
     sleep(1)
@@ -63,7 +62,7 @@ if flag[0].char_code != 82:
 
 Then it goes to the next character: `LIMIT 0,1),1,1` becomes `LIMIT 0,1),2,1`.
 
-So the most interesting entries entries look like this: `...LIMIT 0,1),1,1))!=82),SLEEP(1)...` (highlighted in the snippet).
+So the most interesting entries look like this: `...LIMIT 0,1),1,1))!=82),SLEEP(1)...` (highlighted in the snippet).
 We can find the flag value by extracting every character after a `!=`. I used Sublime Text's search + multi-select for this, but you can do some vim or regex magic too.
 Pasting these characters in my good old friend [asciitohex](http://www.asciitohex.com) revealed the flag.
 In the snippet above, you can find the first 4 letters: `ROIS`.
