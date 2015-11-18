@@ -126,7 +126,7 @@ github: publish
 DATE = $(shell date +'%Y-%m-%d')
 SLUG = $(shell echo '${NAME}' | sed -e 's/[^[:alnum:]]/-/g' | tr -s '-' | tr A-Z a-z)
 EXT ?= md
-FILENAME = $(INPUTDIR)/$(DATE)-$(SLUG)_DRAFT.$(EXT)
+FILENAME = $(INPUTDIR)/$(DATE)-$(SLUG).$(EXT)
 
 
 newpost:
