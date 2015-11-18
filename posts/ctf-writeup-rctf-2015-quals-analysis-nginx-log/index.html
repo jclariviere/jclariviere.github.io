@@ -141,7 +141,7 @@ I extracted those URL-encoded entries then converted them to readable text using
 </span></pre></div>
 
 
-<p>For each character, there is a bunch of entries that basically does this:</p>
+<p>For each character of the flag, there is a bunch of entries that basically does this:</p>
 <div class="highlight"><pre>if flag[0].char_code &gt; 64:
     sleep(1)
 </pre></div>
@@ -157,7 +157,7 @@ I extracted those URL-encoded entries then converted them to readable text using
 <p>So the most interesting entries look like this: <code>...LIMIT 0,1),1,1))!=82),SLEEP(1)...</code> (highlighted in the snippet).
 We can find the flag value by extracting every character after a <code>!=</code>. I used Sublime Text's search + multi-select for this, but you can do some vim or regex magic too.
 Pasting these characters in my good old friend <a href="http://www.asciitohex.com">asciitohex</a> revealed the flag.
-In the snippet above, you can find the first 4 letters: <code>ROIS</code>.</p>
+In the snippet above, you can find the first 4 characters: <code>ROIS</code>.</p>
             </div>
             <!-- /.entry-content -->
     <hr/>

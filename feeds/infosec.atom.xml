@@ -39,7 +39,7 @@ I extracted those URL-encoded entries then converted them to readable text using
 &lt;/span&gt;&lt;/pre&gt;&lt;/div&gt;
 
 
-&lt;p&gt;For each character, there is a bunch of entries that basically does this:&lt;/p&gt;
+&lt;p&gt;For each character of the flag, there is a bunch of entries that basically does this:&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;if flag[0].char_code &amp;gt; 64:
     sleep(1)
 &lt;/pre&gt;&lt;/div&gt;
@@ -55,4 +55,4 @@ I extracted those URL-encoded entries then converted them to readable text using
 &lt;p&gt;So the most interesting entries look like this: &lt;code&gt;...LIMIT 0,1),1,1))!=82),SLEEP(1)...&lt;/code&gt; (highlighted in the snippet).
 We can find the flag value by extracting every character after a &lt;code&gt;!=&lt;/code&gt;. I used Sublime Text's search + multi-select for this, but you can do some vim or regex magic too.
 Pasting these characters in my good old friend &lt;a href="http://www.asciitohex.com"&gt;asciitohex&lt;/a&gt; revealed the flag.
-In the snippet above, you can find the first 4 letters: &lt;code&gt;ROIS&lt;/code&gt;.&lt;/p&gt;</summary><category term="ctf"></category><category term="sqli"></category></entry></feed>
+In the snippet above, you can find the first 4 characters: &lt;code&gt;ROIS&lt;/code&gt;.&lt;/p&gt;</summary><category term="ctf"></category><category term="sqli"></category></entry></feed>
