@@ -5,9 +5,11 @@ Summary: Analysis of a blind SQL Injection in logs
 Status: draft
 
 
-> Challenge: Find the flag in an nginx log file.
+## Challenge
+Find the flag in an nginx log file.
 
-The first thing I did is to search for the string `flag`, which found a blind SQL Injection performed by sqlmap.
+## Writeup
+The first thing I did is to search for the string `flag`, which found a [blind SQL Injection](https://www.owasp.org/index.php/Blind_SQL_Injection) performed by [sqlmap](http://sqlmap.org/).
 I extracted those URL-encoded entries then converted them to readable text using [asciitohex](http://www.asciitohex.com), which gave lines like these:
 
 ```
