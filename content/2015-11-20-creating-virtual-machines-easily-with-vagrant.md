@@ -1,4 +1,4 @@
-Title: Creating a new VM in 30 seconds with Vagrant
+Title: Creating virtual machines easily with Vagrant
 Category: DevOps
 Tags: vagrant
 Summary: Getting started with Vagrant
@@ -8,7 +8,7 @@ Status: draft
 ## What is Vagrant?
 Vagrant is basically a wrapper around virtual machine providers like VirtualBox, VMware or AWS.
 You simply create a config file (called `Vagrantfile`) in a folder, use `vagrant up` and you got a VM up and running in less than 30 seconds!
-The only required entry in the config file is the base image to use (called "box"), but you can configure multiple properties like port forwarding, IP address, shared folders, amount of memory, script to run on first startup of the machine, etc.
+The only required entry in the config file is the base image to use, but you can configure multiple properties like port forwarding, IP address, shared folders, amount of memory, script to run on first startup of the machine, etc.
 This is very useful for sharing, as you only need to share a config file instead of a huge VM folder. And it can be [version controlled](https://en.wikipedia.org/wiki/Version_control)!
 
 
@@ -32,10 +32,12 @@ end
 
 As you can see, this is plain ruby, so you can use variables, loops, conditions, etc.
 
+The base image (called "box") I used is Ubuntu 14.04 64 bits.
+
 Put this file in a new folder and use `vagrant up` to create the virtual machine.
 
-If this is the first time you use this box, you will notice that [I lied](https://www.youtube.com/watch?v=Q2h9L4EVIdI&t=30s), it didn't take 30 seconds!
-The box first needs to be downloaded, but it will be 30 seconds for future machines, promise!
+If this is the first time you use this box, you will notice that it didn't take 30 seconds.
+[I lied](https://www.youtube.com/watch?v=Q2h9L4EVIdI&t=30s)... The box first needs to be downloaded, but it will be 30 seconds for future machines using this box, promise!
 
 You should see the VM in the VirtualBox GUI, but **do not edit the configuration there** since Vagrant will probably override your settings. Edit the `Vagrantfile` instead.
 
