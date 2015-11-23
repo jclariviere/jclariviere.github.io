@@ -174,8 +174,9 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 end
 ```
 
-Here, the sub-configs inherits from `config`, so alice and bob will both have the box `ubuntu/trusty64`.
-You can define it per-machine, just make sure you use the per-machine variables (`bob` and `alice`).
+Here, we defined 2 VMs, `alice` and `bob`, and both have a sub-config setting a private network IP.
+They also inherit from the top level config, so they will both use the box `ubuntu/trusty64`.
+To define it per-machine, just make sure you use the per-machine variables (`alice` and `bob`) in their `do...end` block.
 
 The Vagrant command line differs when there is multiple machines defined.
 Commands that only make sense for a single machine, such as `vagrant ssh`, require you to include the name of the machine as an argument: `vagrant ssh bob`.
