@@ -2,7 +2,6 @@ Title: Creating virtual machines easily with Vagrant
 Category: DevOps
 Tags: vagrant
 Summary: Getting started with Vagrant
-Status: draft
 
 
 ## What is Vagrant?
