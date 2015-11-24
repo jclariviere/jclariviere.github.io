@@ -13,6 +13,7 @@ TIMEZONE = 'America/Montreal'
 DEFAULT_LANG = u'en'
 
 THEME = 'pelican-bootstrap3'
+BOOTSTRAP_THEME = 'sandstone'
 
 PLUGIN_PATHS = ['/pelican/pelican-plugins']
 PLUGINS = ['tag_cloud']
@@ -34,6 +35,9 @@ AUTHOR_FEED_RSS = None
 SOCIAL = (('github', 'https://github.com/jclariviere'),
           ('twitter', 'https://twitter.com/jclariviere'),
           ('linkedin', 'https://www.linkedin.com/in/jclariviere'))
+
+TWITTER_CARDS = True
+TWITTER_USERNAME = 'jclariviere'
 
 DISPLAY_CATEGORIES_ON_SIDEBAR = True
 CATEGORIES_URL = 'categories.html'
