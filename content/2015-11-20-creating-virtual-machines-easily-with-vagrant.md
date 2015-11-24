@@ -19,7 +19,7 @@ Vagrant also uses ruby, but you don't need to install it since it's embedded in 
 
 
 ## Getting started
-Here is the most basic Vagrantfile you can do:
+Here is the most basic `Vagrantfile` you can do:
 ```ruby
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
@@ -37,9 +37,11 @@ Don't panic if you don't know ruby, the `Vagrantfile` can be read like a regular
 The base image (called "box") I used is Ubuntu 14.04 64 bits.
 
 Put this file in a new folder and use `vagrant up` to create the virtual machine.
+Remember when I told you it'd take 30 seconds?
 
-If this is the first time you use this box, you will notice that it didn't take 30 seconds.
-[I lied](https://www.youtube.com/watch?v=Q2h9L4EVIdI&t=30s)... The box first needs to be downloaded, then it will be stored in a local repository so future machines using this box won't need to download it again.
+![I lied!](/images/i-lied.png)
+
+The box first needs to be downloaded to a local repository, but future machines using this box will use the local version.
 
 You should see the VM in the VirtualBox GUI, but **do not edit the configuration there** since Vagrant will probably override your settings. Edit the `Vagrantfile` instead.
 
