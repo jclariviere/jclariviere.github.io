@@ -7,13 +7,15 @@ SITENAME = u'jclariviere'
 SITEURL = ''
 
 PATH = 'content'
+STATIC_PATHS = ['images', 'css']
 
 TIMEZONE = 'America/Montreal'
 
 DEFAULT_LANG = u'en'
 
 THEME = 'pelican-bootstrap3'
-BOOTSTRAP_THEME = 'sandstone'
+BOOTSTRAP_THEME = 'slate'
+CUSTOM_CSS = 'css/custom.css'
 
 PLUGIN_PATHS = ['/pelican/pelican-plugins']
 PLUGINS = ['tag_cloud']
@@ -47,7 +49,6 @@ DISPLAY_TAGS_ON_SIDEBAR = True
 TAGS_URL = 'tags.html'
 TAG_CLOUD_STEPS = 2
 TAG_CLOUD_SORTING = 'alphabetically'
-
 
 DEFAULT_PAGINATION = 10
 
