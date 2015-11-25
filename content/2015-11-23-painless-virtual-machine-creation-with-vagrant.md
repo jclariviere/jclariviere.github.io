@@ -1,4 +1,4 @@
-Title: Creating virtual machines easily with Vagrant
+Title: Painless virtual machine creation with Vagrant
 Category: DevOps
 Tags: vagrant
 Summary: Getting started with Vagrant
