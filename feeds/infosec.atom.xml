@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<feed xmlns="http://www.w3.org/2005/Atom"><title>jclariviere</title><link href="http://blog.jclariviere.com/" rel="alternate"></link><link href="http://blog.jclariviere.com/feeds/infosec.atom.xml" rel="self"></link><id>http://blog.jclariviere.com/</id><updated>2015-11-17T00:00:00-05:00</updated><entry><title>CTF writeup - RCTF 2015 Quals: Analysis nginx's log</title><link href="http://blog.jclariviere.com/posts/ctf-writeup-rctf-2015-quals-analysis-nginx-log" rel="alternate"></link><updated>2015-11-17T00:00:00-05:00</updated><author><name>Jean-Christophe Lariviere</name></author><id>tag:blog.jclariviere.com,2015-11-17:posts/ctf-writeup-rctf-2015-quals-analysis-nginx-log</id><summary type="html">&lt;h2&gt;Challenge&lt;/h2&gt;
-&lt;p&gt;Find the flag in an nginx log file.&lt;/p&gt;
+<feed xmlns="http://www.w3.org/2005/Atom"><title>jclariviere</title><link href="http://blog.jclariviere.com/" rel="alternate"></link><link href="http://blog.jclariviere.com/feeds/infosec.atom.xml" rel="self"></link><id>http://blog.jclariviere.com/</id><updated>2015-11-29T00:00:00-05:00</updated><entry><title>CTF writeup - RCTF 2015 Quals: Analysis nginx's log</title><link href="http://blog.jclariviere.com/posts/ctf-writeup-rctf-2015-quals-analysis-nginx-log" rel="alternate"></link><updated>2015-11-29T00:00:00-05:00</updated><author><name>Jean-Christophe Lariviere</name></author><id>tag:blog.jclariviere.com,2015-11-17:posts/ctf-writeup-rctf-2015-quals-analysis-nginx-log</id><summary type="html">&lt;h2&gt;Challenge&lt;/h2&gt;
+&lt;blockquote&gt;
+&lt;p&gt;Analysis nginx's log (this flag is like ROIS{xxx}).&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;The log file can be found &lt;a href="https://github.com/ctfs/write-ups-2015/blob/master/rctf-quals-2015/misc/analysis-nginxs-log/log_d30afe96202aafae7c0a1ecc123c0584"&gt;here&lt;/a&gt;.&lt;/p&gt;
 &lt;h2&gt;Writeup&lt;/h2&gt;
 &lt;p&gt;The first thing I did is to search for the string &lt;code&gt;flag&lt;/code&gt;, which found a &lt;a href="https://www.owasp.org/index.php/Blind_SQL_Injection"&gt;blind SQL Injection&lt;/a&gt; performed by &lt;a href="http://sqlmap.org/"&gt;sqlmap&lt;/a&gt;.
 I extracted those URL-encoded entries then converted them to readable text using &lt;a href="http://www.asciitohex.com"&gt;asciitohex&lt;/a&gt;, which gave lines like these:&lt;/p&gt;
@@ -52,7 +55,8 @@ I extracted those URL-encoded entries then converted them to readable text using
 
 
 &lt;p&gt;Then it goes to the next character: &lt;code&gt;LIMIT 0,1),1,1&lt;/code&gt; becomes &lt;code&gt;LIMIT 0,1),2,1&lt;/code&gt;.&lt;/p&gt;
-&lt;p&gt;So the most interesting entries look like this: &lt;code&gt;...LIMIT 0,1),1,1))!=82),SLEEP(1)...&lt;/code&gt; (highlighted in the snippet).
-We can find the flag value by extracting every character after a &lt;code&gt;!=&lt;/code&gt;. I used Sublime Text's search + multi-select for this, but you can do some vim or regex magic too.
-Pasting these characters in my good old friend &lt;a href="http://www.asciitohex.com"&gt;asciitohex&lt;/a&gt; revealed the flag.
-In the snippet above, you can find the first 4 characters: &lt;code&gt;ROIS&lt;/code&gt;.&lt;/p&gt;</summary><category term="ctf"></category><category term="sqli"></category></entry></feed>
+&lt;p&gt;So the most interesting entries contains a &lt;code&gt;!=&lt;/code&gt;, like this: &lt;code&gt;...LIMIT 0,1),1,1))!=82),SLEEP(1)...&lt;/code&gt; (highlighted in the snippet).
+We can find the flag value by extracting every character code after a &lt;code&gt;!=&lt;/code&gt;. I used Sublime Text's search + multi-select for this, but you can do some vim or regex magic too.
+Pasting these characters in &lt;a href="http://www.asciitohex.com"&gt;asciitohex&lt;/a&gt; revealed the flag.
+In the snippet above, you can find the first 4 characters.&lt;/p&gt;
+&lt;p&gt;Flag: &lt;code&gt;ROIS{miSc_An@lySis_nG1nx_L0g}&lt;/code&gt;.&lt;/p&gt;</summary><category term="ctf"></category><category term="sqli"></category></entry></feed>

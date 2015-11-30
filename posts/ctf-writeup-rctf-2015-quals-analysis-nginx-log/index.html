@@ -99,6 +99,10 @@ jclariviere            </a>
     <span class="published">
         <i class="fa fa-calendar"></i><time datetime="2015-11-17T00:00:00-05:00"> Tue 17 November 2015</time>
     </span>
+            <span class="label label-default">Modified</span>
+            <span class="modified">
+                <i class="fa fa-calendar"></i><time datetime="2015-11-29T00:00:00-05:00"> Sun 29 November 2015</time>
+            </span>
 
 
 
@@ -110,7 +114,10 @@ jclariviere            </a>
 </footer><!-- /.post-info -->                    </div>
                 </div>
                 <h2>Challenge</h2>
-<p>Find the flag in an nginx log file.</p>
+<blockquote>
+<p>Analysis nginx's log (this flag is like ROIS{xxx}).</p>
+</blockquote>
+<p>The log file can be found <a href="https://github.com/ctfs/write-ups-2015/blob/master/rctf-quals-2015/misc/analysis-nginxs-log/log_d30afe96202aafae7c0a1ecc123c0584">here</a>.</p>
 <h2>Writeup</h2>
 <p>The first thing I did is to search for the string <code>flag</code>, which found a <a href="https://www.owasp.org/index.php/Blind_SQL_Injection">blind SQL Injection</a> performed by <a href="http://sqlmap.org/">sqlmap</a>.
 I extracted those URL-encoded entries then converted them to readable text using <a href="http://www.asciitohex.com">asciitohex</a>, which gave lines like these:</p>
@@ -162,10 +169,11 @@ I extracted those URL-encoded entries then converted them to readable text using
 
 
 <p>Then it goes to the next character: <code>LIMIT 0,1),1,1</code> becomes <code>LIMIT 0,1),2,1</code>.</p>
-<p>So the most interesting entries look like this: <code>...LIMIT 0,1),1,1))!=82),SLEEP(1)...</code> (highlighted in the snippet).
-We can find the flag value by extracting every character after a <code>!=</code>. I used Sublime Text's search + multi-select for this, but you can do some vim or regex magic too.
-Pasting these characters in my good old friend <a href="http://www.asciitohex.com">asciitohex</a> revealed the flag.
-In the snippet above, you can find the first 4 characters: <code>ROIS</code>.</p>
+<p>So the most interesting entries contains a <code>!=</code>, like this: <code>...LIMIT 0,1),1,1))!=82),SLEEP(1)...</code> (highlighted in the snippet).
+We can find the flag value by extracting every character code after a <code>!=</code>. I used Sublime Text's search + multi-select for this, but you can do some vim or regex magic too.
+Pasting these characters in <a href="http://www.asciitohex.com">asciitohex</a> revealed the flag.
+In the snippet above, you can find the first 4 characters.</p>
+<p>Flag: <code>ROIS{miSc_An@lySis_nG1nx_L0g}</code>.</p>
             </div>
             <!-- /.entry-content -->
     <hr/>
