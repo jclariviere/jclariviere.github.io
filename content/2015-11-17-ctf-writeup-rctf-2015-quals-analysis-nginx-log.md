@@ -1,11 +1,14 @@
 Title: CTF writeup - RCTF 2015 Quals: Analysis nginx's log
 Category: Infosec
 Tags: ctf,sqli
+Modified: 2015-11-29
 Summary: Analysis of a blind SQL Injection in logs
 
 
 ## Challenge
-Find the flag in an nginx log file.
+> Analysis nginx's log (this flag is like ROIS{xxx}).
+
+The log file can be found [here](https://github.com/ctfs/write-ups-2015/blob/master/rctf-quals-2015/misc/analysis-nginxs-log/log_d30afe96202aafae7c0a1ecc123c0584).
 
 ## Writeup
 The first thing I did is to search for the string `flag`, which found a [blind SQL Injection](https://www.owasp.org/index.php/Blind_SQL_Injection) performed by [sqlmap](http://sqlmap.org/).
@@ -62,7 +65,9 @@ if flag[0].char_code != 82:
 
 Then it goes to the next character: `LIMIT 0,1),1,1` becomes `LIMIT 0,1),2,1`.
 
-So the most interesting entries look like this: `...LIMIT 0,1),1,1))!=82),SLEEP(1)...` (highlighted in the snippet).
-We can find the flag value by extracting every character after a `!=`. I used Sublime Text's search + multi-select for this, but you can do some vim or regex magic too.
-Pasting these characters in my good old friend [asciitohex](http://www.asciitohex.com) revealed the flag.
-In the snippet above, you can find the first 4 characters: `ROIS`.
+So the most interesting entries contains a `!=`, like this: `...LIMIT 0,1),1,1))!=82),SLEEP(1)...` (highlighted in the snippet).
+We can find the flag value by extracting every character code after a `!=`. I used Sublime Text's search + multi-select for this, but you can do some vim or regex magic too.
+Pasting these characters in [asciitohex](http://www.asciitohex.com) revealed the flag.
+In the snippet above, you can find the first 4 characters.
+
+Flag: `ROIS{miSc_An@lySis_nG1nx_L0g}`.

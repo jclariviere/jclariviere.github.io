@@ -62,3 +62,5 @@ SLUGIFY_SOURCE = 'basename'
 # Url settings
 ARTICLE_URL = 'posts/{slug}'
 ARTICLE_SAVE_AS = 'posts/{slug}/index.html'
+
+SHOW_DATE_MODIFIED = True
