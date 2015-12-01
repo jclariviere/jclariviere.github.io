@@ -183,9 +183,9 @@ Allow: /sounds/pljesus.wav
 </pre></div>
 
 
-<p>Following the hint, we have to do a <a href="https://www.owasp.org/index.php/Path_Traversal">directory traversal attack</a>.
-Trying to list <code>../</code> with curl didn't work and simply showed the website's main page.</p>
-<div class="highlight"><pre>$ curl &#39;http://yws-fsiqc922.9447.plumbing/../&#39;
+<p>Following the hint, we have to do a <a href="https://www.owasp.org/index.php/Path_Traversal">directory traversal attack</a> and, since directory listing is enabled on the server, we can simply do it on paths instead of specific files.
+Trying to list <code>/..</code> with curl didn't work and simply showed the website's main page.</p>
+<div class="highlight"><pre>$ curl &#39;http://yws-fsiqc922.9447.plumbing/..&#39;
 </pre></div>
 
 
@@ -227,7 +227,7 @@ Trying to list <code>../</code> with curl didn't work and simply showed the webs
 </pre></div>
 
 
-<p>Most people seems to have used BurpSuite or a plain connection with netcat to get the flag:</p>
+<p>Most people seem to have used BurpSuite or a plain connection with netcat to get the flag:</p>
 <div class="highlight"><pre><span class="nb">echo</span> <span class="s2">&quot;GET /.. HTTP/1.1\r\n\r\n&quot;</span> <span class="p">|</span> nc yws-fsiqc922.9447.plumbing 80
 </pre></div>
 
@@ -235,7 +235,7 @@ Trying to list <code>../</code> with curl didn't work and simply showed the webs
 <h2>Why adding it as a query param worked</h2>
 <p>I didn't understand why adding the directory traversal after a <code>?</code> worked, since the vulnerability was in the path, not a query param.</p>
 <p>I looked at the source code that the organizers uploaded after the CTF, and it turns out that the <code>extractUrl</code> function will strip extra levels of <code>../</code>.
-It only keep the last one, so it strips the <code>?</code> at the same time: <code>?../..</code> becomes <code>/..</code>.
+It only keeps the last one, so it strips the <code>?</code> at the same time: <code>?../..</code> becomes <code>/..</code>.
 Here is the function from the source code:</p>
 <div class="highlight"><pre><span class="kt">int</span> <span class="nf">extractURL</span><span class="p">(</span><span class="kt">char</span> <span class="o">*</span><span class="n">urlS</span><span class="p">,</span> <span class="kt">int</span> <span class="n">urlSize</span><span class="p">,</span> <span class="kt">char</span> <span class="o">*</span><span class="n">fileN</span><span class="p">,</span> <span class="kt">int</span> <span class="n">fileNMaxSize</span><span class="p">)</span> <span class="p">{</span>
     <span class="c1">// Verify it starts with &#39;/&#39;.</span>

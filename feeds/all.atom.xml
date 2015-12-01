@@ -73,9 +73,9 @@ Allow: /sounds/pljesus.wav
 &lt;/pre&gt;&lt;/div&gt;
 
 
-&lt;p&gt;Following the hint, we have to do a &lt;a href="https://www.owasp.org/index.php/Path_Traversal"&gt;directory traversal attack&lt;/a&gt;.
-Trying to list &lt;code&gt;../&lt;/code&gt; with curl didn't work and simply showed the website's main page.&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;$ curl &amp;#39;http://yws-fsiqc922.9447.plumbing/../&amp;#39;
+&lt;p&gt;Following the hint, we have to do a &lt;a href="https://www.owasp.org/index.php/Path_Traversal"&gt;directory traversal attack&lt;/a&gt; and, since directory listing is enabled on the server, we can simply do it on paths instead of specific files.
+Trying to list &lt;code&gt;/..&lt;/code&gt; with curl didn't work and simply showed the website's main page.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;$ curl &amp;#39;http://yws-fsiqc922.9447.plumbing/..&amp;#39;
 &lt;/pre&gt;&lt;/div&gt;
 
 
@@ -117,7 +117,7 @@ Trying to list &lt;code&gt;../&lt;/code&gt; with curl didn't work and simply sho
 &lt;/pre&gt;&lt;/div&gt;
 
 
-&lt;p&gt;Most people seems to have used BurpSuite or a plain connection with netcat to get the flag:&lt;/p&gt;
+&lt;p&gt;Most people seem to have used BurpSuite or a plain connection with netcat to get the flag:&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="nb"&gt;echo&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;GET /.. HTTP/1.1\r\n\r\n&amp;quot;&lt;/span&gt; &lt;span class="p"&gt;|&lt;/span&gt; nc yws-fsiqc922.9447.plumbing 80
 &lt;/pre&gt;&lt;/div&gt;
 
@@ -125,7 +125,7 @@ Trying to list &lt;code&gt;../&lt;/code&gt; with curl didn't work and simply sho
 &lt;h2&gt;Why adding it as a query param worked&lt;/h2&gt;
 &lt;p&gt;I didn't understand why adding the directory traversal after a &lt;code&gt;?&lt;/code&gt; worked, since the vulnerability was in the path, not a query param.&lt;/p&gt;
 &lt;p&gt;I looked at the source code that the organizers uploaded after the CTF, and it turns out that the &lt;code&gt;extractUrl&lt;/code&gt; function will strip extra levels of &lt;code&gt;../&lt;/code&gt;.
-It only keep the last one, so it strips the &lt;code&gt;?&lt;/code&gt; at the same time: &lt;code&gt;?../..&lt;/code&gt; becomes &lt;code&gt;/..&lt;/code&gt;.
+It only keeps the last one, so it strips the &lt;code&gt;?&lt;/code&gt; at the same time: &lt;code&gt;?../..&lt;/code&gt; becomes &lt;code&gt;/..&lt;/code&gt;.
 Here is the function from the source code:&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="kt"&gt;int&lt;/span&gt; &lt;span class="nf"&gt;extractURL&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="kt"&gt;char&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="n"&gt;urlS&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="kt"&gt;int&lt;/span&gt; &lt;span class="n"&gt;urlSize&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="kt"&gt;char&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="n"&gt;fileN&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="kt"&gt;int&lt;/span&gt; &lt;span class="n"&gt;fileNMaxSize&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
     &lt;span class="c1"&gt;// Verify it starts with &amp;#39;/&amp;#39;.&lt;/span&gt;
