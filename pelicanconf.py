@@ -7,7 +7,8 @@ SITENAME = u'jclariviere'
 SITEURL = ''
 
 PATH = 'content'
-STATIC_PATHS = ['images', 'css']
+STATIC_PATHS = ['images', 'css', 'code']
+ARTICLE_PATHS = ['posts']
 
 TIMEZONE = 'America/Montreal'
 
@@ -18,7 +19,8 @@ BOOTSTRAP_THEME = 'slate'
 CUSTOM_CSS = 'css/custom.css'
 
 PLUGIN_PATHS = ['/pelican/pelican-plugins']
-PLUGINS = ['tag_cloud']
+PLUGINS = ['tag_cloud', 'liquid_tags.include_code']
+MD_EXTENSIONS = ['codehilite(css_class=highlight)', 'extra', 'toc']
 
 # Feed generation is usually not desired when developing
 FEED_ALL_ATOM = None

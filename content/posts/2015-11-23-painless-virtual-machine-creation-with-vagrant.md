@@ -1,6 +1,7 @@
 Title: Painless virtual machine creation with Vagrant
 Category: DevOps
 Tags: vagrant
+Modified: 2015-12-16
 Summary: Getting started with Vagrant
 
 
@@ -18,17 +19,9 @@ Vagrant also uses ruby, but you don't need to install it since it's embedded in 
 
 
 ## Getting started
-Here is the most basic `Vagrantfile` you can do:
-```ruby
-# -*- mode: ruby -*-
-# vi: set ft=ruby :
+Here is the most basic `Vagrantfile` you can do.
 
-VAGRANTFILE_API_VERSION = "2"
-
-Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
-  config.vm.box = "ubuntu/trusty64"
-end
-```
+{% include_code basic-vagrantfile-trusty64/Vagrantfile lang:ruby %}
 
 As you can see, this is plain ruby, so you could use variables, loops, conditions, etc.
 Don't panic if you don't know ruby, the `Vagrantfile` can be read like a regular config file.
@@ -38,7 +31,7 @@ The base image (called "box") I used is Ubuntu 14.04 64 bits.
 Put this file in a new folder and use `vagrant up` to create the virtual machine.
 Remember when I told you it'd take 30 seconds?
 
-![I lied!](/images/i-lied.png)
+![I lied!]({filename}/images/i-lied.png)
 
 The box first needs to be downloaded to a local repository, but future machines using this box will use the local version.
 
@@ -156,26 +149,9 @@ Provisionning happens in these situations:
 ## Defining multiple machines in a Vagrantfile
 To do so, use `config.vm.define` in the `Vagrantfile`.
 
-```ruby
-# -*- mode: ruby -*-
-# vi: set ft=ruby :
+{% include_code vagrantfile-two-machines-trusty64/Vagrantfile lang:ruby %}
 
-VAGRANTFILE_API_VERSION = "2"
-
-Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
-  config.vm.box = "ubuntu/trusty64"
-
-  config.vm.define "alice" do |alice|
-    alice.vm.network :private_network, ip: "192.168.33.210"
-  end
-
-  config.vm.define "bob" do |bob|
-    bob.vm.network :private_network, ip: "192.168.33.211"
-  end
-end
-```
-
-Here, we defined 2 VMs, `alice` and `bob`, and both have a sub-config setting a private network IP.
+Here, we defined 2 VMs, `alice` and `bob`, that both have a sub-config setting their hostname and a private network IP and adding the other machine in the `hosts` file.
 They also inherit from the top level config, so they will both use the box `ubuntu/trusty64`.
 To define it per-machine, just make sure you use the per-machine variables (`alice` and `bob`) in their `do...end` block.
 
