@@ -12,7 +12,7 @@ From the manpage:
 It is referred as the TCP/IP swiss army knife, and is most commonly used to either connect to an open TCP port (client-mode), or to listen on a port (server-mode).
 
 ## Setup
-To test the connection between 2 machines, I will use Vagrant to create 2 virtual machines. Vagrant is very simple to use, see [this post]({filename}/posts/2015-11-23-painless-virtual-machine-creation-with-vagrant.md) for the basics.
+To test the connection between 2 machines, I will use Vagrant to create 2 virtual machines. Vagrant is very simple to use, see [this post]({filename}/posts/2015-11-23-virtual-machines-with-vagrant.md) for the basics.
 
 {% include_code vagrantfile-netcat/Vagrantfile lang:ruby %}
 
