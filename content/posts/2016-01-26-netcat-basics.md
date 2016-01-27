@@ -2,7 +2,6 @@ Title: Netcat basics
 Category: Infosec
 Tags: netcat, vagrant
 Summary: Netcat basics
-Status: draft
 
 
 ## What is netcat?
