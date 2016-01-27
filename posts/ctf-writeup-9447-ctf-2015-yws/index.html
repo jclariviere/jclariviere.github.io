@@ -109,13 +109,13 @@ jclariviere            </a>
     
 </footer><!-- /.post-info -->                    </div>
                 </div>
-                <h2>Challenge</h2>
+                <h2 id="challenge">Challenge</h2>
 <blockquote>
 <p>My friend wrote a cool web server. I'm sure he's stored some great doxxxs on the website. Can you take a look and report back any interesting things you find?</p>
 <p>The web page is at http://yws-fsiqc922.9447.plumbing</p>
 <p>Hint! Where does the website not want you to go?</p>
 </blockquote>
-<h2>Writeup</h2>
+<h2 id="writeup">Writeup</h2>
 <p>The first thing to try is robots.txt.</p>
 <div class="highlight"><pre>$ curl http://yws-fsiqc922.9447.plumbing/robots.txt
 User-agnet: *
@@ -213,7 +213,7 @@ Trying to list <code>/..</code> with curl didn't work and simply showed the webs
 
 
 <p>Flag: <code>9447{D1rect0ries_ARe_h4rd}</code></p>
-<h2>curl gotcha</h2>
+<h2 id="curl-gotcha">curl gotcha</h2>
 <p>After the CTF, I followed discussions on IRC and learned that curl will "fix" the path for you before sending the query.</p>
 <div class="highlight"><pre><span class="hll">$ curl -v http://127.0.0.1:8080/../../..
 </span>* Rebuilt URL to: http://127.0.0.1:8080/
@@ -228,11 +228,11 @@ Trying to list <code>/..</code> with curl didn't work and simply showed the webs
 
 
 <p>Most people seem to have used BurpSuite or a plain connection with netcat to get the flag:</p>
-<div class="highlight"><pre><span class="nb">echo</span> <span class="s2">&quot;GET /.. HTTP/1.1\r\n\r\n&quot;</span> <span class="p">|</span> nc yws-fsiqc922.9447.plumbing 80
+<div class="highlight"><pre><span class="nb">printf</span> <span class="s2">&quot;GET /.. HTTP/1.1\r\n\r\n&quot;</span> <span class="p">|</span> nc yws-fsiqc922.9447.plumbing 80
 </pre></div>
 
 
-<h2>Why adding it as a query param worked</h2>
+<h2 id="why-adding-it-as-a-query-param-worked">Why adding it as a query param worked</h2>
 <p>I didn't understand why adding the directory traversal after a <code>?</code> worked, since the vulnerability was in the path, not a query param.</p>
 <p>I looked at the source code that the organizers uploaded after the CTF, and it turns out that the <code>extractUrl</code> function will strip extra levels of <code>../</code>.
 It only keeps the last one, so it strips the <code>?</code> at the same time: <code>?../..</code> becomes <code>/..</code>.
@@ -339,19 +339,24 @@ Here is the function from the source code:</p>
                             ctf
                         </a>
                     </li>
+                    <li class="list-group-item tag-1">
+                        <a href="http://blog.jclariviere.com/tag/vagrant.html">
+                            vagrant
+                        </a>
+                    </li>
                     <li class="list-group-item tag-2">
                         <a href="http://blog.jclariviere.com/tag/directory-traversal.html">
                             directory traversal
                         </a>
                     </li>
                     <li class="list-group-item tag-2">
-                        <a href="http://blog.jclariviere.com/tag/sqli.html">
-                            sqli
+                        <a href="http://blog.jclariviere.com/tag/netcat.html">
+                            netcat
                         </a>
                     </li>
                     <li class="list-group-item tag-2">
-                        <a href="http://blog.jclariviere.com/tag/vagrant.html">
-                            vagrant
+                        <a href="http://blog.jclariviere.com/tag/sqli.html">
+                            sqli
                         </a>
                     </li>
                 </ul>
@@ -366,7 +371,7 @@ Here is the function from the source code:</p>
    <div class="container">
       <hr>
       <div class="row">
-         <div class="col-xs-10">&copy; 2015 Jean-Christophe Lariviere
+         <div class="col-xs-10">&copy; 2016 Jean-Christophe Lariviere
             &middot; Powered by <a href="https://github.com/DandyDev/pelican-bootstrap3" target="_blank">pelican-bootstrap3</a>,
             <a href="http://docs.getpelican.com/" target="_blank">Pelican</a>,
             <a href="http://getbootstrap.com" target="_blank">Bootstrap</a>         </div>

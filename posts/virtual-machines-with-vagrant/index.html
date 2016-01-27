@@ -2,7 +2,7 @@
 <html lang="en"
 >
 <head>
-    <title>Painless virtual machine creation with Vagrant - jclariviere</title>
+    <title>Virtual machines with Vagrant - jclariviere</title>
     <!-- Using the latest rendering mode for IE -->
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta charset="utf-8">
@@ -10,7 +10,7 @@
 
 
 
-<link rel="canonical" href="http://blog.jclariviere.com/posts/painless-virtual-machine-creation-with-vagrant">
+<link rel="canonical" href="http://blog.jclariviere.com/posts/virtual-machines-with-vagrant">
 
         <meta name="author" content="Jean-Christophe Lariviere" />
         <meta name="keywords" content="vagrant" />
@@ -18,8 +18,8 @@
 
         <meta property="og:site_name" content="jclariviere" />
         <meta property="og:type" content="article"/>
-        <meta property="og:title" content="Painless virtual machine creation with Vagrant"/>
-        <meta property="og:url" content="http://blog.jclariviere.com/posts/painless-virtual-machine-creation-with-vagrant"/>
+        <meta property="og:title" content="Virtual machines with Vagrant"/>
+        <meta property="og:url" content="http://blog.jclariviere.com/posts/virtual-machines-with-vagrant"/>
         <meta property="og:description" content="Getting started with Vagrant"/>
         <meta property="article:published_time" content="2015-11-23" />
             <meta property="article:section" content="DevOps" />
@@ -83,10 +83,10 @@ jclariviere            </a>
         <article>
             <header class="page-header">
                 <h1>
-                    <a href="http://blog.jclariviere.com/posts/painless-virtual-machine-creation-with-vagrant"
+                    <a href="http://blog.jclariviere.com/posts/virtual-machines-with-vagrant"
                        rel="bookmark"
-                       title="Permalink to Painless virtual machine creation with Vagrant">
-                        Painless virtual machine creation with Vagrant
+                       title="Permalink to Virtual machines with Vagrant">
+                        Virtual machines with Vagrant
                     </a>
                 </h1>
             </header>
@@ -98,6 +98,10 @@ jclariviere            </a>
     <span class="published">
         <i class="fa fa-calendar"></i><time datetime="2015-11-23T00:00:00-05:00"> Mon 23 November 2015</time>
     </span>
+            <span class="label label-default">Modified</span>
+            <span class="modified">
+                <i class="fa fa-calendar"></i><time datetime="2016-01-26T00:00:00-05:00"> Tue 26 January 2016</time>
+            </span>
 
 
 
@@ -106,17 +110,20 @@ jclariviere            </a>
     
 </footer><!-- /.post-info -->                    </div>
                 </div>
-                <h2>What is Vagrant?</h2>
+                <h2 id="what-is-vagrant">What is Vagrant?</h2>
 <p>Vagrant is basically a wrapper around virtual machine providers like VirtualBox, VMware or AWS.
 You simply need to create a config file (called <code>Vagrantfile</code>) in a folder, use <code>vagrant up</code> and you've got a VM up and running in less than 30 seconds!
 The only required entry in the config file is the base image to use, but you can configure multiple properties like port forwarding, IP address, shared folders, amount of memory, script to run on first startup of the machine, etc.
 This is very useful for sharing, as you only need to share a config file instead of a huge VM folder. And it can be <a href="https://en.wikipedia.org/wiki/Version_control">version controlled</a>!</p>
-<h2>Required software</h2>
+<h2 id="required-software">Required software</h2>
 <p>For this post, I will use VirtualBox, as it's free, well supported and is the only available provider out of the box (you need to install plugins for the others).
 Make sure you have <a href="https://www.virtualbox.org/">VirtualBox</a> and <a href="https://docs.vagrantup.com/v2/installation">Vagrant</a> installed before continuing.
 Vagrant also uses ruby, but you don't need to install it since it's embedded in Vagrant.</p>
-<h2>Getting started</h2>
-<p>Here is the most basic <code>Vagrantfile</code> you can do:</p>
+<h2 id="getting-started">Getting started</h2>
+<p>Here is the most basic <code>Vagrantfile</code> you can do.</p>
+<figure class='code'>
+<figcaption><span>Vagrantfile</span> <a href='/code/basic-vagrantfile-trusty64/Vagrantfile'>download</a></figcaption>
+
 <div class="highlight"><pre><span class="c1"># -*- mode: ruby -*-</span>
 <span class="c1"># vi: set ft=ruby :</span>
 
@@ -128,20 +135,22 @@ Vagrant also uses ruby, but you don't need to install it since it's embedded in 
 </pre></div>
 
 
+</figure>
+
 <p>As you can see, this is plain ruby, so you could use variables, loops, conditions, etc.
 Don't panic if you don't know ruby, the <code>Vagrantfile</code> can be read like a regular config file.</p>
 <p>The base image (called "box") I used is Ubuntu 14.04 64 bits.</p>
 <p>Put this file in a new folder and use <code>vagrant up</code> to create the virtual machine.
 Remember when I told you it'd take 30 seconds?</p>
-<p><img alt="I lied!" src="/images/i-lied.png" /></p>
+<p><img alt="I lied!" src="http://blog.jclariviere.com/images/i-lied.png" /></p>
 <p>The box first needs to be downloaded to a local repository, but future machines using this box will use the local version.</p>
 <p>You should see the VM in the VirtualBox GUI, but <strong>do not edit the configuration there</strong> since Vagrant will probably override your settings. Edit the <code>Vagrantfile</code> instead.</p>
 <p>When the VM is ready, use <code>vagrant ssh</code> to SSH into it.
 Most boxes in Vagrant run in <a href="https://en.wikipedia.org/wiki/Headless_software">headless mode</a>, but if you need a desktop environment, <a href="https://atlas.hashicorp.com/boxcutter/boxes/ubuntu1404-desktop">boxcutter's Ubuntu desktop box</a> seems to work well.</p>
 <p>To shutdown the VM, use <code>vagrant halt</code>. To destroy it, use <code>vagrant destroy</code>. To reboot it, use <code>vagrant reload</code>.</p>
-<h2>Configuration</h2>
+<h2 id="configuration">Configuration</h2>
 <p>You can also use <code>vagrant init</code> to create a <code>Vagrantfile</code> with a bunch of options commented out. Let's review the most interesting ones.</p>
-<h3>Box</h3>
+<h3 id="box">Box</h3>
 <div class="highlight"><pre><span class="c1"># Every Vagrant development environment requires a box. You can search for</span>
 <span class="c1"># boxes at https://atlas.hashicorp.com/search.</span>
 <span class="n">config</span><span class="o">.</span><span class="n">vm</span><span class="o">.</span><span class="n">box</span> <span class="o">=</span> <span class="s2">&quot;base&quot;</span>
@@ -151,7 +160,7 @@ Most boxes in Vagrant run in <a href="https://en.wikipedia.org/wiki/Headless_sof
 <p>In the previous section, I used the official Ubuntu 14.04 box, but you can find more at <a href="https://atlas.hashicorp.com/search">https://atlas.hashicorp.com/search</a>.
 The value should be the name of the box (<code>ubuntu/trusty64</code> for example).</p>
 <p>You can also use <code>config.vm.box_url</code> if the box is not in Hashicorp's Atlas. In this case you need a full URL.</p>
-<h3>Port forwarding</h3>
+<h3 id="port-forwarding">Port forwarding</h3>
 <div class="highlight"><pre><span class="c1"># Create a forwarded port mapping which allows access to a specific port</span>
 <span class="c1"># within the machine from a port on the host machine. In the example below,</span>
 <span class="c1"># accessing &quot;localhost:8080&quot; will access port 80 on the guest machine.</span>
@@ -160,7 +169,7 @@ The value should be the name of the box (<code>ubuntu/trusty64</code> for exampl
 
 
 <p>Port forwarding can be useful if you need to access a service in the VM from a machine on the network but don't want to expose the whole VM.</p>
-<h3>Private network</h3>
+<h3 id="private-network">Private network</h3>
 <div class="highlight"><pre><span class="c1"># Create a private network, which allows host-only access to the machine</span>
 <span class="c1"># using a specific IP.</span>
 <span class="n">config</span><span class="o">.</span><span class="n">vm</span><span class="o">.</span><span class="n">network</span> <span class="s2">&quot;private_network&quot;</span><span class="p">,</span> <span class="ss">ip</span><span class="p">:</span> <span class="s2">&quot;192.168.33.10&quot;</span>
@@ -169,7 +178,7 @@ The value should be the name of the box (<code>ubuntu/trusty64</code> for exampl
 
 <p>This will create a "host-only network", which allows other VMs and the host to communicate together.
 If the interface doesn't exist on the host, it will create it.</p>
-<h3>Public network</h3>
+<h3 id="public-network">Public network</h3>
 <div class="highlight"><pre><span class="c1"># Create a public network, which generally matched to bridged network.</span>
 <span class="c1"># Bridged networks make the machine appear as another physical device on</span>
 <span class="c1"># your network.</span>
@@ -181,7 +190,7 @@ If the interface doesn't exist on the host, it will create it.</p>
 Let's say your host has IP <code>192.168.0.100</code>, your VM could get <code>192.168.0.167</code>, for example.
 This means you will be able to ping the VM from another computer in the same network.
 <strong>Since Vagrant is <a href="https://docs.vagrantup.com/v2/networking/public_network.html">insecure by default</a>, this is probably a bad idea.</strong></p>
-<h3>Shared folders</h3>
+<h3 id="shared-folders">Shared folders</h3>
 <div class="highlight"><pre><span class="c1"># Share an additional folder to the guest VM. The first argument is</span>
 <span class="c1"># the path on the host to the actual folder. The second argument is</span>
 <span class="c1"># the path on the guest to mount the folder. And the optional third</span>
@@ -191,7 +200,7 @@ This means you will be able to ping the VM from another computer in the same net
 
 
 <p>Share a folder with the host. By default, Vagrant shares the folder containing the <code>Vagrantfile</code> to the <code>/vagrant</code> folder in the VM.</p>
-<h3>Provider-specific configuration</h3>
+<h3 id="provider-specific-configuration">Provider-specific configuration</h3>
 <div class="highlight"><pre><span class="c1"># Provider-specific configuration so you can fine-tune various</span>
 <span class="c1"># backing providers for Vagrant. These expose provider-specific options.</span>
 <span class="c1"># Example for VirtualBox:</span>
@@ -210,7 +219,7 @@ This means you will be able to ping the VM from another computer in the same net
 
 
 <p>Note that customizing the amount of memory is done on a per-provider basis.</p>
-<h3>Provisionning</h3>
+<h3 id="provisionning">Provisionning</h3>
 <div class="highlight"><pre><span class="c1"># Enable provisioning with a shell script. Additional provisioners such as</span>
 <span class="c1"># Puppet, Chef, Ansible, Salt, and Docker are also available. Please see the</span>
 <span class="c1"># documentation for more information about their specific syntax and use.</span>
@@ -232,8 +241,11 @@ If you use scripts, make sure they are non-interactive! (Add the <code>-y</code>
 <li><code>vagrant up --provision</code></li>
 <li><code>vagrant reload --provision</code></li>
 </ul>
-<h2>Defining multiple machines in a Vagrantfile</h2>
+<h2 id="defining-multiple-machines-in-a-vagrantfile">Defining multiple machines in a Vagrantfile</h2>
 <p>To do so, use <code>config.vm.define</code> in the <code>Vagrantfile</code>.</p>
+<figure class='code'>
+<figcaption><span>Vagrantfile</span> <a href='/code/vagrantfile-two-machines-trusty64/Vagrantfile'>download</a></figcaption>
+
 <div class="highlight"><pre><span class="c1"># -*- mode: ruby -*-</span>
 <span class="c1"># vi: set ft=ruby :</span>
 
@@ -243,23 +255,29 @@ If you use scripts, make sure they are non-interactive! (Add the <code>-y</code>
   <span class="n">config</span><span class="o">.</span><span class="n">vm</span><span class="o">.</span><span class="n">box</span> <span class="o">=</span> <span class="s2">&quot;ubuntu/trusty64&quot;</span>
 
   <span class="n">config</span><span class="o">.</span><span class="n">vm</span><span class="o">.</span><span class="n">define</span> <span class="s2">&quot;alice&quot;</span> <span class="k">do</span> <span class="o">|</span><span class="n">alice</span><span class="o">|</span>
+    <span class="n">alice</span><span class="o">.</span><span class="n">vm</span><span class="o">.</span><span class="n">hostname</span> <span class="o">=</span> <span class="s2">&quot;alice&quot;</span>
     <span class="n">alice</span><span class="o">.</span><span class="n">vm</span><span class="o">.</span><span class="n">network</span> <span class="ss">:private_network</span><span class="p">,</span> <span class="ss">ip</span><span class="p">:</span> <span class="s2">&quot;192.168.33.210&quot;</span>
+    <span class="n">alice</span><span class="o">.</span><span class="n">vm</span><span class="o">.</span><span class="n">provision</span> <span class="s2">&quot;shell&quot;</span><span class="p">,</span> <span class="ss">inline</span><span class="p">:</span> <span class="s2">&quot;echo 192.168.33.211 bob &gt;&gt; /etc/hosts&quot;</span>
   <span class="k">end</span>
 
   <span class="n">config</span><span class="o">.</span><span class="n">vm</span><span class="o">.</span><span class="n">define</span> <span class="s2">&quot;bob&quot;</span> <span class="k">do</span> <span class="o">|</span><span class="n">bob</span><span class="o">|</span>
+    <span class="n">bob</span><span class="o">.</span><span class="n">vm</span><span class="o">.</span><span class="n">hostname</span> <span class="o">=</span> <span class="s2">&quot;bob&quot;</span>
     <span class="n">bob</span><span class="o">.</span><span class="n">vm</span><span class="o">.</span><span class="n">network</span> <span class="ss">:private_network</span><span class="p">,</span> <span class="ss">ip</span><span class="p">:</span> <span class="s2">&quot;192.168.33.211&quot;</span>
+    <span class="n">bob</span><span class="o">.</span><span class="n">vm</span><span class="o">.</span><span class="n">provision</span> <span class="s2">&quot;shell&quot;</span><span class="p">,</span> <span class="ss">inline</span><span class="p">:</span> <span class="s2">&quot;echo 192.168.33.210 alice &gt;&gt; /etc/hosts&quot;</span>
   <span class="k">end</span>
 <span class="k">end</span>
 </pre></div>
 
 
-<p>Here, we defined 2 VMs, <code>alice</code> and <code>bob</code>, and both have a sub-config setting a private network IP.
+</figure>
+
+<p>Here, we defined 2 VMs, <code>alice</code> and <code>bob</code>, that both have a sub-config setting their hostname and a private network IP and adding the other machine in the <code>hosts</code> file.
 They also inherit from the top level config, so they will both use the box <code>ubuntu/trusty64</code>.
 To define it per-machine, just make sure you use the per-machine variables (<code>alice</code> and <code>bob</code>) in their <code>do...end</code> block.</p>
 <p>The Vagrant command line differs when there is multiple machines defined.
 Commands that only make sense for a single machine, such as <code>vagrant ssh</code>, require you to include the name of the machine as an argument: <code>vagrant ssh bob</code>.
 Other commands, such as <code>vagrant up</code>, will operate on every machine by default, but you can also specify the target: <code>vagrant up alice</code>.</p>
-<h2>More info</h2>
+<h2 id="more-info">More info</h2>
 <p>This post covered common usage of Vagrant, but you can do more with it, such as pushing code to Heroku or sharing your VM over SSH.
 The <a href="https://docs.vagrantup.com">official documentation</a> is very well structured, so make sure you have a look!</p>
             </div>
@@ -273,8 +291,8 @@ The <a href="https://docs.vagrantup.com">official documentation</a> is very well
             /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
             var disqus_shortname = 'jclariviere-blog'; // required: replace example with your forum shortname
 
-                    var disqus_identifier = 'painless-virtual-machine-creation-with-vagrant';
-                var disqus_url = 'http://blog.jclariviere.com/posts/painless-virtual-machine-creation-with-vagrant';
+                    var disqus_identifier = 'virtual-machines-with-vagrant';
+                var disqus_url = 'http://blog.jclariviere.com/posts/virtual-machines-with-vagrant';
 
             var disqus_config = function () {
                 this.language = "en";
@@ -334,19 +352,24 @@ The <a href="https://docs.vagrantup.com">official documentation</a> is very well
                             ctf
                         </a>
                     </li>
+                    <li class="list-group-item tag-1">
+                        <a href="http://blog.jclariviere.com/tag/vagrant.html">
+                            vagrant
+                        </a>
+                    </li>
                     <li class="list-group-item tag-2">
                         <a href="http://blog.jclariviere.com/tag/directory-traversal.html">
                             directory traversal
                         </a>
                     </li>
                     <li class="list-group-item tag-2">
-                        <a href="http://blog.jclariviere.com/tag/sqli.html">
-                            sqli
+                        <a href="http://blog.jclariviere.com/tag/netcat.html">
+                            netcat
                         </a>
                     </li>
                     <li class="list-group-item tag-2">
-                        <a href="http://blog.jclariviere.com/tag/vagrant.html">
-                            vagrant
+                        <a href="http://blog.jclariviere.com/tag/sqli.html">
+                            sqli
                         </a>
                     </li>
                 </ul>
@@ -361,7 +384,7 @@ The <a href="https://docs.vagrantup.com">official documentation</a> is very well
    <div class="container">
       <hr>
       <div class="row">
-         <div class="col-xs-10">&copy; 2015 Jean-Christophe Lariviere
+         <div class="col-xs-10">&copy; 2016 Jean-Christophe Lariviere
             &middot; Powered by <a href="https://github.com/DandyDev/pelican-bootstrap3" target="_blank">pelican-bootstrap3</a>,
             <a href="http://docs.getpelican.com/" target="_blank">Pelican</a>,
             <a href="http://getbootstrap.com" target="_blank">Bootstrap</a>         </div>

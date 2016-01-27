@@ -113,12 +113,12 @@ jclariviere            </a>
     
 </footer><!-- /.post-info -->                    </div>
                 </div>
-                <h2>Challenge</h2>
+                <h2 id="challenge">Challenge</h2>
 <blockquote>
 <p>Analysis nginx's log (this flag is like ROIS{xxx}).</p>
 </blockquote>
 <p>The log file can be found <a href="https://github.com/ctfs/write-ups-2015/blob/master/rctf-quals-2015/misc/analysis-nginxs-log/log_d30afe96202aafae7c0a1ecc123c0584">here</a>.</p>
-<h2>Writeup</h2>
+<h2 id="writeup">Writeup</h2>
 <p>The first thing I did is to search for the string <code>flag</code>, which found a <a href="https://www.owasp.org/index.php/Blind_SQL_Injection">blind SQL Injection</a> performed by <a href="http://sqlmap.org/">sqlmap</a>.
 I extracted those URL-encoded entries then converted them to readable text using <a href="http://www.asciitohex.com">asciitohex</a>, which gave lines like these:</p>
 <div class="highlight"><pre>192.168.52.1 - - [06/Nov/2015:19:33:07 -0800] &quot;GET /phpcode/rctf/misc/index.php?id=1 AND 7500=IF((ORD(MID((SELECT IFNULL(CAST(flag AS CHAR),0x20) FROM misc.flag ORDER BY flag LIMIT 0,1),1,1))&gt;64),SLEEP(1),7500) HTTP/1.1&quot; 200 5 &quot;-&quot; &quot;sqlmap/1.0-dev (http://sqlmap.org)&quot; &quot;-&quot;
@@ -246,19 +246,24 @@ In the snippet above, you can find the first 4 characters.</p>
                             ctf
                         </a>
                     </li>
+                    <li class="list-group-item tag-1">
+                        <a href="http://blog.jclariviere.com/tag/vagrant.html">
+                            vagrant
+                        </a>
+                    </li>
                     <li class="list-group-item tag-2">
                         <a href="http://blog.jclariviere.com/tag/directory-traversal.html">
                             directory traversal
                         </a>
                     </li>
                     <li class="list-group-item tag-2">
-                        <a href="http://blog.jclariviere.com/tag/sqli.html">
-                            sqli
+                        <a href="http://blog.jclariviere.com/tag/netcat.html">
+                            netcat
                         </a>
                     </li>
                     <li class="list-group-item tag-2">
-                        <a href="http://blog.jclariviere.com/tag/vagrant.html">
-                            vagrant
+                        <a href="http://blog.jclariviere.com/tag/sqli.html">
+                            sqli
                         </a>
                     </li>
                 </ul>
@@ -273,7 +278,7 @@ In the snippet above, you can find the first 4 characters.</p>
    <div class="container">
       <hr>
       <div class="row">
-         <div class="col-xs-10">&copy; 2015 Jean-Christophe Lariviere
+         <div class="col-xs-10">&copy; 2016 Jean-Christophe Lariviere
             &middot; Powered by <a href="https://github.com/DandyDev/pelican-bootstrap3" target="_blank">pelican-bootstrap3</a>,
             <a href="http://docs.getpelican.com/" target="_blank">Pelican</a>,
             <a href="http://getbootstrap.com" target="_blank">Bootstrap</a>         </div>
