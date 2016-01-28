@@ -121,31 +121,35 @@ The `-C` option is to send CRLF instead of LF, [following the HTTP standard](htt
 ### Transferring files
 You can transfer files (it works for binaries too) using shell redirections.
 ```
-:::text hl_lines="1 4"
+:::text hl_lines="1"
 
 vagrant@alice:~$ nc -vl 4444 > received-file
 Listening on [0.0.0.0] (family 0, port 4444)
 Connection from [192.168.33.211] port 4444 [tcp/*] accepted (family 2, sport 41034)
+
 vagrant@alice:~$ cat received-file
 This is text written by bob
 ```
 
 ```
-:::text hl_lines="2"
+:::text hl_lines="3"
 
 vagrant@bob:~$ echo This is text written by bob > file-to-transfer.txt
+
 vagrant@bob:~$ nc -v alice 4444 < file-to-transfer.txt
 Connection to alice 4444 port [tcp/*] succeeded!
+
 vagrant@bob:~$ # Connection closes after the transfer
 ```
 
 You can also pipe the result of a command.
 ```
-:::text hl_lines="1 4"
+:::text hl_lines="1"
 
 vagrant@alice:~$ nc -vl 4444 > received-input
 Listening on [0.0.0.0] (family 0, port 4444)
 Connection from [192.168.33.211] port 4444 [tcp/*] accepted (family 2, sport 41038)
+
 vagrant@alice:~$ cat received-input
 bob
 ```
@@ -155,6 +159,7 @@ bob
 
 vagrant@bob:~$ hostname | nc -v alice 4444
 Connection to alice 4444 port [tcp/*] succeeded!
+
 vagrant@bob:~$ # Connection closes after the transfer
 ```
 
