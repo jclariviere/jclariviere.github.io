@@ -133,14 +133,17 @@ Content-Type: text/html
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="hll"&gt;vagrant@alice:~$ nc -vl 4444 &amp;gt; received-file
 &lt;/span&gt;Listening on [0.0.0.0] (family 0, port 4444)
 Connection from [192.168.33.211] port 4444 [tcp/*] accepted (family 2, sport 41034)
-&lt;span class="hll"&gt;vagrant@alice:~$ cat received-file
-&lt;/span&gt;This is text written by bob
+
+vagrant@alice:~$ cat received-file
+This is text written by bob
 &lt;/pre&gt;&lt;/div&gt;
 
 
 &lt;div class="highlight"&gt;&lt;pre&gt;vagrant@bob:~$ echo This is text written by bob &amp;gt; file-to-transfer.txt
+
 &lt;span class="hll"&gt;vagrant@bob:~$ nc -v alice 4444 &amp;lt; file-to-transfer.txt
 &lt;/span&gt;Connection to alice 4444 port [tcp/*] succeeded!
+
 vagrant@bob:~$ # Connection closes after the transfer
 &lt;/pre&gt;&lt;/div&gt;
 
@@ -149,13 +152,15 @@ vagrant@bob:~$ # Connection closes after the transfer
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="hll"&gt;vagrant@alice:~$ nc -vl 4444 &amp;gt; received-input
 &lt;/span&gt;Listening on [0.0.0.0] (family 0, port 4444)
 Connection from [192.168.33.211] port 4444 [tcp/*] accepted (family 2, sport 41038)
-&lt;span class="hll"&gt;vagrant@alice:~$ cat received-input
-&lt;/span&gt;bob
+
+vagrant@alice:~$ cat received-input
+bob
 &lt;/pre&gt;&lt;/div&gt;
 
 
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="hll"&gt;vagrant@bob:~$ hostname | nc -v alice 4444
 &lt;/span&gt;Connection to alice 4444 port [tcp/*] succeeded!
+
 vagrant@bob:~$ # Connection closes after the transfer
 &lt;/pre&gt;&lt;/div&gt;
 

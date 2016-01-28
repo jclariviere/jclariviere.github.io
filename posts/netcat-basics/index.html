@@ -243,14 +243,17 @@ Content-Type: text/html
 <div class="highlight"><pre><span class="hll">vagrant@alice:~$ nc -vl 4444 &gt; received-file
 </span>Listening on [0.0.0.0] (family 0, port 4444)
 Connection from [192.168.33.211] port 4444 [tcp/*] accepted (family 2, sport 41034)
-<span class="hll">vagrant@alice:~$ cat received-file
-</span>This is text written by bob
+
+vagrant@alice:~$ cat received-file
+This is text written by bob
 </pre></div>
 
 
 <div class="highlight"><pre>vagrant@bob:~$ echo This is text written by bob &gt; file-to-transfer.txt
+
 <span class="hll">vagrant@bob:~$ nc -v alice 4444 &lt; file-to-transfer.txt
 </span>Connection to alice 4444 port [tcp/*] succeeded!
+
 vagrant@bob:~$ # Connection closes after the transfer
 </pre></div>
 
@@ -259,13 +262,15 @@ vagrant@bob:~$ # Connection closes after the transfer
 <div class="highlight"><pre><span class="hll">vagrant@alice:~$ nc -vl 4444 &gt; received-input
 </span>Listening on [0.0.0.0] (family 0, port 4444)
 Connection from [192.168.33.211] port 4444 [tcp/*] accepted (family 2, sport 41038)
-<span class="hll">vagrant@alice:~$ cat received-input
-</span>bob
+
+vagrant@alice:~$ cat received-input
+bob
 </pre></div>
 
 
 <div class="highlight"><pre><span class="hll">vagrant@bob:~$ hostname | nc -v alice 4444
 </span>Connection to alice 4444 port [tcp/*] succeeded!
+
 vagrant@bob:~$ # Connection closes after the transfer
 </pre></div>
 
