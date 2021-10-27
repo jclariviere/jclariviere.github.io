@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<feed xmlns="http://www.w3.org/2005/Atom"><title>jclariviere</title><link href="http://blog.jclariviere.com/" rel="alternate"></link><link href="http://blog.jclariviere.com/feeds/infosec.atom.xml" rel="self"></link><id>http://blog.jclariviere.com/</id><updated>2016-01-26T00:00:00-05:00</updated><entry><title>Netcat basics</title><link href="http://blog.jclariviere.com/posts/netcat-basics" rel="alternate"></link><updated>2016-01-26T00:00:00-05:00</updated><author><name>Jean-Christophe Lariviere</name></author><id>tag:blog.jclariviere.com,2016-01-26:posts/netcat-basics</id><summary type="html">&lt;h2 id="what-is-netcat"&gt;What is netcat?&lt;/h2&gt;
+<feed xmlns="http://www.w3.org/2005/Atom"><title>jclariviere</title><link href="https://blog.jclariviere.com/" rel="alternate"></link><link href="https://blog.jclariviere.com/feeds/infosec.atom.xml" rel="self"></link><id>https://blog.jclariviere.com/</id><updated>2016-01-26T00:00:00-05:00</updated><entry><title>Netcat basics</title><link href="https://blog.jclariviere.com/posts/netcat-basics" rel="alternate"></link><updated>2016-01-26T00:00:00-05:00</updated><author><name>Jean-Christophe Lariviere</name></author><id>tag:blog.jclariviere.com,2016-01-26:posts/netcat-basics</id><summary type="html">&lt;h2 id="what-is-netcat"&gt;What is netcat?&lt;/h2&gt;
 &lt;p&gt;From the manpage:&lt;/p&gt;
 &lt;blockquote&gt;
 &lt;p&gt;The nc (or netcat) utility is used for just about anything under the sun involving TCP, UDP, or UNIX-domain sockets. It can open TCP connections, send UDP packets, listen on arbitrary TCP and UDP ports, do port scanning and deal with both IPv4 and IPv6.&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;p&gt;It is referred as the TCP/IP swiss army knife, and is most commonly used to either connect to an open TCP port (client-mode), or to listen on a port (server-mode).&lt;/p&gt;
 &lt;h2 id="setup"&gt;Setup&lt;/h2&gt;
-&lt;p&gt;To test the connection between 2 machines, I will use Vagrant to create 2 virtual machines. Vagrant is very simple to use, see &lt;a href="http://blog.jclariviere.com/posts/virtual-machines-with-vagrant"&gt;this post&lt;/a&gt; for the basics.&lt;/p&gt;
+&lt;p&gt;To test the connection between 2 machines, I will use Vagrant to create 2 virtual machines. Vagrant is very simple to use, see &lt;a href="https://blog.jclariviere.com/posts/virtual-machines-with-vagrant"&gt;this post&lt;/a&gt; for the basics.&lt;/p&gt;
 &lt;figure class='code'&gt;
 &lt;figcaption&gt;&lt;span&gt;Vagrantfile&lt;/span&gt; &lt;a href='/code/vagrantfile-netcat/Vagrantfile'&gt;download&lt;/a&gt;&lt;/figcaption&gt;
 
@@ -127,7 +127,7 @@ Content-Type: text/html
 &lt;/pre&gt;&lt;/div&gt;
 
 
-&lt;p&gt;The &lt;code&gt;-C&lt;/code&gt; option is to send CRLF instead of LF, &lt;a href="http://stackoverflow.com/a/5757349/3672769"&gt;following the HTTP standard&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;The &lt;code&gt;-C&lt;/code&gt; option is to send CRLF instead of LF, &lt;a href="https://stackoverflow.com/a/5757349/3672769"&gt;following the HTTP standard&lt;/a&gt;.&lt;/p&gt;
 &lt;h3 id="transferring-files"&gt;Transferring files&lt;/h3&gt;
 &lt;p&gt;You can transfer files (it works for binaries too) using shell redirections.&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="hll"&gt;vagrant@alice:~$ nc -vl 4444 &amp;gt; received-file
@@ -240,7 +240,7 @@ Hello from alice!
 &lt;h2 id="conclusion"&gt;Conclusion&lt;/h2&gt;
 &lt;p&gt;As the TCP/IP swiss army knife, netcat is a very useful tool with multiple usages.
 The command execution options (&lt;code&gt;-e&lt;/code&gt;/&lt;code&gt;-c&lt;/code&gt;) were not covered, but it will be the subject of a future post.
-Stay tuned!&lt;/p&gt;</summary><category term="netcat"></category><category term="vagrant"></category></entry><entry><title>CTF writeup - 9447 CTF 2015: YWS</title><link href="http://blog.jclariviere.com/posts/ctf-writeup-9447-ctf-2015-yws" rel="alternate"></link><updated>2015-11-30T00:00:00-05:00</updated><author><name>Jean-Christophe Lariviere</name></author><id>tag:blog.jclariviere.com,2015-11-30:posts/ctf-writeup-9447-ctf-2015-yws</id><summary type="html">&lt;h2 id="challenge"&gt;Challenge&lt;/h2&gt;
+Stay tuned!&lt;/p&gt;</summary><category term="netcat"></category><category term="vagrant"></category></entry><entry><title>CTF writeup - 9447 CTF 2015: YWS</title><link href="https://blog.jclariviere.com/posts/ctf-writeup-9447-ctf-2015-yws" rel="alternate"></link><updated>2015-11-30T00:00:00-05:00</updated><author><name>Jean-Christophe Lariviere</name></author><id>tag:blog.jclariviere.com,2015-11-30:posts/ctf-writeup-9447-ctf-2015-yws</id><summary type="html">&lt;h2 id="challenge"&gt;Challenge&lt;/h2&gt;
 &lt;blockquote&gt;
 &lt;p&gt;My friend wrote a cool web server. I'm sure he's stored some great doxxxs on the website. Can you take a look and report back any interesting things you find?&lt;/p&gt;
 &lt;p&gt;The web page is at http://yws-fsiqc922.9447.plumbing&lt;/p&gt;
@@ -397,14 +397,14 @@ Here is the function from the source code:&lt;/p&gt;
     &lt;span class="p"&gt;}&lt;/span&gt;
     &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
 &lt;span class="p"&gt;}&lt;/span&gt;
-&lt;/pre&gt;&lt;/div&gt;</summary><category term="ctf"></category><category term="directory traversal"></category></entry><entry><title>CTF writeup - RCTF 2015 Quals: Analysis nginx's log</title><link href="http://blog.jclariviere.com/posts/ctf-writeup-rctf-2015-quals-analysis-nginx-log" rel="alternate"></link><updated>2015-11-29T00:00:00-05:00</updated><author><name>Jean-Christophe Lariviere</name></author><id>tag:blog.jclariviere.com,2015-11-17:posts/ctf-writeup-rctf-2015-quals-analysis-nginx-log</id><summary type="html">&lt;h2 id="challenge"&gt;Challenge&lt;/h2&gt;
+&lt;/pre&gt;&lt;/div&gt;</summary><category term="ctf"></category><category term="directory traversal"></category></entry><entry><title>CTF writeup - RCTF 2015 Quals: Analysis nginx's log</title><link href="https://blog.jclariviere.com/posts/ctf-writeup-rctf-2015-quals-analysis-nginx-log" rel="alternate"></link><updated>2015-11-29T00:00:00-05:00</updated><author><name>Jean-Christophe Lariviere</name></author><id>tag:blog.jclariviere.com,2015-11-17:posts/ctf-writeup-rctf-2015-quals-analysis-nginx-log</id><summary type="html">&lt;h2 id="challenge"&gt;Challenge&lt;/h2&gt;
 &lt;blockquote&gt;
 &lt;p&gt;Analysis nginx's log (this flag is like ROIS{xxx}).&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;p&gt;The log file can be found &lt;a href="https://github.com/ctfs/write-ups-2015/blob/master/rctf-quals-2015/misc/analysis-nginxs-log/log_d30afe96202aafae7c0a1ecc123c0584"&gt;here&lt;/a&gt;.&lt;/p&gt;
 &lt;h2 id="writeup"&gt;Writeup&lt;/h2&gt;
 &lt;p&gt;The first thing I did is to search for the string &lt;code&gt;flag&lt;/code&gt;, which found a &lt;a href="https://www.owasp.org/index.php/Blind_SQL_Injection"&gt;blind SQL Injection&lt;/a&gt; performed by &lt;a href="http://sqlmap.org/"&gt;sqlmap&lt;/a&gt;.
-I extracted those URL-encoded entries then converted them to readable text using &lt;a href="http://www.asciitohex.com"&gt;asciitohex&lt;/a&gt;, which gave lines like these:&lt;/p&gt;
+I extracted those URL-encoded entries then converted them to readable text using &lt;a href="https://www.asciitohex.com"&gt;asciitohex&lt;/a&gt;, which gave lines like these:&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;192.168.52.1 - - [06/Nov/2015:19:33:07 -0800] &amp;quot;GET /phpcode/rctf/misc/index.php?id=1 AND 7500=IF((ORD(MID((SELECT IFNULL(CAST(flag AS CHAR),0x20) FROM misc.flag ORDER BY flag LIMIT 0,1),1,1))&amp;gt;64),SLEEP(1),7500) HTTP/1.1&amp;quot; 200 5 &amp;quot;-&amp;quot; &amp;quot;sqlmap/1.0-dev (http://sqlmap.org)&amp;quot; &amp;quot;-&amp;quot;
 192.168.52.1 - - [06/Nov/2015:19:33:07 -0800] &amp;quot;GET /phpcode/rctf/misc/index.php?id=1 AND 7500=IF((ORD(MID((SELECT IFNULL(CAST(flag AS CHAR),0x20) FROM misc.flag ORDER BY flag LIMIT 0,1),1,1))&amp;gt;96),SLEEP(1),7500) HTTP/1.1&amp;quot; 200 5 &amp;quot;-&amp;quot; &amp;quot;sqlmap/1.0-dev (http://sqlmap.org)&amp;quot; &amp;quot;-&amp;quot;
 192.168.52.1 - - [06/Nov/2015:19:33:08 -0800] &amp;quot;GET /phpcode/rctf/misc/index.php?id=1 AND 7500=IF((ORD(MID((SELECT IFNULL(CAST(flag AS CHAR),0x20) FROM misc.flag ORDER BY flag LIMIT 0,1),1,1))&amp;gt;80),SLEEP(1),7500) HTTP/1.1&amp;quot; 200 5 &amp;quot;-&amp;quot; &amp;quot;sqlmap/1.0-dev (http://sqlmap.org)&amp;quot; &amp;quot;-&amp;quot;
@@ -455,6 +455,6 @@ I extracted those URL-encoded entries then converted them to readable text using
 &lt;p&gt;Then it goes to the next character: &lt;code&gt;LIMIT 0,1),1,1&lt;/code&gt; becomes &lt;code&gt;LIMIT 0,1),2,1&lt;/code&gt;.&lt;/p&gt;
 &lt;p&gt;So the most interesting entries contains a &lt;code&gt;!=&lt;/code&gt;, like this: &lt;code&gt;...LIMIT 0,1),1,1))!=82),SLEEP(1)...&lt;/code&gt; (highlighted in the snippet).
 We can find the flag value by extracting every character code after a &lt;code&gt;!=&lt;/code&gt;. I used Sublime Text's search + multi-select for this, but you can do some vim or regex magic too.
-Pasting these characters in &lt;a href="http://www.asciitohex.com"&gt;asciitohex&lt;/a&gt; revealed the flag.
+Pasting these characters in &lt;a href="https://www.asciitohex.com"&gt;asciitohex&lt;/a&gt; revealed the flag.
 In the snippet above, you can find the first 4 characters.&lt;/p&gt;
 &lt;p&gt;Flag: &lt;code&gt;ROIS{miSc_An@lySis_nG1nx_L0g}&lt;/code&gt;.&lt;/p&gt;</summary><category term="ctf"></category><category term="sqli"></category></entry></feed>

@@ -10,7 +10,7 @@
 
 
 
-<link rel="canonical" href="http://blog.jclariviere.com/posts/ctf-writeup-rctf-2015-quals-analysis-nginx-log">
+<link rel="canonical" href="https://blog.jclariviere.com/posts/ctf-writeup-rctf-2015-quals-analysis-nginx-log">
 
         <meta name="author" content="Jean-Christophe Lariviere" />
         <meta name="keywords" content="ctf,sqli" />
@@ -19,7 +19,7 @@
         <meta property="og:site_name" content="jclariviere" />
         <meta property="og:type" content="article"/>
         <meta property="og:title" content="CTF writeup - RCTF 2015 Quals: Analysis nginx&#39;s log"/>
-        <meta property="og:url" content="http://blog.jclariviere.com/posts/ctf-writeup-rctf-2015-quals-analysis-nginx-log"/>
+        <meta property="og:url" content="https://blog.jclariviere.com/posts/ctf-writeup-rctf-2015-quals-analysis-nginx-log"/>
         <meta property="og:description" content="Analysis of a blind SQL Injection in logs"/>
         <meta property="article:published_time" content="2015-11-17" />
             <meta property="article:section" content="Infosec" />
@@ -30,17 +30,17 @@
     <meta name="twitter:card" content="summary">
         <meta name="twitter:site" content="@jclariviere">
         <meta name="twitter:creator" content="@jclariviere">
-    <meta name="twitter:domain" content="http://blog.jclariviere.com">
+    <meta name="twitter:domain" content="https://blog.jclariviere.com">
 
     <!-- Bootstrap -->
-        <link rel="stylesheet" href="http://blog.jclariviere.com/theme/css/bootstrap.slate.min.css" type="text/css"/>
-    <link href="http://blog.jclariviere.com/theme/css/font-awesome.min.css" rel="stylesheet">
+        <link rel="stylesheet" href="https://blog.jclariviere.com/theme/css/bootstrap.slate.min.css" type="text/css"/>
+    <link href="https://blog.jclariviere.com/theme/css/font-awesome.min.css" rel="stylesheet">
 
-    <link href="http://blog.jclariviere.com/theme/css/pygments/native.css" rel="stylesheet">
-    <link rel="stylesheet" href="http://blog.jclariviere.com/theme/css/style.css" type="text/css"/>
-        <link href="http://blog.jclariviere.com/css/custom.css" rel="stylesheet">
+    <link href="https://blog.jclariviere.com/theme/css/pygments/native.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://blog.jclariviere.com/theme/css/style.css" type="text/css"/>
+        <link href="https://blog.jclariviere.com/css/custom.css" rel="stylesheet">
 
-        <link href="http://blog.jclariviere.com/feeds/all.atom.xml" type="application/atom+xml" rel="alternate"
+        <link href="https://blog.jclariviere.com/feeds/all.atom.xml" type="application/atom+xml" rel="alternate"
               title="jclariviere ATOM Feed"/>
 
 </head>
@@ -55,20 +55,20 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a href="http://blog.jclariviere.com/" class="navbar-brand">
+            <a href="https://blog.jclariviere.com/" class="navbar-brand">
 jclariviere            </a>
         </div>
         <div class="collapse navbar-collapse navbar-ex1-collapse">
             <ul class="nav navbar-nav">
                         <li >
-                            <a href="http://blog.jclariviere.com/category/devops.html">Devops</a>
+                            <a href="https://blog.jclariviere.com/category/devops.html">Devops</a>
                         </li>
                         <li class="active">
-                            <a href="http://blog.jclariviere.com/category/infosec.html">Infosec</a>
+                            <a href="https://blog.jclariviere.com/category/infosec.html">Infosec</a>
                         </li>
             </ul>
             <ul class="nav navbar-nav navbar-right">
-              <li><a href="http://blog.jclariviere.com/archives.html"><i class="fa fa-th-list"></i><span class="icon-label">Archives</span></a></li>
+              <li><a href="https://blog.jclariviere.com/archives.html"><i class="fa fa-th-list"></i><span class="icon-label">Archives</span></a></li>
             </ul>
         </div>
         <!-- /.navbar-collapse -->
@@ -84,7 +84,7 @@ jclariviere            </a>
         <article>
             <header class="page-header">
                 <h1>
-                    <a href="http://blog.jclariviere.com/posts/ctf-writeup-rctf-2015-quals-analysis-nginx-log"
+                    <a href="https://blog.jclariviere.com/posts/ctf-writeup-rctf-2015-quals-analysis-nginx-log"
                        rel="bookmark"
                        title="Permalink to CTF writeup - RCTF 2015 Quals: Analysis nginx's log">
                         CTF writeup - RCTF 2015 Quals: Analysis nginx's log
@@ -107,9 +107,9 @@ jclariviere            </a>
 
 
 <span class="label label-default">Tags</span>
-	<a href="http://blog.jclariviere.com/tag/ctf.html">ctf</a>
+	<a href="https://blog.jclariviere.com/tag/ctf.html">ctf</a>
         /
-	<a href="http://blog.jclariviere.com/tag/sqli.html">sqli</a>
+	<a href="https://blog.jclariviere.com/tag/sqli.html">sqli</a>
     
 </footer><!-- /.post-info -->                    </div>
                 </div>
@@ -120,7 +120,7 @@ jclariviere            </a>
 <p>The log file can be found <a href="https://github.com/ctfs/write-ups-2015/blob/master/rctf-quals-2015/misc/analysis-nginxs-log/log_d30afe96202aafae7c0a1ecc123c0584">here</a>.</p>
 <h2 id="writeup">Writeup</h2>
 <p>The first thing I did is to search for the string <code>flag</code>, which found a <a href="https://www.owasp.org/index.php/Blind_SQL_Injection">blind SQL Injection</a> performed by <a href="http://sqlmap.org/">sqlmap</a>.
-I extracted those URL-encoded entries then converted them to readable text using <a href="http://www.asciitohex.com">asciitohex</a>, which gave lines like these:</p>
+I extracted those URL-encoded entries then converted them to readable text using <a href="https://www.asciitohex.com">asciitohex</a>, which gave lines like these:</p>
 <div class="highlight"><pre>192.168.52.1 - - [06/Nov/2015:19:33:07 -0800] &quot;GET /phpcode/rctf/misc/index.php?id=1 AND 7500=IF((ORD(MID((SELECT IFNULL(CAST(flag AS CHAR),0x20) FROM misc.flag ORDER BY flag LIMIT 0,1),1,1))&gt;64),SLEEP(1),7500) HTTP/1.1&quot; 200 5 &quot;-&quot; &quot;sqlmap/1.0-dev (http://sqlmap.org)&quot; &quot;-&quot;
 192.168.52.1 - - [06/Nov/2015:19:33:07 -0800] &quot;GET /phpcode/rctf/misc/index.php?id=1 AND 7500=IF((ORD(MID((SELECT IFNULL(CAST(flag AS CHAR),0x20) FROM misc.flag ORDER BY flag LIMIT 0,1),1,1))&gt;96),SLEEP(1),7500) HTTP/1.1&quot; 200 5 &quot;-&quot; &quot;sqlmap/1.0-dev (http://sqlmap.org)&quot; &quot;-&quot;
 192.168.52.1 - - [06/Nov/2015:19:33:08 -0800] &quot;GET /phpcode/rctf/misc/index.php?id=1 AND 7500=IF((ORD(MID((SELECT IFNULL(CAST(flag AS CHAR),0x20) FROM misc.flag ORDER BY flag LIMIT 0,1),1,1))&gt;80),SLEEP(1),7500) HTTP/1.1&quot; 200 5 &quot;-&quot; &quot;sqlmap/1.0-dev (http://sqlmap.org)&quot; &quot;-&quot;
@@ -171,7 +171,7 @@ I extracted those URL-encoded entries then converted them to readable text using
 <p>Then it goes to the next character: <code>LIMIT 0,1),1,1</code> becomes <code>LIMIT 0,1),2,1</code>.</p>
 <p>So the most interesting entries contains a <code>!=</code>, like this: <code>...LIMIT 0,1),1,1))!=82),SLEEP(1)...</code> (highlighted in the snippet).
 We can find the flag value by extracting every character code after a <code>!=</code>. I used Sublime Text's search + multi-select for this, but you can do some vim or regex magic too.
-Pasting these characters in <a href="http://www.asciitohex.com">asciitohex</a> revealed the flag.
+Pasting these characters in <a href="https://www.asciitohex.com">asciitohex</a> revealed the flag.
 In the snippet above, you can find the first 4 characters.</p>
 <p>Flag: <code>ROIS{miSc_An@lySis_nG1nx_L0g}</code>.</p>
             </div>
@@ -186,7 +186,7 @@ In the snippet above, you can find the first 4 characters.</p>
             var disqus_shortname = 'jclariviere-blog'; // required: replace example with your forum shortname
 
                     var disqus_identifier = 'ctf-writeup-rctf-2015-quals-analysis-nginx-log';
-                var disqus_url = 'http://blog.jclariviere.com/posts/ctf-writeup-rctf-2015-quals-analysis-nginx-log';
+                var disqus_url = 'https://blog.jclariviere.com/posts/ctf-writeup-rctf-2015-quals-analysis-nginx-log';
 
             var disqus_config = function () {
                 this.language = "en";
@@ -224,45 +224,45 @@ In the snippet above, you can find the first 4 characters.</p>
             </li>
 
 
-            <li class="list-group-item"><a href="http://blog.jclariviere.com/categories.html"><h4><i class="fa fa-home fa-lg"></i><span class="icon-label">Categories</span></h4></a>
+            <li class="list-group-item"><a href="https://blog.jclariviere.com/categories.html"><h4><i class="fa fa-home fa-lg"></i><span class="icon-label">Categories</span></h4></a>
                 <ul class="list-group" id="categories">
                     <li class="list-group-item">
-                        <a href="http://blog.jclariviere.com/category/devops.html">
+                        <a href="https://blog.jclariviere.com/category/devops.html">
                             <i class="fa fa-folder-open fa-lg"></i> DevOps
                         </a>
                     </li>
                     <li class="list-group-item">
-                        <a href="http://blog.jclariviere.com/category/infosec.html">
+                        <a href="https://blog.jclariviere.com/category/infosec.html">
                             <i class="fa fa-folder-open fa-lg"></i> Infosec
                         </a>
                     </li>
                 </ul>
             </li>
 
-            <li class="list-group-item"><a href="http://blog.jclariviere.com/tags.html"><h4><i class="fa fa-tags fa-lg"></i><span class="icon-label">Tags</span></h4></a>
+            <li class="list-group-item"><a href="https://blog.jclariviere.com/tags.html"><h4><i class="fa fa-tags fa-lg"></i><span class="icon-label">Tags</span></h4></a>
                 <ul class="list-group " id="tags">
                     <li class="list-group-item tag-1">
-                        <a href="http://blog.jclariviere.com/tag/ctf.html">
+                        <a href="https://blog.jclariviere.com/tag/ctf.html">
                             ctf
                         </a>
                     </li>
                     <li class="list-group-item tag-1">
-                        <a href="http://blog.jclariviere.com/tag/vagrant.html">
+                        <a href="https://blog.jclariviere.com/tag/vagrant.html">
                             vagrant
                         </a>
                     </li>
                     <li class="list-group-item tag-2">
-                        <a href="http://blog.jclariviere.com/tag/directory-traversal.html">
+                        <a href="https://blog.jclariviere.com/tag/directory-traversal.html">
                             directory traversal
                         </a>
                     </li>
                     <li class="list-group-item tag-2">
-                        <a href="http://blog.jclariviere.com/tag/netcat.html">
+                        <a href="https://blog.jclariviere.com/tag/netcat.html">
                             netcat
                         </a>
                     </li>
                     <li class="list-group-item tag-2">
-                        <a href="http://blog.jclariviere.com/tag/sqli.html">
+                        <a href="https://blog.jclariviere.com/tag/sqli.html">
                             sqli
                         </a>
                     </li>
@@ -280,19 +280,19 @@ In the snippet above, you can find the first 4 characters.</p>
       <div class="row">
          <div class="col-xs-10">&copy; 2016 Jean-Christophe Lariviere
             &middot; Powered by <a href="https://github.com/DandyDev/pelican-bootstrap3" target="_blank">pelican-bootstrap3</a>,
-            <a href="http://docs.getpelican.com/" target="_blank">Pelican</a>,
-            <a href="http://getbootstrap.com" target="_blank">Bootstrap</a>         </div>
+            <a href="https://docs.getpelican.com/" target="_blank">Pelican</a>,
+            <a href="https://getbootstrap.com" target="_blank">Bootstrap</a>         </div>
          <div class="col-xs-2"><p class="pull-right"><i class="fa fa-arrow-up"></i> <a href="#">Back to top</a></p></div>
       </div>
    </div>
 </footer>
-<script src="http://blog.jclariviere.com/theme/js/jquery.min.js"></script>
+<script src="https://blog.jclariviere.com/theme/js/jquery.min.js"></script>
 
 <!-- Include all compiled plugins (below), or include individual files as needed -->
-<script src="http://blog.jclariviere.com/theme/js/bootstrap.min.js"></script>
+<script src="https://blog.jclariviere.com/theme/js/bootstrap.min.js"></script>
 
 <!-- Enable responsive features in IE8 with Respond.js (https://github.com/scottjehl/Respond) -->
-<script src="http://blog.jclariviere.com/theme/js/respond.min.js"></script>
+<script src="https://blog.jclariviere.com/theme/js/respond.min.js"></script>
 
     <!-- Disqus -->
     <script type="text/javascript">
