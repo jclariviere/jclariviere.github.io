@@ -41,8 +41,7 @@ vagrant@bob:~$ nc alice 4444
 Here is the output from both machines.
 The `-v` option is for `verbose`, which shows the "connection accepted/succeeded" message.
 
-```
-:::text hl_lines="4"
+```text hl_lines="4"
 
 vagrant@alice:~$ nc -vl 4444
 Listening on [0.0.0.0] (family 0, port 4444)
@@ -51,8 +50,7 @@ Hello from alice!
 Hello from bob!
 ```
 
-```
-:::text hl_lines="4 5"
+```text hl_lines="4 5"
 
 vagrant@bob:~$ nc -v alice 4444
 Connection to alice 4444 port [tcp/*] succeeded!
@@ -95,8 +93,7 @@ Here are some interesting usages of netcat.
 
 ### Connecting to a web server
 Simply connect to the web server on port 80. You can then do a manual HTTP request.
-```
-:::text hl_lines="3 4"
+```text hl_lines="3 4"
 
 $ nc -Cv perdu.com 80
 Connection to perdu.com 80 port [tcp/http] succeeded!
@@ -120,8 +117,7 @@ The `-C` option is to send CRLF instead of LF, [following the HTTP standard](htt
 
 ### Transferring files
 You can transfer files (it works for binaries too) using shell redirections.
-```
-:::text hl_lines="1"
+```text hl_lines="1"
 
 vagrant@alice:~$ nc -vl 4444 > received-file
 Listening on [0.0.0.0] (family 0, port 4444)
@@ -131,8 +127,7 @@ vagrant@alice:~$ cat received-file
 This is text written by bob
 ```
 
-```
-:::text hl_lines="3"
+```text hl_lines="3"
 
 vagrant@bob:~$ echo This is text written by bob > file-to-transfer.txt
 
@@ -143,8 +138,7 @@ vagrant@bob:~$ # Connection closes after the transfer
 ```
 
 You can also pipe the result of a command.
-```
-:::text hl_lines="1"
+```text hl_lines="1"
 
 vagrant@alice:~$ nc -vl 4444 > received-input
 Listening on [0.0.0.0] (family 0, port 4444)
@@ -154,8 +148,7 @@ vagrant@alice:~$ cat received-input
 bob
 ```
 
-```
-:::text hl_lines="1"
+```text hl_lines="1"
 
 vagrant@bob:~$ hostname | nc -v alice 4444
 Connection to alice 4444 port [tcp/*] succeeded!
@@ -217,8 +210,7 @@ It's bundled with nmap since [version 5](https://nmap.org/5/).
 
 It supports all the options from both versions of netcat (including `-e`/`-c`) and adds some really interesting ones, like a list of allowed and denied IPs and, of course... SSL!
 It's as simple as adding `--ssl` to both sides.
-```
-:::text hl_lines="9"
+```text hl_lines="9"
 
 vagrant@alice:~$ ncat --ssl -vl 4444
 Ncat: Version 6.40 ( http://nmap.org/ncat )
@@ -232,8 +224,7 @@ Hello from alice!
 Hello from bob!
 ```
 
-```
-:::text hl_lines="6"
+```text hl_lines="6"
 
 vagrant@bob:~$ ncat --ssl -v alice 4444
 Ncat: Version 6.40 ( http://nmap.org/ncat )

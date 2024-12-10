@@ -1,7 +1,6 @@
-# The liquid_tags plugin currently used is out of date: https://github.com/getpelican/pelican-plugins/tree/master/liquid_tags
-# To be able to use the latest Markdown version, liquid_tags must be updated to use this instead: https://github.com/pelican-plugins/liquid-tags
-Markdown<3.2
-pelican
-# pelican[markdown]
+pelican[markdown]
 invoke
 livereload
+
+# Plugins
+pelican-liquid-tags

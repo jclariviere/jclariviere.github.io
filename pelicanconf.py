@@ -11,7 +11,8 @@ TIMEZONE = 'America/Montreal'
 DEFAULT_LANG = 'en'
 
 PLUGIN_PATHS = ['pelican-plugins']
-PLUGINS = ['tag_cloud', 'liquid_tags.include_code']
+PLUGINS = ['tag_cloud', 'pelican.plugins.liquid_tags']
+LIQUID_TAGS = ["include_code"]
 
 # See this page for defaults: https://docs.getpelican.com/en/latest/settings.html
 MARKDOWN = {
