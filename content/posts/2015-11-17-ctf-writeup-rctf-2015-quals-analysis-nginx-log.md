@@ -14,8 +14,7 @@ The log file can be found [here](https://github.com/ctfs/write-ups-2015/blob/mas
 The first thing I did is to search for the string `flag`, which found a [blind SQL Injection](https://www.owasp.org/index.php/Blind_SQL_Injection) performed by [sqlmap](http://sqlmap.org/).
 I extracted those URL-encoded entries then converted them to readable text using [asciitohex](http://www.asciitohex.com), which gave lines like these:
 
-```
-:::text hl_lines="8 16 24 32"
+```text hl_lines="8 16 24 32"
 
 192.168.52.1 - - [06/Nov/2015:19:33:07 -0800] "GET /phpcode/rctf/misc/index.php?id=1 AND 7500=IF((ORD(MID((SELECT IFNULL(CAST(flag AS CHAR),0x20) FROM misc.flag ORDER BY flag LIMIT 0,1),1,1))>64),SLEEP(1),7500) HTTP/1.1" 200 5 "-" "sqlmap/1.0-dev (http://sqlmap.org)" "-"
 192.168.52.1 - - [06/Nov/2015:19:33:07 -0800] "GET /phpcode/rctf/misc/index.php?id=1 AND 7500=IF((ORD(MID((SELECT IFNULL(CAST(flag AS CHAR),0x20) FROM misc.flag ORDER BY flag LIMIT 0,1),1,1))>96),SLEEP(1),7500) HTTP/1.1" 200 5 "-" "sqlmap/1.0-dev (http://sqlmap.org)" "-"

@@ -1,9 +1,5 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*- #
-from __future__ import unicode_literals
-
-AUTHOR = u'Jean-Christophe Lariviere'
-SITENAME = u'jclariviere'
+AUTHOR = 'Jean-Christophe Lariviere'
+SITENAME = 'jclariviere'
 SITEURL = ''
 
 PATH = 'content'
@@ -12,15 +8,28 @@ ARTICLE_PATHS = ['posts']
 
 TIMEZONE = 'America/Montreal'
 
-DEFAULT_LANG = u'en'
+DEFAULT_LANG = 'en'
 
-THEME = 'pelican-bootstrap3'
+PLUGIN_PATHS = ['pelican-plugins']
+PLUGINS = ['tag_cloud', 'pelican.plugins.liquid_tags']
+LIQUID_TAGS = ["include_code"]
+
+# See this page for defaults: https://docs.getpelican.com/en/latest/settings.html
+MARKDOWN = {
+    'extension_configs': {
+        'markdown.extensions.codehilite': {'css_class': 'highlight', 'guess_lang': False},
+        'markdown.extensions.extra': {},
+        'markdown.extensions.meta': {},
+        'markdown.extensions.toc': {}, # Adds id attribute to <hX> HTML tags
+    },
+    'output_format': 'html5',
+}
+
+THEME = 'pelican-themes/pelican-bootstrap3'
 BOOTSTRAP_THEME = 'slate'
 CUSTOM_CSS = 'css/custom.css'
-
-PLUGIN_PATHS = ['/pelican/pelican-plugins']
-PLUGINS = ['tag_cloud', 'liquid_tags.include_code']
-MD_EXTENSIONS = ['codehilite(css_class=highlight)', 'extra', 'toc']
+JINJA_ENVIRONMENT = {'extensions': ['jinja2.ext.i18n']}
+PLUGINS += ['i18n_subsites']
 
 # Feed generation is usually not desired when developing
 FEED_ALL_ATOM = None
@@ -55,10 +64,10 @@ TAG_CLOUD_SORTING = 'alphabetically'
 DEFAULT_PAGINATION = 10
 
 # Uncomment following line if you want document-relative URLs when developing
-#RELATIVE_URLS = True
+# RELATIVE_URLS = True
 
 # Date and slug in filename
-FILENAME_METADATA = '(?P<date>\d{4}-\d{2}-\d{2})-(?P<slug>.*)'
+FILENAME_METADATA = r'(?P<date>\d{4}-\d{2}-\d{2})-(?P<slug>.*)'
 SLUGIFY_SOURCE = 'basename'
 
 # Url settings

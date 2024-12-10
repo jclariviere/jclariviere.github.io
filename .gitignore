@@ -1,5 +1,7 @@
-*.pyc
-
-*.pid
-
+pelican-themes/
+pelican-plugins/
 output/
+cache/
+
+venv
+*.pyc

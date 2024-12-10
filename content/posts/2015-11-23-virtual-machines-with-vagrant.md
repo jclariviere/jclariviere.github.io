@@ -31,7 +31,7 @@ The base image (called "box") I used is Ubuntu 14.04 64 bits.
 Put this file in a new folder and use `vagrant up` to create the virtual machine.
 Remember when I told you it'd take 30 seconds?
 
-![I lied!]({filename}/images/i-lied.png)
+![I lied!]({static}/images/i-lied.png)
 
 The box first needs to be downloaded to a local repository, but future machines using this box will use the local version.
 
