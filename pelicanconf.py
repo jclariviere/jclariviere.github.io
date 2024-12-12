@@ -3,7 +3,7 @@ SITENAME = 'jclariviere'
 SITEURL = ''
 
 PATH = 'content'
-STATIC_PATHS = ['images', 'css', 'code']
+STATIC_PATHS = ['images', 'css']
 ARTICLE_PATHS = ['posts']
 
 TIMEZONE = 'America/Montreal'
@@ -11,8 +11,7 @@ TIMEZONE = 'America/Montreal'
 DEFAULT_LANG = 'en'
 
 PLUGIN_PATHS = ['pelican-plugins']
-PLUGINS = ['tag_cloud', 'pelican.plugins.liquid_tags']
-LIQUID_TAGS = ["include_code"]
+PLUGINS = ['tag_cloud']
 
 # See this page for defaults: https://docs.getpelican.com/en/latest/settings.html
 MARKDOWN = {

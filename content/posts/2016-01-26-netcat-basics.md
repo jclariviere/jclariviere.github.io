@@ -16,7 +16,27 @@ It is referred as the TCP/IP swiss army knife, and is most commonly used to eith
 
 To test the connection between 2 machines, I will use Vagrant to create 2 virtual machines. Vagrant is very simple to use, see [this post]({filename}/posts/2015-11-23-virtual-machines-with-vagrant.md) for the basics.
 
-{% include_code vagrantfile-netcat/Vagrantfile lang:ruby %}
+``` { .ruby filename="Vagrantfile" }
+VAGRANTFILE_API_VERSION = "2"
+
+Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
+  config.vm.box = "ubuntu/trusty64"
+
+  config.vm.define "alice" do |alice|
+    alice.vm.hostname = "alice"
+    alice.vm.network :private_network, ip: "192.168.33.210"
+    alice.vm.provision "shell", inline: "echo 192.168.33.211 bob >> /etc/hosts"
+  end
+
+  config.vm.define "bob" do |bob|
+    bob.vm.hostname = "bob"
+    bob.vm.network :private_network, ip: "192.168.33.211"
+    bob.vm.provision "shell", inline: "echo 192.168.33.210 alice >> /etc/hosts"
+  end
+
+  config.vm.provision "shell", inline: "apt-get update && apt-get install -y nmap" # to install ncat
+end
+```
 
 Put this `Vagrantfile` in a new folder, use `vagrant up` to create the VMs then in 2 separate command prompts, use `vagrant ssh alice` and `vagrant ssh bob` to SSH into them.
 

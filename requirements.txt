@@ -2,6 +2,3 @@ pelican[markdown]
 invoke
 livereload
 ghp-import
-
-# Plugins
-pelican-liquid-tags

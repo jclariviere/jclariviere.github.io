@@ -4,12 +4,7 @@ code {
     color: #d0d0d0;
 }
 
-/* Better caption for liquid_tags.include_code */
-figure[class="code"] figcaption span {
+/* Better caption for filenames in code blocks */
+.highlight .filename {
     font-weight: bold;
-}
-
-figure[class="code"] figcaption a {
-    float: right;
-    font-style: italic;
 }
