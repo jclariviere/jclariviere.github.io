@@ -22,7 +22,13 @@ Vagrant also uses ruby, but you don't need to install it since it's embedded in 
 
 Here is the most basic `Vagrantfile` you can do.
 
-{% include_code basic-vagrantfile-trusty64/Vagrantfile lang:ruby %}
+``` { .ruby filename="Vagrantfile" }
+VAGRANTFILE_API_VERSION = "2"
+
+Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
+  config.vm.box = "ubuntu/trusty64"
+end
+```
 
 As you can see, this is plain ruby, so you could use variables, loops, conditions, etc.
 Don't panic if you don't know ruby, the `Vagrantfile` can be read like a regular config file.
@@ -158,7 +164,25 @@ Provisionning happens in these situations:
 
 To do so, use `config.vm.define` in the `Vagrantfile`.
 
-{% include_code vagrantfile-two-machines-trusty64/Vagrantfile lang:ruby %}
+``` { .ruby filename="Vagrantfile" }
+VAGRANTFILE_API_VERSION = "2"
+
+Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
+  config.vm.box = "ubuntu/trusty64"
+
+  config.vm.define "alice" do |alice|
+    alice.vm.hostname = "alice"
+    alice.vm.network :private_network, ip: "192.168.33.210"
+    alice.vm.provision "shell", inline: "echo 192.168.33.211 bob >> /etc/hosts"
+  end
+
+  config.vm.define "bob" do |bob|
+    bob.vm.hostname = "bob"
+    bob.vm.network :private_network, ip: "192.168.33.211"
+    bob.vm.provision "shell", inline: "echo 192.168.33.210 alice >> /etc/hosts"
+  end
+end
+```
 
 Here, we defined 2 VMs, `alice` and `bob`, that both have a sub-config setting their hostname and a private network IP and adding the other machine in the `hosts` file.
 They also inherit from the top level config, so they will both use the box `ubuntu/trusty64`.
