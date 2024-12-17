@@ -15,9 +15,25 @@ ARTICLE_PATHS = ['posts']
 FILENAME_METADATA = r'(?P<date>\d{4}-\d{2}-\d{2})-(?P<slug>.*)'
 SLUGIFY_SOURCE = 'basename'
 
-# Url settings
-ARTICLE_URL = 'posts/{slug}'
-ARTICLE_SAVE_AS = 'posts/{slug}/index.html'
+# URL settings
+ARTICLE_URL = 'blog/post/{slug}/'
+CATEGORIES_URL = 'blog/categories/'
+CATEGORY_URL = 'blog/category/{slug}/'
+TAGS_URL = 'blog/tags/'
+TAG_URL = 'blog/tag/{slug}/'
+AUTHORS_URL = 'blog/authors/'
+AUTHOR_URL = 'blog/author/{slug}/'
+ARCHIVES_URL = 'blog/archives/'
+
+# SAVE_AS settings that make the above URLs work
+ARTICLE_SAVE_AS = ARTICLE_URL + "index.html"
+CATEGORIES_SAVE_AS = CATEGORIES_URL + "index.html"
+CATEGORY_SAVE_AS = CATEGORY_URL + "index.html"
+TAGS_SAVE_AS = TAGS_URL + "index.html"
+TAG_SAVE_AS = TAG_URL + "index.html"
+AUTHORS_SAVE_AS = AUTHORS_URL + "index.html"
+AUTHOR_SAVE_AS = AUTHOR_URL + "index.html"
+ARCHIVES_SAVE_AS = ARCHIVES_URL + "index.html"
 
 #LINKS = (('Pelican', 'http://getpelican.com/'),
 #         ('Python.org', 'http://python.org/'),
