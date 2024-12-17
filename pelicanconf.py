@@ -59,6 +59,7 @@ SITETITLE = "Jean-Christophe Lariviere"
 SITESUBTITLE = "Developer | Cybersecurity | DevOps"
 SITEDESCRIPTION = "Jean-Christophe Lariviere's blog"
 SITELOGO = SITEURL + "/images/glados.jpg"
+FAVICON = SITEURL + "/images/favicon.ico"
 
 DISABLE_URL_HASH = True
 CUSTOM_CSS = 'css/custom.css'
