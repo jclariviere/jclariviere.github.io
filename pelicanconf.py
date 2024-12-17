@@ -1,3 +1,5 @@
+from datetime import datetime
+
 AUTHOR = 'Jean-Christophe Lariviere'
 SITENAME = 'jclariviere'
 SITEURL = ''
@@ -25,8 +27,7 @@ ARTICLE_SAVE_AS = 'posts/{slug}/index.html'
 SOCIAL = (('github', 'https://github.com/jclariviere'),
           ('linkedin', 'https://www.linkedin.com/in/jclariviere'))
 
-PLUGIN_PATHS = ['pelican-plugins']
-PLUGINS = ['tag_cloud']
+PLUGINS = []
 
 # See this page for defaults: https://docs.getpelican.com/en/latest/settings.html
 MARKDOWN = {
@@ -48,19 +49,20 @@ AUTHOR_FEED_RSS = None
 
 # --- Theme settings ---
 
-THEME = 'pelican-themes/pelican-bootstrap3'
-BOOTSTRAP_THEME = 'slate'
+THEME = 'theme-flex'
+THEME_COLOR_AUTO_DETECT_BROWSER_PREFERENCE = True
+THEME_COLOR_ENABLE_USER_OVERRIDE = True
+PYGMENTS_STYLE = 'default'
+PYGMENTS_STYLE_DARK = 'native'
+
+SITETITLE = "Jean-Christophe Lariviere"
+SITESUBTITLE = "Developer | Cybersecurity | DevOps"
+SITEDESCRIPTION = "Jean-Christophe Lariviere's blog"
+SITELOGO = SITEURL + "/images/glados.jpg"
+FAVICON = SITEURL + "/images/favicon.ico"
+
+DISABLE_URL_HASH = True
 CUSTOM_CSS = 'css/custom.css'
-JINJA_ENVIRONMENT = {'extensions': ['jinja2.ext.i18n']}
-PLUGINS += ['i18n_subsites']
 
-DISPLAY_CATEGORIES_ON_SIDEBAR = True
-CATEGORIES_URL = 'categories.html'
-
-DISPLAY_TAGS_ON_SIDEBAR = True
-#DISPLAY_TAGS_INLINE = True
-TAGS_URL = 'tags.html'
-TAG_CLOUD_STEPS = 2
-TAG_CLOUD_SORTING = 'alphabetically'
-
-SHOW_DATE_MODIFIED = True
+COPYRIGHT_YEAR = f"2015 - {datetime.now().year}"
+COPYRIGHT_NAME = AUTHOR
