@@ -1,10 +1,35 @@
-/* Better dark theme inline code snippets */
-code {
-    background-color: #202020;
-    color: #d0d0d0;
+/* WARNING: These css rules will apply to both themes.
+
+The Flex pelican theme does apply a `[light|dark]-theme` CSS class to the body,
+but only if the pelican setting THEME_COLOR_AUTO_DETECT_BROWSER_PREFERENCE is False,
+or if the user has chosen a theme manually with the "Switch to dark|light theme" button.
+
+If custom CSS specific to a theme is needed, we can:
+- Switch off THEME_COLOR_AUTO_DETECT_BROWSER_PREFERENCE
+- Find a template file to override and use the THEME_TEMPLATES_OVERRIDES pelican setting
+- Fork the theme repo to modify the templates
+*/
+
+/* Bigger menu image, since the current one is rectangular */
+aside div img {
+  max-width: 200px;
 }
 
-/* Better caption for filenames in code blocks */
+/* Filename header in code blocks */
 .highlight .filename {
     font-weight: bold;
+    display: block;
+    text-align: center;
+    padding-top: 10px;
+}
+
+/* Console prompt in code blocks */
+.highlight .gp {
+    font-weight: bold;
+    color: #ff4500;
+}
+
+/* Console output in code blocks */
+.highlight .go {
+    color: #888;
 }
