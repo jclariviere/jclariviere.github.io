@@ -35,10 +35,10 @@ AUTHORS_SAVE_AS = AUTHORS_URL + "index.html"
 AUTHOR_SAVE_AS = AUTHOR_URL + "index.html"
 ARCHIVES_SAVE_AS = ARCHIVES_URL + "index.html"
 
-#LINKS = (('Pelican', 'http://getpelican.com/'),
-#         ('Python.org', 'http://python.org/'),
-#         ('Jinja2', 'http://jinja.pocoo.org/'),
-#         ('You can modify those links in your config file', '#'),)
+LINKS = (
+    ('Blog', '/'),
+    ('CTF Writeups', 'https://github.com/jclariviere/ctf-writeups'),
+)
 
 SOCIAL = (('github', 'https://github.com/jclariviere'),
           ('linkedin', 'https://www.linkedin.com/in/jclariviere'))
