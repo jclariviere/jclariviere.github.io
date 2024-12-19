@@ -33,3 +33,10 @@ aside div img {
 .highlight .go {
     color: #888;
 }
+
+/* Footnotes plugin */
+.simple-footnotes {
+    border-top: 1px solid #666;
+    margin-top: 2em;
+    padding-top: 1em;
+}
