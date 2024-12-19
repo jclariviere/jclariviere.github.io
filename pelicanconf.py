@@ -43,7 +43,7 @@ LINKS = (
 SOCIAL = (('github', 'https://github.com/jclariviere'),
           ('linkedin', 'https://www.linkedin.com/in/jclariviere'))
 
-PLUGINS = []
+PLUGINS = ['pelican.plugins.simple_footnotes']
 
 # See this page for defaults: https://docs.getpelican.com/en/latest/settings.html
 MARKDOWN = {
