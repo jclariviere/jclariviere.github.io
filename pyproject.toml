@@ -3,14 +3,14 @@ name = "jclariviere-pelican"
 version = "0.1.0"
 requires-python = ">=3.12"
 dependencies = [
-    "ghp-import>=2.1.0",
-    "invoke>=2.2.0",
     "pelican-simple-footnotes>=1.0.3",
     "pelican[markdown]>=4.10.2",
 ]
 
 [dependency-groups]
 dev = [
+    "ghp-import>=2.1.0",
+    "invoke>=2.2.0",
     "livereload>=2.7.1",
     "ruff>=0.8.4",
 ]
