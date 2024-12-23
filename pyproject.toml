@@ -12,4 +12,8 @@ dependencies = [
 [dependency-groups]
 dev = [
     "livereload>=2.7.1",
+    "ruff>=0.8.4",
 ]
+
+[tool.ruff]
+extend-exclude = ["theme-flex"]
