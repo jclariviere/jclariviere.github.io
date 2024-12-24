@@ -1,13 +1,11 @@
+import datetime
 import os
 import shlex
 import shutil
-import sys
-import datetime
 
 from invoke import task
 from invoke.main import program
 from pelican import main as pelican_main
-from pelican.server import ComplexHTTPRequestHandler, RootedHTTPServer
 from pelican.settings import DEFAULT_CONFIG, get_settings_from_file
 
 OPEN_BROWSER_ON_SERVE = True
@@ -125,6 +123,18 @@ def gh_pages(c):
         "--no-jekyll "
         "{deploy_path} --push".format(**CONFIG)
     )
+
+
+@task
+def lint(c):
+    """Run the linter on python files"""
+    c.run("ruff check --fix --show-fixes")
+
+
+@task
+def format(c):
+    """Run the formatter on python files"""
+    c.run("ruff format")
 
 
 def pelican_run(cmd):
