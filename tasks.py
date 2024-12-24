@@ -15,14 +15,18 @@ SETTINGS.update(DEFAULT_CONFIG)
 LOCAL_SETTINGS = get_settings_from_file(SETTINGS_FILE_BASE)
 SETTINGS.update(LOCAL_SETTINGS)
 
+SETTINGS_FILE_PUBLISH = "publishconf.py"
+PUBLISH_SETTINGS = get_settings_from_file(SETTINGS_FILE_PUBLISH)
+
 CONFIG = {
     "settings_base": SETTINGS_FILE_BASE,
-    "settings_publish": "publishconf.py",
+    "settings_publish": SETTINGS_FILE_PUBLISH,
     # Output path. Can be absolute or relative to tasks.py. Default: 'output'
     "deploy_path": SETTINGS["OUTPUT_PATH"],
     # Github Pages configuration
     "github_pages_branch": "master",
     "commit_message": f"'Publish site on {datetime.date.today().isoformat()}'",
+    "custom_domain": PUBLISH_SETTINGS["SITEDOMAIN"],
     # Host and port for `serve`
     "host": "localhost",
     "port": 8000,
@@ -116,10 +120,10 @@ def build_prod(c):
 def gh_pages(c):
     """`build-prod` then publish to GitHub Pages"""
     build_prod(c)
-    c.run("cp CNAME {deploy_path}/CNAME".format(**CONFIG))
     c.run(
         "ghp-import --branch {github_pages_branch} "
         "--message {commit_message} "
+        "--cname {custom_domain} "
         "--no-jekyll "
         "{deploy_path} --push".format(**CONFIG)
     )
