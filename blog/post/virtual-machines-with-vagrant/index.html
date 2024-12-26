@@ -1,0 +1,325 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="HandheldFriendly" content="True" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="" />
+
+  <link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro:ital,wght@0,400;0,700;1,400&family=Source+Sans+Pro:ital,wght@0,300;0,400;0,700;1,400&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" type="text/css" href="https://jclariviere.com/theme/stylesheet/style.min.css">
+
+    <link id="dark-theme-style" rel="stylesheet" type="text/css"
+          media="(prefers-color-scheme: dark)"
+    href="https://jclariviere.com/theme/stylesheet/dark-theme.min.css">
+
+    <link id="pygments-dark-theme" rel="stylesheet" type="text/css"
+              media="(prefers-color-scheme: dark)"
+          href="https://jclariviere.com/theme/pygments/native.min.css">
+    <link id="pygments-light-theme" rel="stylesheet" type="text/css"
+              media="(prefers-color-scheme: light), (prefers-color-scheme: no-preference)"
+          href="https://jclariviere.com/theme/pygments/default.min.css">
+
+
+
+  <link rel="stylesheet" type="text/css" href="https://jclariviere.com/theme/font-awesome/css/fontawesome.css">
+  <link rel="stylesheet" type="text/css" href="https://jclariviere.com/theme/font-awesome/css/brands.css">
+  <link rel="stylesheet" type="text/css" href="https://jclariviere.com/theme/font-awesome/css/solid.css">
+
+  <link rel="stylesheet" type="text/css" href="https://jclariviere.com/css/custom.css">
+
+  <link rel="shortcut icon" href="/images/favicon.ico" type="image/x-icon">
+  <link rel="icon" href="/images/favicon.ico" type="image/x-icon">
+
+
+  <link href="https://jclariviere.com/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="jclariviere Atom">
+
+
+
+ 
+
+<meta name="author" content="Jean-Christophe Lariviere" />
+<meta name="description" content="2024 update: Updated links and use kalilinux/rolling instead of the outdated ubuntu/trusty64. The rest is still relevant today. One of the biggest pain points of using a VM is bootstrapping it. Even if you have a pre-packaged VM, you still have to use the UI to import it …" />
+<meta name="keywords" content="vagrant">
+
+
+  <meta property="og:site_name" content="jclariviere"/>
+  <meta property="og:title" content="Virtual machines with Vagrant"/>
+  <meta property="og:description" content="2024 update: Updated links and use kalilinux/rolling instead of the outdated ubuntu/trusty64. The rest is still relevant today. One of the biggest pain points of using a VM is bootstrapping it. Even if you have a pre-packaged VM, you still have to use the UI to import it …"/>
+  <meta property="og:locale" content="en_US"/>
+  <meta property="og:url" content="https://jclariviere.com/blog/post/virtual-machines-with-vagrant/"/>
+  <meta property="og:type" content="article"/>
+  <meta property="article:published_time" content="2015-11-23 00:00:00-05:00"/>
+  <meta property="article:modified_time" content="2024-12-19 00:00:00-05:00"/>
+  <meta property="article:author" content="https://jclariviere.com/blog/author/jean-christophe-lariviere/">
+  <meta property="article:section" content="DevOps"/>
+  <meta property="article:tag" content="vagrant"/>
+  <meta property="og:image" content="/images/glados.jpg">
+
+  <title>jclariviere &ndash; Virtual machines with Vagrant</title>
+
+
+</head>
+<body >
+
+<aside>
+  <div>
+    <a href="https://jclariviere.com/">
+      <img src="/images/glados.jpg" alt="Jean-Christophe Lariviere" title="Jean-Christophe Lariviere">
+    </a>
+
+    <h1>
+      <a href="https://jclariviere.com/">Jean-Christophe Lariviere</a>
+    </h1>
+
+    <p>Developer | Cybersecurity | DevOps</p>
+
+
+    <nav>
+      <ul class="list">
+
+
+
+          <li>
+            <a target="_self" href="/" >Blog</a>
+          </li>
+          <li>
+            <a target="_self" href="https://github.com/jclariviere/ctf-writeups" >CTF Writeups</a>
+          </li>
+      </ul>
+    </nav>
+
+    <ul class="social">
+      <li>
+        <a class="sc-github"
+           href="https://github.com/jclariviere"
+           target="_blank">
+          <i class="fa-brands fa-github"></i>
+        </a>
+      </li>
+      <li>
+        <a class="sc-linkedin"
+           href="https://www.linkedin.com/in/jclariviere"
+           target="_blank">
+          <i class="fa-brands fa-linkedin"></i>
+        </a>
+      </li>
+    </ul>
+  </div>
+
+</aside>
+  <main>
+
+
+<article class="single">
+  <header>
+      
+    <h1 id="virtual-machines-with-vagrant">Virtual machines with Vagrant</h1>
+    <p>
+      Posted on Mon 23 November 2015 in <a href="https://jclariviere.com/blog/category/devops/">DevOps</a>
+
+    </p>
+  </header>
+
+
+  <div>
+    <p><strong>2024 update: Updated links and use <code>kalilinux/rolling</code> instead of the outdated <code>ubuntu/trusty64</code>. The rest is still relevant today.</strong></p>
+<hr>
+<p>One of the biggest pain points of using a VM is bootstrapping it.
+Even if you have a pre-packaged VM, you still have to use the UI to import it and customize its settings, and then you have to log in to install the packages you need.
+It's possible to use the command line, but the commands are specific to each provider and they're not very user friendly.</p>
+<p>Vagrant solves this problem. It is basically a wrapper around virtual machine providers like VirtualBox, VMware or AWS.
+You simply need to create a config file (called <code>Vagrantfile</code>) in a folder, use <code>vagrant up</code> and you've got a VM up and running in less than 30 seconds!
+The only required entry in the config file is the base image to use, but you can configure multiple properties like port forwarding, IP address, shared folders, amount of memory, script to run on first startup of the machine, etc.
+This is very useful for sharing, as you only need to share a config file instead of a huge VM folder, which can then be version controlled with <code>git</code>.</p>
+<h2 id="getting-started">Getting started</h2>
+<h3 id="required-software">Required software</h3>
+<p>For this post, I will use the VirtualBox provider, as it's free and available out of the box.
+If you wish to use VMware, you will need to <a href="https://developer.hashicorp.com/vagrant/docs/providers/vmware/installation">install a plugin</a>.</p>
+<p>Make sure you have <a href="https://www.virtualbox.org/">VirtualBox</a> and <a href="https://developer.hashicorp.com/vagrant/docs/installation">Vagrant</a> installed before continuing.
+Vagrant also uses ruby, but you don't need to install it since it's embedded in Vagrant.</p>
+<h3 id="basics">Basics</h3>
+<p>Here is the most basic <code>Vagrantfile</code> you can do.</p>
+<div class="highlight"><span class="filename">Vagrantfile</span><pre><span></span><code><span class="no">VAGRANTFILE_API_VERSION</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;2&quot;</span>
+
+<span class="no">Vagrant</span><span class="o">.</span><span class="n">configure</span><span class="p">(</span><span class="no">VAGRANTFILE_API_VERSION</span><span class="p">)</span><span class="w"> </span><span class="k">do</span><span class="w"> </span><span class="o">|</span><span class="n">config</span><span class="o">|</span>
+<span class="w">  </span><span class="n">config</span><span class="o">.</span><span class="n">vm</span><span class="o">.</span><span class="n">box</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;kalilinux/rolling&quot;</span>
+<span class="k">end</span>
+</code></pre></div>
+
+<p>As you might have noticed, this is plain ruby, so you could use variables, loops, conditions, etc.
+Don't panic if you don't know ruby, the <code>Vagrantfile</code> is simple enough that it can be read like a regular config file.</p>
+<p>The base image (called "box") I used is Kali Linux <a href="https://www.kali.org/docs/general-use/kali-branches/">rolling</a>.</p>
+<p>Put this file in a new folder and use <code>vagrant up</code> to create the virtual machine.
+Remember when I told you it'd take 30 seconds?</p>
+<p><img alt="I lied!" src="https://jclariviere.com/images/i-lied.png"></p>
+<p>The box needs to be downloaded locally when it's first used.
+But! The next machine created from it will be set up much faster.</p>
+<p>You should see the VM in the VirtualBox GUI, but <strong>do not edit the configuration there</strong> since Vagrant will probably override your settings. Edit the <code>Vagrantfile</code> instead.</p>
+<p>When the VM is ready, use <code>vagrant ssh</code> to SSH into it.
+Most boxes in Vagrant run in "headless mode" (no GUI), but some, like Kali Linux, do start a desktop environment that you can use in a different window.</p>
+<p>You can use these commands to manage the VM:</p>
+<ul>
+<li><code>vagrant halt</code> to shut it down</li>
+<li><code>vagrant reload</code> to reboot it</li>
+<li><code>vagrant destroy</code> to destroy it</li>
+</ul>
+<h2 id="configuration">Configuration</h2>
+<p>You can use <code>vagrant init</code> to create a <code>Vagrantfile</code> with a bunch of options commented out. Let's review the most interesting ones.</p>
+<h3 id="box">Box</h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># Every Vagrant development environment requires a box. You can search for</span>
+<span class="c1"># boxes at https://vagrantcloud.com/search.</span>
+<span class="n">config</span><span class="o">.</span><span class="n">vm</span><span class="o">.</span><span class="n">box</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;base&quot;</span>
+</code></pre></div>
+
+<p>In the previous section, I used the <code>kalilinux/rolling</code> box, but you can find more at <a href="https://vagrantcloud.com/search">https://vagrantcloud.com/search</a>.</p>
+<p>You can also use <code>config.vm.box_url</code> if the box is not in Hashicorp's Cloud.</p>
+<h3 id="port-forwarding">Port forwarding</h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># Create a forwarded port mapping which allows access to a specific port</span>
+<span class="c1"># within the machine from a port on the host machine. In the example below,</span>
+<span class="c1"># accessing &quot;localhost:8080&quot; will access port 80 on the guest machine.</span>
+<span class="c1"># NOTE: This will enable public access to the opened port</span>
+<span class="n">config</span><span class="o">.</span><span class="n">vm</span><span class="o">.</span><span class="n">network</span><span class="w"> </span><span class="s2">&quot;forwarded_port&quot;</span><span class="p">,</span><span class="w"> </span><span class="ss">guest</span><span class="p">:</span><span class="w"> </span><span class="mi">80</span><span class="p">,</span><span class="w"> </span><span class="ss">host</span><span class="p">:</span><span class="w"> </span><span class="mi">8080</span>
+</code></pre></div>
+
+<p>Port forwarding can be useful if you need to access a service in the VM from a machine on the network but don't want to expose the whole VM.</p>
+<h3 id="private-network">Private network</h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># Create a private network, which allows host-only access to the machine</span>
+<span class="c1"># using a specific IP.</span>
+<span class="n">config</span><span class="o">.</span><span class="n">vm</span><span class="o">.</span><span class="n">network</span><span class="w"> </span><span class="s2">&quot;private_network&quot;</span><span class="p">,</span><span class="w"> </span><span class="ss">ip</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;192.168.33.10&quot;</span>
+</code></pre></div>
+
+<p>This will create a "host-only network", which allows other VMs and the host to communicate together.
+If the interface doesn't exist on the host, it will create it.</p>
+<h3 id="public-network">Public network</h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># Create a public network, which generally matched to bridged network.</span>
+<span class="c1"># Bridged networks make the machine appear as another physical device on</span>
+<span class="c1"># your network.</span>
+<span class="n">config</span><span class="o">.</span><span class="n">vm</span><span class="o">.</span><span class="n">network</span><span class="w"> </span><span class="s2">&quot;public_network&quot;</span>
+</code></pre></div>
+
+<p>The word <code>public</code> here is confusing. This will add an interface on the same network as the host.
+Let's say your host has IP <code>192.168.0.100</code>, your VM could get <code>192.168.0.167</code>, for example.
+This means you will be able to ping the VM from another computer in the same network.
+<strong>Since Vagrant is <a href="https://developer.hashicorp.com/vagrant/docs/networking/public_network">insecure by default</a>, this is probably a bad idea.</strong></p>
+<h3 id="shared-folders">Shared folders</h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># Share an additional folder to the guest VM. The first argument is</span>
+<span class="c1"># the path on the host to the actual folder. The second argument is</span>
+<span class="c1"># the path on the guest to mount the folder. And the optional third</span>
+<span class="c1"># argument is a set of non-required options.</span>
+<span class="n">config</span><span class="o">.</span><span class="n">vm</span><span class="o">.</span><span class="n">synced_folder</span><span class="w"> </span><span class="s2">&quot;../data&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;/vagrant_data&quot;</span>
+</code></pre></div>
+
+<p>Share a folder with the host. By default, Vagrant shares the folder containing the <code>Vagrantfile</code> to the <code>/vagrant</code> folder in the VM.</p>
+<h3 id="provider-specific-configuration">Provider-specific configuration</h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># Provider-specific configuration so you can fine-tune various</span>
+<span class="c1"># backing providers for Vagrant. These expose provider-specific options.</span>
+<span class="c1"># Example for VirtualBox:</span>
+<span class="c1">#</span>
+<span class="n">config</span><span class="o">.</span><span class="n">vm</span><span class="o">.</span><span class="n">provider</span><span class="w"> </span><span class="s2">&quot;virtualbox&quot;</span><span class="w"> </span><span class="k">do</span><span class="w"> </span><span class="o">|</span><span class="n">vb</span><span class="o">|</span>
+<span class="w">  </span><span class="c1"># Display the VirtualBox GUI when booting the machine</span>
+<span class="w">  </span><span class="n">vb</span><span class="o">.</span><span class="n">gui</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kp">true</span>
+
+<span class="w">  </span><span class="c1"># Customize the amount of memory on the VM:</span>
+<span class="w">  </span><span class="n">vb</span><span class="o">.</span><span class="n">memory</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;1024&quot;</span>
+<span class="k">end</span>
+<span class="c1">#</span>
+<span class="c1"># View the documentation for the provider you are using for more</span>
+<span class="c1"># information on available options.</span>
+</code></pre></div>
+
+<p>Note that customizing the amount of memory is done on a per-provider basis.</p>
+<h3 id="provisionning">Provisionning</h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># Enable provisioning with a shell script. Additional provisioners such as</span>
+<span class="c1"># Ansible, Chef, Docker, Puppet and Salt are also available. Please see the</span>
+<span class="c1"># documentation for more information about their specific syntax and use.</span>
+<span class="n">config</span><span class="o">.</span><span class="n">vm</span><span class="o">.</span><span class="n">provision</span><span class="w"> </span><span class="s2">&quot;shell&quot;</span><span class="p">,</span><span class="w"> </span><span class="ss">inline</span><span class="p">:</span><span class="w"> </span><span class="o">&lt;&lt;-</span><span class="dl">SHELL</span>
+<span class="sh">  apt-get update</span>
+<span class="sh">  apt-get install -y apache2</span>
+<span class="dl">SHELL</span>
+</code></pre></div>
+
+<p>Provisionning is used to setup the VM once it is booted.
+Of course, you can simply SSH into the machine and install what you want in it, but adding it in the <code>Vagrantfile</code> will automate the process if you need multiple VMs or want to share it.</p>
+<p>You can add your script inline (like the example), but you can also use a script file or configuration managements systems like Ansible, Chef, Puppet or Salt.
+If you use scripts, make sure they are non-interactive (add the <code>-y</code> flag to <code>apt-get install</code> for example).</p>
+<p>Provisionning happens in these situations:</p>
+<ul>
+<li>On the <strong>first</strong> <code>vagrant up</code></li>
+<li>On a running VM, <code>vagrant provision</code></li>
+<li><code>vagrant up --provision</code></li>
+<li><code>vagrant reload --provision</code></li>
+</ul>
+<h2 id="defining-multiple-machines-in-a-vagrantfile">Defining multiple machines in a Vagrantfile</h2>
+<p>To do so, use <code>config.vm.define</code> in the <code>Vagrantfile</code>.</p>
+<div class="highlight"><span class="filename">Vagrantfile</span><pre><span></span><code><span class="no">VAGRANTFILE_API_VERSION</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;2&quot;</span>
+
+<span class="no">Vagrant</span><span class="o">.</span><span class="n">configure</span><span class="p">(</span><span class="no">VAGRANTFILE_API_VERSION</span><span class="p">)</span><span class="w"> </span><span class="k">do</span><span class="w"> </span><span class="o">|</span><span class="n">config</span><span class="o">|</span>
+<span class="w">  </span><span class="n">config</span><span class="o">.</span><span class="n">vm</span><span class="o">.</span><span class="n">box</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;kalilinux/rolling&quot;</span>
+
+<span class="w">  </span><span class="n">config</span><span class="o">.</span><span class="n">vm</span><span class="o">.</span><span class="n">define</span><span class="w"> </span><span class="s2">&quot;alice&quot;</span><span class="w"> </span><span class="k">do</span><span class="w"> </span><span class="o">|</span><span class="n">alice</span><span class="o">|</span>
+<span class="w">    </span><span class="n">alice</span><span class="o">.</span><span class="n">vm</span><span class="o">.</span><span class="n">hostname</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;alice&quot;</span>
+<span class="w">    </span><span class="n">alice</span><span class="o">.</span><span class="n">vm</span><span class="o">.</span><span class="n">network</span><span class="w"> </span><span class="ss">:private_network</span><span class="p">,</span><span class="w"> </span><span class="ss">ip</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;192.168.33.210&quot;</span>
+<span class="w">    </span><span class="n">alice</span><span class="o">.</span><span class="n">vm</span><span class="o">.</span><span class="n">provision</span><span class="w"> </span><span class="s2">&quot;shell&quot;</span><span class="p">,</span><span class="w"> </span><span class="ss">inline</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;echo 192.168.33.211 bob &gt;&gt; /etc/hosts&quot;</span>
+<span class="w">  </span><span class="k">end</span>
+
+<span class="w">  </span><span class="n">config</span><span class="o">.</span><span class="n">vm</span><span class="o">.</span><span class="n">define</span><span class="w"> </span><span class="s2">&quot;bob&quot;</span><span class="w"> </span><span class="k">do</span><span class="w"> </span><span class="o">|</span><span class="n">bob</span><span class="o">|</span>
+<span class="w">    </span><span class="n">bob</span><span class="o">.</span><span class="n">vm</span><span class="o">.</span><span class="n">hostname</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;bob&quot;</span>
+<span class="w">    </span><span class="n">bob</span><span class="o">.</span><span class="n">vm</span><span class="o">.</span><span class="n">network</span><span class="w"> </span><span class="ss">:private_network</span><span class="p">,</span><span class="w"> </span><span class="ss">ip</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;192.168.33.211&quot;</span>
+<span class="w">    </span><span class="n">bob</span><span class="o">.</span><span class="n">vm</span><span class="o">.</span><span class="n">provision</span><span class="w"> </span><span class="s2">&quot;shell&quot;</span><span class="p">,</span><span class="w"> </span><span class="ss">inline</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;echo 192.168.33.210 alice &gt;&gt; /etc/hosts&quot;</span>
+<span class="w">  </span><span class="k">end</span>
+<span class="k">end</span>
+</code></pre></div>
+
+<p>Here, we defined 2 VMs, <code>alice</code> and <code>bob</code>, that both have a sub-config block configuring their hostname and a private network IP, as well as adding the other machine in their <code>/etc/hosts</code> file.
+They also inherit from the top level config, so they will both use the box <code>kalilinux/rolling</code>.
+To define it per-machine, simply use their per-machine variable: <code>alice.vm.box = "box/name"</code>.</p>
+<p>The Vagrant command line differs when there is multiple machines defined.
+Commands that only make sense for a single machine, such as <code>vagrant ssh</code>, require you to include the name of the machine as an argument: <code>vagrant ssh bob</code>.
+Other commands, such as <code>vagrant up</code>, will operate on every machine by default, but you can also specify the target: <code>vagrant up alice</code>.</p>
+<h2 id="more-info">More info</h2>
+<p>This post covered common usage of Vagrant, but you can do more with it, such as pushing code to Heroku or sharing your VM over SSH.
+The <a href="https://developer.hashicorp.com/vagrant/docs">official documentation</a> is very well structured, so make sure you have a look!</p>
+  </div>
+  <div class="tag-cloud">
+    <p>
+      <a href="https://jclariviere.com/blog/tag/vagrant/">vagrant</a>
+    </p>
+  </div>
+
+
+
+
+
+
+</article>
+
+<footer>
+<p>&copy; 2015 - 2024 Jean-Christophe Lariviere</p>
+<p>
+Built with <a href="http://getpelican.com" target="_blank">Pelican</a> using <a href="http://bit.ly/flex-pelican" target="_blank">Flex</a> theme
+  <span class="footer-separator">|</span>
+  Switch to the <a href="javascript:void(0)" onclick="theme.switch(`dark`)">dark</a> | <a href="javascript:void(0)" onclick="theme.switch(`light`)">light</a> | <a href="javascript:void(0)" onclick="theme.switch(`browser`)">browser</a> theme
+  <script id="dark-theme-script"
+          src="https://jclariviere.com/theme/dark-theme/dark-theme.min.js"
+          data-enable-auto-detect-theme="True"
+          data-default-theme="light"
+          type="text/javascript">
+  </script>
+</p></footer>  </main>
+
+<script type="application/ld+json">
+{
+  "@context" : "http://schema.org",
+  "@type" : "Blog",
+  "name": " jclariviere ",
+  "url" : "https://jclariviere.com",
+  "image": "/images/glados.jpg",
+  "description": "Jean-Christophe Lariviere's blog"
+}
+</script>
+</body>
+</html>

@@ -1,128 +1,127 @@
 <?xml version="1.0" encoding="utf-8"?>
-<feed xmlns="http://www.w3.org/2005/Atom"><title>jclariviere</title><link href="https://blog.jclariviere.com/" rel="alternate"></link><link href="https://blog.jclariviere.com/feeds/devops.atom.xml" rel="self"></link><id>https://blog.jclariviere.com/</id><updated>2016-01-26T00:00:00-05:00</updated><entry><title>Virtual machines with Vagrant</title><link href="https://blog.jclariviere.com/posts/virtual-machines-with-vagrant" rel="alternate"></link><updated>2016-01-26T00:00:00-05:00</updated><author><name>Jean-Christophe Lariviere</name></author><id>tag:blog.jclariviere.com,2015-11-23:posts/virtual-machines-with-vagrant</id><summary type="html">&lt;h2 id="what-is-vagrant"&gt;What is Vagrant?&lt;/h2&gt;
-&lt;p&gt;Vagrant is basically a wrapper around virtual machine providers like VirtualBox, VMware or AWS.
+<feed xmlns="http://www.w3.org/2005/Atom"><title>jclariviere - DevOps</title><link href="https://jclariviere.com/" rel="alternate"></link><link href="https://jclariviere.com/feeds/devops.atom.xml" rel="self"></link><id>https://jclariviere.com/</id><updated>2024-12-19T00:00:00-05:00</updated><subtitle>Developer | Cybersecurity | DevOps</subtitle><entry><title>Virtual machines with Vagrant</title><link href="https://jclariviere.com/blog/post/virtual-machines-with-vagrant/" rel="alternate"></link><published>2015-11-23T00:00:00-05:00</published><updated>2024-12-19T00:00:00-05:00</updated><author><name>Jean-Christophe Lariviere</name></author><id>tag:jclariviere.com,2015-11-23:/blog/post/virtual-machines-with-vagrant/</id><summary type="html">&lt;p&gt;&lt;strong&gt;2024 update: Updated links and use &lt;code&gt;kalilinux/rolling&lt;/code&gt; instead of the outdated &lt;code&gt;ubuntu/trusty64&lt;/code&gt;. The rest is still relevant today.&lt;/strong&gt;&lt;/p&gt;
+&lt;hr&gt;
+&lt;p&gt;One of the biggest pain points of using a VM is bootstrapping it.
+Even if you have a pre-packaged VM, you still have to use the UI to import it …&lt;/p&gt;</summary><content type="html">&lt;p&gt;&lt;strong&gt;2024 update: Updated links and use &lt;code&gt;kalilinux/rolling&lt;/code&gt; instead of the outdated &lt;code&gt;ubuntu/trusty64&lt;/code&gt;. The rest is still relevant today.&lt;/strong&gt;&lt;/p&gt;
+&lt;hr&gt;
+&lt;p&gt;One of the biggest pain points of using a VM is bootstrapping it.
+Even if you have a pre-packaged VM, you still have to use the UI to import it and customize its settings, and then you have to log in to install the packages you need.
+It's possible to use the command line, but the commands are specific to each provider and they're not very user friendly.&lt;/p&gt;
+&lt;p&gt;Vagrant solves this problem. It is basically a wrapper around virtual machine providers like VirtualBox, VMware or AWS.
 You simply need to create a config file (called &lt;code&gt;Vagrantfile&lt;/code&gt;) in a folder, use &lt;code&gt;vagrant up&lt;/code&gt; and you've got a VM up and running in less than 30 seconds!
 The only required entry in the config file is the base image to use, but you can configure multiple properties like port forwarding, IP address, shared folders, amount of memory, script to run on first startup of the machine, etc.
-This is very useful for sharing, as you only need to share a config file instead of a huge VM folder. And it can be &lt;a href="https://en.wikipedia.org/wiki/Version_control"&gt;version controlled&lt;/a&gt;!&lt;/p&gt;
-&lt;h2 id="required-software"&gt;Required software&lt;/h2&gt;
-&lt;p&gt;For this post, I will use VirtualBox, as it's free, well supported and is the only available provider out of the box (you need to install plugins for the others).
-Make sure you have &lt;a href="https://www.virtualbox.org/"&gt;VirtualBox&lt;/a&gt; and &lt;a href="https://docs.vagrantup.com/v2/installation"&gt;Vagrant&lt;/a&gt; installed before continuing.
-Vagrant also uses ruby, but you don't need to install it since it's embedded in Vagrant.&lt;/p&gt;
+This is very useful for sharing, as you only need to share a config file instead of a huge VM folder, which can then be version controlled with &lt;code&gt;git&lt;/code&gt;.&lt;/p&gt;
 &lt;h2 id="getting-started"&gt;Getting started&lt;/h2&gt;
+&lt;h3 id="required-software"&gt;Required software&lt;/h3&gt;
+&lt;p&gt;For this post, I will use the VirtualBox provider, as it's free and available out of the box.
+If you wish to use VMware, you will need to &lt;a href="https://developer.hashicorp.com/vagrant/docs/providers/vmware/installation"&gt;install a plugin&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;Make sure you have &lt;a href="https://www.virtualbox.org/"&gt;VirtualBox&lt;/a&gt; and &lt;a href="https://developer.hashicorp.com/vagrant/docs/installation"&gt;Vagrant&lt;/a&gt; installed before continuing.
+Vagrant also uses ruby, but you don't need to install it since it's embedded in Vagrant.&lt;/p&gt;
+&lt;h3 id="basics"&gt;Basics&lt;/h3&gt;
 &lt;p&gt;Here is the most basic &lt;code&gt;Vagrantfile&lt;/code&gt; you can do.&lt;/p&gt;
-&lt;figure class='code'&gt;
-&lt;figcaption&gt;&lt;span&gt;Vagrantfile&lt;/span&gt; &lt;a href='/code/basic-vagrantfile-trusty64/Vagrantfile'&gt;download&lt;/a&gt;&lt;/figcaption&gt;
+&lt;div class="highlight"&gt;&lt;span class="filename"&gt;Vagrantfile&lt;/span&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="no"&gt;VAGRANTFILE_API_VERSION&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;2&amp;quot;&lt;/span&gt;
 
-&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="c1"&gt;# -*- mode: ruby -*-&lt;/span&gt;
-&lt;span class="c1"&gt;# vi: set ft=ruby :&lt;/span&gt;
-
-&lt;span class="no"&gt;VAGRANTFILE_API_VERSION&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;2&amp;quot;&lt;/span&gt;
-
-&lt;span class="no"&gt;Vagrant&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;configure&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="no"&gt;VAGRANTFILE_API_VERSION&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="k"&gt;do&lt;/span&gt; &lt;span class="o"&gt;|&lt;/span&gt;&lt;span class="n"&gt;config&lt;/span&gt;&lt;span class="o"&gt;|&lt;/span&gt;
-  &lt;span class="n"&gt;config&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;vm&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;box&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;ubuntu/trusty64&amp;quot;&lt;/span&gt;
+&lt;span class="no"&gt;Vagrant&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;configure&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="no"&gt;VAGRANTFILE_API_VERSION&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;do&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;|&lt;/span&gt;&lt;span class="n"&gt;config&lt;/span&gt;&lt;span class="o"&gt;|&lt;/span&gt;
+&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="n"&gt;config&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;vm&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;box&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;kalilinux/rolling&amp;quot;&lt;/span&gt;
 &lt;span class="k"&gt;end&lt;/span&gt;
-&lt;/pre&gt;&lt;/div&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
-
-&lt;/figure&gt;
-
-&lt;p&gt;As you can see, this is plain ruby, so you could use variables, loops, conditions, etc.
-Don't panic if you don't know ruby, the &lt;code&gt;Vagrantfile&lt;/code&gt; can be read like a regular config file.&lt;/p&gt;
-&lt;p&gt;The base image (called "box") I used is Ubuntu 14.04 64 bits.&lt;/p&gt;
+&lt;p&gt;As you might have noticed, this is plain ruby, so you could use variables, loops, conditions, etc.
+Don't panic if you don't know ruby, the &lt;code&gt;Vagrantfile&lt;/code&gt; is simple enough that it can be read like a regular config file.&lt;/p&gt;
+&lt;p&gt;The base image (called "box") I used is Kali Linux &lt;a href="https://www.kali.org/docs/general-use/kali-branches/"&gt;rolling&lt;/a&gt;.&lt;/p&gt;
 &lt;p&gt;Put this file in a new folder and use &lt;code&gt;vagrant up&lt;/code&gt; to create the virtual machine.
 Remember when I told you it'd take 30 seconds?&lt;/p&gt;
-&lt;p&gt;&lt;img alt="I lied!" src="https://blog.jclariviere.com/images/i-lied.png" /&gt;&lt;/p&gt;
-&lt;p&gt;The box first needs to be downloaded to a local repository, but future machines using this box will use the local version.&lt;/p&gt;
+&lt;p&gt;&lt;img alt="I lied!" src="https://jclariviere.com/images/i-lied.png"&gt;&lt;/p&gt;
+&lt;p&gt;The box needs to be downloaded locally when it's first used.
+But! The next machine created from it will be set up much faster.&lt;/p&gt;
 &lt;p&gt;You should see the VM in the VirtualBox GUI, but &lt;strong&gt;do not edit the configuration there&lt;/strong&gt; since Vagrant will probably override your settings. Edit the &lt;code&gt;Vagrantfile&lt;/code&gt; instead.&lt;/p&gt;
 &lt;p&gt;When the VM is ready, use &lt;code&gt;vagrant ssh&lt;/code&gt; to SSH into it.
-Most boxes in Vagrant run in &lt;a href="https://en.wikipedia.org/wiki/Headless_software"&gt;headless mode&lt;/a&gt;, but if you need a desktop environment, &lt;a href="https://atlas.hashicorp.com/boxcutter/boxes/ubuntu1404-desktop"&gt;boxcutter's Ubuntu desktop box&lt;/a&gt; seems to work well.&lt;/p&gt;
-&lt;p&gt;To shutdown the VM, use &lt;code&gt;vagrant halt&lt;/code&gt;. To destroy it, use &lt;code&gt;vagrant destroy&lt;/code&gt;. To reboot it, use &lt;code&gt;vagrant reload&lt;/code&gt;.&lt;/p&gt;
+Most boxes in Vagrant run in "headless mode" (no GUI), but some, like Kali Linux, do start a desktop environment that you can use in a different window.&lt;/p&gt;
+&lt;p&gt;You can use these commands to manage the VM:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;vagrant halt&lt;/code&gt; to shut it down&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;vagrant reload&lt;/code&gt; to reboot it&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;vagrant destroy&lt;/code&gt; to destroy it&lt;/li&gt;
+&lt;/ul&gt;
 &lt;h2 id="configuration"&gt;Configuration&lt;/h2&gt;
-&lt;p&gt;You can also use &lt;code&gt;vagrant init&lt;/code&gt; to create a &lt;code&gt;Vagrantfile&lt;/code&gt; with a bunch of options commented out. Let's review the most interesting ones.&lt;/p&gt;
+&lt;p&gt;You can use &lt;code&gt;vagrant init&lt;/code&gt; to create a &lt;code&gt;Vagrantfile&lt;/code&gt; with a bunch of options commented out. Let's review the most interesting ones.&lt;/p&gt;
 &lt;h3 id="box"&gt;Box&lt;/h3&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="c1"&gt;# Every Vagrant development environment requires a box. You can search for&lt;/span&gt;
-&lt;span class="c1"&gt;# boxes at https://atlas.hashicorp.com/search.&lt;/span&gt;
-&lt;span class="n"&gt;config&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;vm&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;box&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;base&amp;quot;&lt;/span&gt;
-&lt;/pre&gt;&lt;/div&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="c1"&gt;# Every Vagrant development environment requires a box. You can search for&lt;/span&gt;
+&lt;span class="c1"&gt;# boxes at https://vagrantcloud.com/search.&lt;/span&gt;
+&lt;span class="n"&gt;config&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;vm&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;box&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;base&amp;quot;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
-
-&lt;p&gt;In the previous section, I used the official Ubuntu 14.04 box, but you can find more at &lt;a href="https://atlas.hashicorp.com/search"&gt;https://atlas.hashicorp.com/search&lt;/a&gt;.
-The value should be the name of the box (&lt;code&gt;ubuntu/trusty64&lt;/code&gt; for example).&lt;/p&gt;
-&lt;p&gt;You can also use &lt;code&gt;config.vm.box_url&lt;/code&gt; if the box is not in Hashicorp's Atlas. In this case you need a full URL.&lt;/p&gt;
+&lt;p&gt;In the previous section, I used the &lt;code&gt;kalilinux/rolling&lt;/code&gt; box, but you can find more at &lt;a href="https://vagrantcloud.com/search"&gt;https://vagrantcloud.com/search&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;You can also use &lt;code&gt;config.vm.box_url&lt;/code&gt; if the box is not in Hashicorp's Cloud.&lt;/p&gt;
 &lt;h3 id="port-forwarding"&gt;Port forwarding&lt;/h3&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="c1"&gt;# Create a forwarded port mapping which allows access to a specific port&lt;/span&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="c1"&gt;# Create a forwarded port mapping which allows access to a specific port&lt;/span&gt;
 &lt;span class="c1"&gt;# within the machine from a port on the host machine. In the example below,&lt;/span&gt;
 &lt;span class="c1"&gt;# accessing &amp;quot;localhost:8080&amp;quot; will access port 80 on the guest machine.&lt;/span&gt;
-&lt;span class="n"&gt;config&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;vm&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;network&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;forwarded_port&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="ss"&gt;guest&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="mi"&gt;80&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="ss"&gt;host&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="mi"&gt;8080&lt;/span&gt;
-&lt;/pre&gt;&lt;/div&gt;
-
+&lt;span class="c1"&gt;# NOTE: This will enable public access to the opened port&lt;/span&gt;
+&lt;span class="n"&gt;config&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;vm&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;network&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;forwarded_port&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="ss"&gt;guest&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;80&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="ss"&gt;host&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;8080&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
 &lt;p&gt;Port forwarding can be useful if you need to access a service in the VM from a machine on the network but don't want to expose the whole VM.&lt;/p&gt;
 &lt;h3 id="private-network"&gt;Private network&lt;/h3&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="c1"&gt;# Create a private network, which allows host-only access to the machine&lt;/span&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="c1"&gt;# Create a private network, which allows host-only access to the machine&lt;/span&gt;
 &lt;span class="c1"&gt;# using a specific IP.&lt;/span&gt;
-&lt;span class="n"&gt;config&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;vm&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;network&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;private_network&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="ss"&gt;ip&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;192.168.33.10&amp;quot;&lt;/span&gt;
-&lt;/pre&gt;&lt;/div&gt;
-
+&lt;span class="n"&gt;config&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;vm&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;network&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;private_network&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="ss"&gt;ip&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;192.168.33.10&amp;quot;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
 &lt;p&gt;This will create a "host-only network", which allows other VMs and the host to communicate together.
 If the interface doesn't exist on the host, it will create it.&lt;/p&gt;
 &lt;h3 id="public-network"&gt;Public network&lt;/h3&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="c1"&gt;# Create a public network, which generally matched to bridged network.&lt;/span&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="c1"&gt;# Create a public network, which generally matched to bridged network.&lt;/span&gt;
 &lt;span class="c1"&gt;# Bridged networks make the machine appear as another physical device on&lt;/span&gt;
 &lt;span class="c1"&gt;# your network.&lt;/span&gt;
-&lt;span class="n"&gt;config&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;vm&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;network&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;public_network&amp;quot;&lt;/span&gt;
-&lt;/pre&gt;&lt;/div&gt;
-
+&lt;span class="n"&gt;config&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;vm&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;network&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;public_network&amp;quot;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
 &lt;p&gt;The word &lt;code&gt;public&lt;/code&gt; here is confusing. This will add an interface on the same network as the host.
 Let's say your host has IP &lt;code&gt;192.168.0.100&lt;/code&gt;, your VM could get &lt;code&gt;192.168.0.167&lt;/code&gt;, for example.
 This means you will be able to ping the VM from another computer in the same network.
-&lt;strong&gt;Since Vagrant is &lt;a href="https://docs.vagrantup.com/v2/networking/public_network.html"&gt;insecure by default&lt;/a&gt;, this is probably a bad idea.&lt;/strong&gt;&lt;/p&gt;
+&lt;strong&gt;Since Vagrant is &lt;a href="https://developer.hashicorp.com/vagrant/docs/networking/public_network"&gt;insecure by default&lt;/a&gt;, this is probably a bad idea.&lt;/strong&gt;&lt;/p&gt;
 &lt;h3 id="shared-folders"&gt;Shared folders&lt;/h3&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="c1"&gt;# Share an additional folder to the guest VM. The first argument is&lt;/span&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="c1"&gt;# Share an additional folder to the guest VM. The first argument is&lt;/span&gt;
 &lt;span class="c1"&gt;# the path on the host to the actual folder. The second argument is&lt;/span&gt;
 &lt;span class="c1"&gt;# the path on the guest to mount the folder. And the optional third&lt;/span&gt;
 &lt;span class="c1"&gt;# argument is a set of non-required options.&lt;/span&gt;
-&lt;span class="n"&gt;config&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;vm&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;synced_folder&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;../data&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;/vagrant_data&amp;quot;&lt;/span&gt;
-&lt;/pre&gt;&lt;/div&gt;
-
+&lt;span class="n"&gt;config&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;vm&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;synced_folder&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;../data&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;/vagrant_data&amp;quot;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
 &lt;p&gt;Share a folder with the host. By default, Vagrant shares the folder containing the &lt;code&gt;Vagrantfile&lt;/code&gt; to the &lt;code&gt;/vagrant&lt;/code&gt; folder in the VM.&lt;/p&gt;
 &lt;h3 id="provider-specific-configuration"&gt;Provider-specific configuration&lt;/h3&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="c1"&gt;# Provider-specific configuration so you can fine-tune various&lt;/span&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="c1"&gt;# Provider-specific configuration so you can fine-tune various&lt;/span&gt;
 &lt;span class="c1"&gt;# backing providers for Vagrant. These expose provider-specific options.&lt;/span&gt;
 &lt;span class="c1"&gt;# Example for VirtualBox:&lt;/span&gt;
 &lt;span class="c1"&gt;#&lt;/span&gt;
-&lt;span class="n"&gt;config&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;vm&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;provider&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;virtualbox&amp;quot;&lt;/span&gt; &lt;span class="k"&gt;do&lt;/span&gt; &lt;span class="o"&gt;|&lt;/span&gt;&lt;span class="n"&gt;vb&lt;/span&gt;&lt;span class="o"&gt;|&lt;/span&gt;
-  &lt;span class="c1"&gt;# Display the VirtualBox GUI when booting the machine&lt;/span&gt;
-  &lt;span class="n"&gt;vb&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;gui&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="kp"&gt;true&lt;/span&gt;
+&lt;span class="n"&gt;config&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;vm&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;provider&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;virtualbox&amp;quot;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;do&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;|&lt;/span&gt;&lt;span class="n"&gt;vb&lt;/span&gt;&lt;span class="o"&gt;|&lt;/span&gt;
+&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="c1"&gt;# Display the VirtualBox GUI when booting the machine&lt;/span&gt;
+&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="n"&gt;vb&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;gui&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="kp"&gt;true&lt;/span&gt;
 
-  &lt;span class="c1"&gt;# Customize the amount of memory on the VM:&lt;/span&gt;
-  &lt;span class="n"&gt;vb&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;memory&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;1024&amp;quot;&lt;/span&gt;
+&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="c1"&gt;# Customize the amount of memory on the VM:&lt;/span&gt;
+&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="n"&gt;vb&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;memory&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;1024&amp;quot;&lt;/span&gt;
 &lt;span class="k"&gt;end&lt;/span&gt;
 &lt;span class="c1"&gt;#&lt;/span&gt;
 &lt;span class="c1"&gt;# View the documentation for the provider you are using for more&lt;/span&gt;
 &lt;span class="c1"&gt;# information on available options.&lt;/span&gt;
-&lt;/pre&gt;&lt;/div&gt;
-
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
 &lt;p&gt;Note that customizing the amount of memory is done on a per-provider basis.&lt;/p&gt;
 &lt;h3 id="provisionning"&gt;Provisionning&lt;/h3&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="c1"&gt;# Enable provisioning with a shell script. Additional provisioners such as&lt;/span&gt;
-&lt;span class="c1"&gt;# Puppet, Chef, Ansible, Salt, and Docker are also available. Please see the&lt;/span&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="c1"&gt;# Enable provisioning with a shell script. Additional provisioners such as&lt;/span&gt;
+&lt;span class="c1"&gt;# Ansible, Chef, Docker, Puppet and Salt are also available. Please see the&lt;/span&gt;
 &lt;span class="c1"&gt;# documentation for more information about their specific syntax and use.&lt;/span&gt;
-&lt;span class="n"&gt;config&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;vm&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;provision&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;shell&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="ss"&gt;inline&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;&amp;lt;-&lt;/span&gt;&lt;span class="no"&gt;SHELL&lt;/span&gt;
-&lt;span class="sh"&gt;  sudo apt-get update&lt;/span&gt;
-&lt;span class="sh"&gt;  sudo apt-get install -y apache2&lt;/span&gt;
-&lt;span class="no"&gt;SHELL&lt;/span&gt;
-&lt;/pre&gt;&lt;/div&gt;
-
+&lt;span class="n"&gt;config&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;vm&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;provision&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;shell&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="ss"&gt;inline&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;&amp;lt;&amp;lt;-&lt;/span&gt;&lt;span class="dl"&gt;SHELL&lt;/span&gt;
+&lt;span class="sh"&gt;  apt-get update&lt;/span&gt;
+&lt;span class="sh"&gt;  apt-get install -y apache2&lt;/span&gt;
+&lt;span class="dl"&gt;SHELL&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
 &lt;p&gt;Provisionning is used to setup the VM once it is booted.
 Of course, you can simply SSH into the machine and install what you want in it, but adding it in the &lt;code&gt;Vagrantfile&lt;/code&gt; will automate the process if you need multiple VMs or want to share it.&lt;/p&gt;
-&lt;p&gt;You can add your script inline (like the example), but you can also use a script file or configuration managements systems like Chef, Puppet, Ansible or Salt.
-If you use scripts, make sure they are non-interactive! (Add the &lt;code&gt;-y&lt;/code&gt; flag to &lt;code&gt;apt-get install&lt;/code&gt; for example).&lt;/p&gt;
+&lt;p&gt;You can add your script inline (like the example), but you can also use a script file or configuration managements systems like Ansible, Chef, Puppet or Salt.
+If you use scripts, make sure they are non-interactive (add the &lt;code&gt;-y&lt;/code&gt; flag to &lt;code&gt;apt-get install&lt;/code&gt; for example).&lt;/p&gt;
 &lt;p&gt;Provisionning happens in these situations:&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;On the &lt;strong&gt;first&lt;/strong&gt; &lt;code&gt;vagrant up&lt;/code&gt;&lt;/li&gt;
@@ -132,40 +131,31 @@ If you use scripts, make sure they are non-interactive! (Add the &lt;code&gt;-y&
 &lt;/ul&gt;
 &lt;h2 id="defining-multiple-machines-in-a-vagrantfile"&gt;Defining multiple machines in a Vagrantfile&lt;/h2&gt;
 &lt;p&gt;To do so, use &lt;code&gt;config.vm.define&lt;/code&gt; in the &lt;code&gt;Vagrantfile&lt;/code&gt;.&lt;/p&gt;
-&lt;figure class='code'&gt;
-&lt;figcaption&gt;&lt;span&gt;Vagrantfile&lt;/span&gt; &lt;a href='/code/vagrantfile-two-machines-trusty64/Vagrantfile'&gt;download&lt;/a&gt;&lt;/figcaption&gt;
+&lt;div class="highlight"&gt;&lt;span class="filename"&gt;Vagrantfile&lt;/span&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="no"&gt;VAGRANTFILE_API_VERSION&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;2&amp;quot;&lt;/span&gt;
 
-&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="c1"&gt;# -*- mode: ruby -*-&lt;/span&gt;
-&lt;span class="c1"&gt;# vi: set ft=ruby :&lt;/span&gt;
+&lt;span class="no"&gt;Vagrant&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;configure&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="no"&gt;VAGRANTFILE_API_VERSION&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;do&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;|&lt;/span&gt;&lt;span class="n"&gt;config&lt;/span&gt;&lt;span class="o"&gt;|&lt;/span&gt;
+&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="n"&gt;config&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;vm&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;box&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;kalilinux/rolling&amp;quot;&lt;/span&gt;
 
-&lt;span class="no"&gt;VAGRANTFILE_API_VERSION&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;2&amp;quot;&lt;/span&gt;
+&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="n"&gt;config&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;vm&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;define&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;alice&amp;quot;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;do&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;|&lt;/span&gt;&lt;span class="n"&gt;alice&lt;/span&gt;&lt;span class="o"&gt;|&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="n"&gt;alice&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;vm&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;hostname&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;alice&amp;quot;&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="n"&gt;alice&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;vm&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;network&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="ss"&gt;:private_network&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="ss"&gt;ip&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;192.168.33.210&amp;quot;&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="n"&gt;alice&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;vm&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;provision&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;shell&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="ss"&gt;inline&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;echo 192.168.33.211 bob &amp;gt;&amp;gt; /etc/hosts&amp;quot;&lt;/span&gt;
+&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="k"&gt;end&lt;/span&gt;
 
-&lt;span class="no"&gt;Vagrant&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;configure&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="no"&gt;VAGRANTFILE_API_VERSION&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="k"&gt;do&lt;/span&gt; &lt;span class="o"&gt;|&lt;/span&gt;&lt;span class="n"&gt;config&lt;/span&gt;&lt;span class="o"&gt;|&lt;/span&gt;
-  &lt;span class="n"&gt;config&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;vm&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;box&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;ubuntu/trusty64&amp;quot;&lt;/span&gt;
-
-  &lt;span class="n"&gt;config&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;vm&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;define&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;alice&amp;quot;&lt;/span&gt; &lt;span class="k"&gt;do&lt;/span&gt; &lt;span class="o"&gt;|&lt;/span&gt;&lt;span class="n"&gt;alice&lt;/span&gt;&lt;span class="o"&gt;|&lt;/span&gt;
-    &lt;span class="n"&gt;alice&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;vm&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;hostname&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;alice&amp;quot;&lt;/span&gt;
-    &lt;span class="n"&gt;alice&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;vm&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;network&lt;/span&gt; &lt;span class="ss"&gt;:private_network&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="ss"&gt;ip&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;192.168.33.210&amp;quot;&lt;/span&gt;
-    &lt;span class="n"&gt;alice&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;vm&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;provision&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;shell&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="ss"&gt;inline&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;echo 192.168.33.211 bob &amp;gt;&amp;gt; /etc/hosts&amp;quot;&lt;/span&gt;
-  &lt;span class="k"&gt;end&lt;/span&gt;
-
-  &lt;span class="n"&gt;config&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;vm&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;define&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;bob&amp;quot;&lt;/span&gt; &lt;span class="k"&gt;do&lt;/span&gt; &lt;span class="o"&gt;|&lt;/span&gt;&lt;span class="n"&gt;bob&lt;/span&gt;&lt;span class="o"&gt;|&lt;/span&gt;
-    &lt;span class="n"&gt;bob&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;vm&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;hostname&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;bob&amp;quot;&lt;/span&gt;
-    &lt;span class="n"&gt;bob&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;vm&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;network&lt;/span&gt; &lt;span class="ss"&gt;:private_network&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="ss"&gt;ip&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;192.168.33.211&amp;quot;&lt;/span&gt;
-    &lt;span class="n"&gt;bob&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;vm&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;provision&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;shell&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="ss"&gt;inline&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;echo 192.168.33.210 alice &amp;gt;&amp;gt; /etc/hosts&amp;quot;&lt;/span&gt;
-  &lt;span class="k"&gt;end&lt;/span&gt;
+&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="n"&gt;config&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;vm&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;define&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;bob&amp;quot;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;do&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;|&lt;/span&gt;&lt;span class="n"&gt;bob&lt;/span&gt;&lt;span class="o"&gt;|&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="n"&gt;bob&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;vm&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;hostname&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;bob&amp;quot;&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="n"&gt;bob&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;vm&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;network&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="ss"&gt;:private_network&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="ss"&gt;ip&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;192.168.33.211&amp;quot;&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="n"&gt;bob&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;vm&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;provision&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;shell&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="ss"&gt;inline&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;echo 192.168.33.210 alice &amp;gt;&amp;gt; /etc/hosts&amp;quot;&lt;/span&gt;
+&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="k"&gt;end&lt;/span&gt;
 &lt;span class="k"&gt;end&lt;/span&gt;
-&lt;/pre&gt;&lt;/div&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
-
-&lt;/figure&gt;
-
-&lt;p&gt;Here, we defined 2 VMs, &lt;code&gt;alice&lt;/code&gt; and &lt;code&gt;bob&lt;/code&gt;, that both have a sub-config setting their hostname and a private network IP and adding the other machine in the &lt;code&gt;hosts&lt;/code&gt; file.
-They also inherit from the top level config, so they will both use the box &lt;code&gt;ubuntu/trusty64&lt;/code&gt;.
-To define it per-machine, just make sure you use the per-machine variables (&lt;code&gt;alice&lt;/code&gt; and &lt;code&gt;bob&lt;/code&gt;) in their &lt;code&gt;do...end&lt;/code&gt; block.&lt;/p&gt;
+&lt;p&gt;Here, we defined 2 VMs, &lt;code&gt;alice&lt;/code&gt; and &lt;code&gt;bob&lt;/code&gt;, that both have a sub-config block configuring their hostname and a private network IP, as well as adding the other machine in their &lt;code&gt;/etc/hosts&lt;/code&gt; file.
+They also inherit from the top level config, so they will both use the box &lt;code&gt;kalilinux/rolling&lt;/code&gt;.
+To define it per-machine, simply use their per-machine variable: &lt;code&gt;alice.vm.box = "box/name"&lt;/code&gt;.&lt;/p&gt;
 &lt;p&gt;The Vagrant command line differs when there is multiple machines defined.
 Commands that only make sense for a single machine, such as &lt;code&gt;vagrant ssh&lt;/code&gt;, require you to include the name of the machine as an argument: &lt;code&gt;vagrant ssh bob&lt;/code&gt;.
 Other commands, such as &lt;code&gt;vagrant up&lt;/code&gt;, will operate on every machine by default, but you can also specify the target: &lt;code&gt;vagrant up alice&lt;/code&gt;.&lt;/p&gt;
 &lt;h2 id="more-info"&gt;More info&lt;/h2&gt;
 &lt;p&gt;This post covered common usage of Vagrant, but you can do more with it, such as pushing code to Heroku or sharing your VM over SSH.
-The &lt;a href="https://docs.vagrantup.com"&gt;official documentation&lt;/a&gt; is very well structured, so make sure you have a look!&lt;/p&gt;</summary><category term="vagrant"></category></entry></feed>
+The &lt;a href="https://developer.hashicorp.com/vagrant/docs"&gt;official documentation&lt;/a&gt; is very well structured, so make sure you have a look!&lt;/p&gt;</content><category term="DevOps"></category><category term="vagrant"></category></entry></feed>
