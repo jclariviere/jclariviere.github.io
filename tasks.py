@@ -1,13 +1,11 @@
+import datetime
 import os
 import shlex
 import shutil
-import sys
-import datetime
 
 from invoke import task
 from invoke.main import program
 from pelican import main as pelican_main
-from pelican.server import ComplexHTTPRequestHandler, RootedHTTPServer
 from pelican.settings import DEFAULT_CONFIG, get_settings_from_file
 
 OPEN_BROWSER_ON_SERVE = True
@@ -17,14 +15,18 @@ SETTINGS.update(DEFAULT_CONFIG)
 LOCAL_SETTINGS = get_settings_from_file(SETTINGS_FILE_BASE)
 SETTINGS.update(LOCAL_SETTINGS)
 
+SETTINGS_FILE_PUBLISH = "publishconf.py"
+PUBLISH_SETTINGS = get_settings_from_file(SETTINGS_FILE_PUBLISH)
+
 CONFIG = {
     "settings_base": SETTINGS_FILE_BASE,
-    "settings_publish": "publishconf.py",
+    "settings_publish": SETTINGS_FILE_PUBLISH,
     # Output path. Can be absolute or relative to tasks.py. Default: 'output'
     "deploy_path": SETTINGS["OUTPUT_PATH"],
     # Github Pages configuration
     "github_pages_branch": "master",
     "commit_message": f"'Publish site on {datetime.date.today().isoformat()}'",
+    "custom_domain": PUBLISH_SETTINGS["SITEDOMAIN"],
     # Host and port for `serve`
     "host": "localhost",
     "port": 8000,
@@ -60,42 +62,18 @@ def regenerate(c):
 @task
 def serve(c):
     """Serve site at http://$HOST:$PORT/ (default is localhost:8000)"""
-
-    class AddressReuseTCPServer(RootedHTTPServer):
-        allow_reuse_address = True
-
-    server = AddressReuseTCPServer(
-        CONFIG["deploy_path"],
-        (CONFIG["host"], CONFIG["port"]),
-        ComplexHTTPRequestHandler,
-    )
-
-    if OPEN_BROWSER_ON_SERVE:
-        # Open site in default browser
-        import webbrowser
-
-        webbrowser.open("http://{host}:{port}".format(**CONFIG))
-
-    sys.stderr.write("Serving at {host}:{port} ...\n".format(**CONFIG))
-    server.serve_forever()
+    pelican_run("-l -s {settings_base}".format(**CONFIG))
 
 
 @task
-def reserve(c):
-    """`build`, then `serve`"""
-    build(c)
-    serve(c)
+def dev_server(c):
+    """`serve` and `regenerate` together"""
+    pelican_run("-lr -s {settings_base}".format(**CONFIG))
 
 
 @task
-def preview(c):
-    """Build production version of site"""
-    pelican_run("-s {settings_publish}".format(**CONFIG))
-
-
-@task
-def livereload(c):
-    """Automatically reload browser tab upon file modification."""
+def live_reload(c):
+    """Like `dev-server`, but also automatically reload browser tab upon file modification."""
     from livereload import Server
 
     def cached_build():
@@ -133,27 +111,34 @@ def livereload(c):
 
 
 @task
-def publish(c):
-    """Publish to production via rsync"""
+def build_prod(c):
+    """Build production version of site"""
     pelican_run("-s {settings_publish}".format(**CONFIG))
-    c.run(
-        'rsync --delete --exclude ".DS_Store" -pthrvz -c '
-        '-e "ssh -p {ssh_port}" '
-        "{} {ssh_user}@{ssh_host}:{ssh_path}".format(
-            CONFIG["deploy_path"].rstrip("/") + "/", **CONFIG
-        )
-    )
 
 
 @task
 def gh_pages(c):
-    """Publish to GitHub Pages"""
-    preview(c)
+    """`build-prod` then publish to GitHub Pages"""
+    build_prod(c)
     c.run(
-        "ghp-import -b {github_pages_branch} "
-        "-m {commit_message} "
-        "{deploy_path} -p".format(**CONFIG)
+        "ghp-import --branch {github_pages_branch} "
+        "--message {commit_message} "
+        "--cname {custom_domain} "
+        "--no-jekyll "
+        "{deploy_path} --push".format(**CONFIG)
     )
+
+
+@task
+def lint(c):
+    """Run the linter on python files"""
+    c.run("ruff check --fix --show-fixes")
+
+
+@task
+def format(c):
+    """Run the formatter on python files"""
+    c.run("ruff format")
 
 
 def pelican_run(cmd):
