@@ -1,6 +1,4 @@
-import os
 import shlex
-import shutil
 
 from invoke import task
 from invoke.main import program
@@ -8,77 +6,27 @@ from pelican import main as pelican_main
 from pelican.settings import DEFAULT_CONFIG, get_settings_from_file
 
 OPEN_BROWSER_ON_SERVE = True
-SETTINGS_FILE_BASE = "pelicanconf.py"
+SETTINGS_FILE = "pelicanconf.py"
+
 SETTINGS = {}
 SETTINGS.update(DEFAULT_CONFIG)
-LOCAL_SETTINGS = get_settings_from_file(SETTINGS_FILE_BASE)
+LOCAL_SETTINGS = get_settings_from_file(SETTINGS_FILE)
 SETTINGS.update(LOCAL_SETTINGS)
 
-SETTINGS_FILE_PUBLISH = "publishconf.py"
-
-CONFIG = {
-    "settings_base": SETTINGS_FILE_BASE,
-    "settings_publish": SETTINGS_FILE_PUBLISH,
-    # Output path. Can be absolute or relative to tasks.py. Default: 'output'
-    "deploy_path": SETTINGS["OUTPUT_PATH"],
-    # Host and port for `serve`
-    "host": "localhost",
-    "port": 8000,
-}
-
 
 @task
-def clean(c):
-    """Remove generated files"""
-    if os.path.isdir(CONFIG["deploy_path"]):
-        shutil.rmtree(CONFIG["deploy_path"])
-        os.makedirs(CONFIG["deploy_path"])
-
-
-@task
-def build(c):
-    """Build local version of site"""
-    pelican_run("-s {settings_base}".format(**CONFIG))
-
-
-@task
-def rebuild(c):
-    """`build` with the delete switch"""
-    pelican_run("-d -s {settings_base}".format(**CONFIG))
-
-
-@task
-def regenerate(c):
-    """Automatically regenerate site upon file modification"""
-    pelican_run("-r -s {settings_base}".format(**CONFIG))
-
-
-@task
-def serve(c):
-    """Serve site at http://$HOST:$PORT/ (default is localhost:8000)"""
-    pelican_run("-l -s {settings_base}".format(**CONFIG))
-
-
-@task
-def dev_server(c):
-    """`serve` and `regenerate` together"""
-    pelican_run("-lr -s {settings_base}".format(**CONFIG))
-
-
-@task
-def live_reload(c):
-    """Like `dev-server`, but also automatically reload browser tab upon file modification."""
-    from livereload import Server
+def live_reload(c, port=8000, host="127.0.0.1", output_path=SETTINGS["OUTPUT_PATH"]):
+    """Runs a dev server that automatically reloads browser tab on file change"""
+    import livereload
 
     def cached_build():
-        cmd = "-s {settings_base} -e CACHE_CONTENT=true LOAD_CONTENT_CACHE=true"
-        pelican_run(cmd.format(**CONFIG))
+        pelican_run(f"-s {SETTINGS_FILE} -e CACHE_CONTENT=true LOAD_CONTENT_CACHE=true")
 
     cached_build()
-    server = Server()
+    server = livereload.Server()
     theme_path = SETTINGS["THEME"]
     watched_globs = [
-        CONFIG["settings_base"],
+        SETTINGS_FILE,
         f"{theme_path}/templates/**/*.html",
     ]
 
@@ -99,27 +47,9 @@ def live_reload(c):
         # Open site in default browser
         import webbrowser
 
-        webbrowser.open("http://{host}:{port}".format(**CONFIG))
+        webbrowser.open(f"http://{host}:{port}")
 
-    server.serve(host=CONFIG["host"], port=CONFIG["port"], root=CONFIG["deploy_path"])
-
-
-@task
-def build_prod(c):
-    """Build production version of site"""
-    pelican_run("-s {settings_publish}".format(**CONFIG))
-
-
-@task
-def lint(c):
-    """Run the linter on python files"""
-    c.run("ruff check --fix --show-fixes")
-
-
-@task
-def format(c):
-    """Run the formatter on python files"""
-    c.run("ruff format")
+    server.serve(host=host, port=port, root=output_path)
 
 
 def pelican_run(cmd):

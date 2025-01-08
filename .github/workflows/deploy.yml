@@ -22,12 +22,16 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      OUTPUT_DIR: "output/"
     steps:
       - name: Checkout
         uses: actions/checkout@v4
         with:
           submodules: recursive
 
+      - name: Install just
+        uses: taiki-e/install-action@just
       - name: Install uv
         uses: astral-sh/setup-uv@v5
       - name: Set up Python
@@ -36,12 +40,12 @@ jobs:
           python-version-file: "pyproject.toml"
 
       - name: Build site
-        run: uv run invoke build-prod
+        run: just build-prod
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: output/
+          path: ${{ env.OUTPUT_DIR }}
 
   deploy:
     environment:
