@@ -7,8 +7,7 @@ import sys
 sys.path.append(os.curdir)
 from pelicanconf import *  # noqa: F403
 
-SITEDOMAIN = "jclariviere.com"
-SITEURL = f"https://{SITEDOMAIN}"
+SITEURL = "https://jclariviere.com"
 RELATIVE_URLS = False
 
 FEED_ALL_ATOM = "feeds/all.atom.xml"

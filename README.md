@@ -17,3 +17,7 @@ Use `uv run invoke --list` to list them and `uv run invoke <command>` to run the
 
 The `tasks.py` file was first created by the `pelican-quickstart` command, but has since been modified.
 See here for details on the initial file: https://docs.getpelican.com/en/stable/publish.html#automation
+
+# Deployment
+
+Deployment is done using a GitHub Actions workflow.
